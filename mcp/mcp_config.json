@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "swend-control-hub": {
+      "command": "python",
+      "args": [
+        "-u",
+        "mcp/swend_mcp_server.py"
+      ],
+      "env": {
+        "DATABASE_URL": "postgresql://root@localhost:26257/antigravity?sslmode=disable"
+      }
+    }
+  }
+}

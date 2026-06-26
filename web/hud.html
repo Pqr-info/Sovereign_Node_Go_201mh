@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PQR SWARM HUD | Sovereign Mesh Interface</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom HUD adjustments */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981; }
+        .offline { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <i data-lucide="shield-check"></i>
+            <span>PQR SOVEREIGN</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" id="nav-board">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Fabric Board</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-lineage">
+                <i data-lucide="git-branch"></i>
+                <span>Lineage Tree</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-agents">
+                <i data-lucide="users"></i>
+                <span>Agent Council</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-forensics">
+                <i data-lucide="search"></i>
+                <span>Forensics</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer" style="padding: 1.5rem; border-top: 1px solid var(--card-border);">
+            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 700;">Token Quota</div>
+            <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem;">
+                <div id="token-bar" style="height: 100%; width: 0%; background: var(--sidebar-active); transition: width 0.5s;"></div>
+            </div>
+            <div id="token-text" style="font-size: 0.7rem; color: var(--text-secondary);">0 / 0 used</div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-title">Sovereign Mesh > Operational HUD</div>
+            <div class="topbar-actions">
+                <div style="display:flex; gap:1.5rem; align-items:center; margin-right:2rem; font-size:0.75rem; font-weight:600;">
+                    <div style="display:flex; align-items:center; gap:6px;"><div class="status-dot"></div> FABRIC</div>
+                    <div style="display:flex; align-items:center; gap:6px;"><div class="status-dot" id="gemma-dot"></div> ORCHESTRATOR</div>
+                </div>
+                <button class="btn btn-primary" id="btn-new-ticket">+ New Directive</button>
+            </div>
+        </header>
+
+        <section class="board" id="view-board">
+            <!-- Backlog -->
+            <div class="column" id="col-backlog">
+                <div class="column-header">
+                    <div class="column-title">
+                        <i data-lucide="circle-slash" style="width:14px; color:var(--status-backlog);"></i>
+                        Backlog
+                        <span class="column-badge" id="count-backlog">0</span>
+                    </div>
+                </div>
+                <div class="card-list" id="list-backlog"></div>
+            </div>
+
+            <!-- Todo -->
+            <div class="column" id="col-todo">
+                <div class="column-header">
+                    <div class="column-title">
+                        <i data-lucide="circle" style="width:14px; color:var(--status-todo);"></i>
+                        Queue
+                        <span class="column-badge" id="count-todo">0</span>
+                    </div>
+                </div>
+                <div class="card-list" id="list-todo"></div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="column" id="col-inprogress">
+                <div class="column-header">
+                    <div class="column-title">
+                        <i data-lucide="loader" style="width:14px; color:var(--status-inprogress); animation: spin 2s linear infinite;"></i>
+                        Processing
+                        <span class="column-badge" id="count-inprogress">0</span>
+                    </div>
+                </div>
+                <div class="card-list" id="list-inprogress"></div>
+            </div>
+
+            <!-- In Review -->
+            <div class="column" id="col-inreview">
+                <div class="column-header">
+                    <div class="column-title">
+                        <i data-lucide="eye" style="width:14px; color:var(--status-inreview);"></i>
+                        Validating
+                        <span class="column-badge" id="count-inreview">0</span>
+                    </div>
+                </div>
+                <div class="card-list" id="list-inreview"></div>
+            </div>
+
+            <!-- Done -->
+            <div class="column" id="col-done">
+                <div class="column-header">
+                    <div class="column-title">
+                        <i data-lucide="check-circle" style="width:14px; color:var(--status-done);"></i>
+                        Resolved
+                        <span class="column-badge" id="count-done">0</span>
+                    </div>
+                </div>
+                <div class="card-list" id="list-done"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Create Ticket Modal -->
+    <div class="modal-overlay" id="modal-new-ticket">
+        <div class="modal">
+            <h2 style="margin-bottom:1.5rem; color:var(--accent-blue);">New Sovereign Directive</h2>
+            <div style="display:flex; flex-direction:column; gap:1.2rem;">
+                <div>
+                    <label style="display:block; font-size:0.7rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.5rem; text-transform:uppercase;">Subject</label>
+                    <input type="text" id="input-subject" placeholder="What needs to be done?" style="width:100%; padding:0.75rem; background:#000; border:1px solid var(--card-border); border-radius:6px; color:#fff; outline:none;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.7rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.5rem; text-transform:uppercase;">Description</label>
+                    <textarea id="input-content" placeholder="Details for the swarm..." style="width:100%; padding:0.75rem; background:#000; border:1px solid var(--card-border); border-radius:6px; color:#fff; outline:none; height:120px; font-family:'JetBrains Mono';"></textarea>
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.7rem; font-weight:700; color:var(--text-secondary); margin-bottom:0.5rem; text-transform:uppercase;">Priority Layer</label>
+                    <select id="input-priority" style="width:100%; padding:0.75rem; background:#000; border:1px solid var(--card-border); border-radius:6px; color:#fff; outline:none;">
+                        <option value="2">Layer 2 - Standard Fabric</option>
+                        <option value="5">Layer 5 - Execution/Healing</option>
+                        <option value="7">Layer 7 - Sovereign Directive</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="btn-submit-ticket" style="padding:1rem; width:100%; justify-content:center;">Submit to Swarm</button>
+                <button class="btn" id="btn-cancel-ticket" style="background:transparent; color:var(--text-secondary); border:none; width:100%; justify-content:center;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        // Gemma Health Polling
+        async function checkGemmaHealth() {
+            try {
+                const res = await fetch('/REST/2.0/health/gemma');
+                const data = await res.json();
+                const dot = document.getElementById('gemma-dot');
+                if (data.status === 'ONLINE') {
+                    dot.classList.remove('offline');
+                } else {
+                    dot.classList.add('offline');
+                }
+            } catch(e) {
+                document.getElementById('gemma-dot').classList.add('offline');
+            }
+        }
+        setInterval(checkGemmaHealth, 5000);
+        checkGemmaHealth();
+    </script>
+    <style>
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</body>
+</html>

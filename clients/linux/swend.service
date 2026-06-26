@@ -1,0 +1,19 @@
+[Unit]
+Description=Swarm Execution Node Daemon (SWEND)
+After=network.target
+
+[Service]
+Type=simple
+User=swend
+WorkingDirectory={{INSTALL_DIR}}
+ExecStart=/usr/local/bin/swend-daemon
+Restart=on-failure
+RestartSec=5s
+
+Environment=DATABASE_URL=postgresql://root@localhost:26257/antigravity?sslmode=disable
+Environment=VAULT_ADDR=http://localhost:8200
+Environment=PQR_SWARM_ADDR=localhost:1111
+Environment=PQR_API_URL=http://localhost:8196
+
+[Install]
+WantedBy=multi-user.target
