@@ -30,11 +30,24 @@ HTML_UI = """<!DOCTYPE html>
         #dlBtn:hover { background: #0066cc; }
         img { max-width: 100%; margin-top: 30px; border: 1px solid #333; }
         .loader { display: none; margin-top: 20px; color: #ffaa00; }
+        select, input[type="checkbox"] { background: #222; border: 1px solid #00ff00; color: #00ff00; font-family: monospace; padding: 10px; margin: 10px; }
+        .controls { margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <h2>ImageFX [HD Flash CodeGen Pipeline]</h2>
     <input type="text" id="prompt" placeholder="Enter generation prompt..." value="cybernetic dog navigating a decentralized physical mesh network">
+    <div class="controls">
+        <label for="aspectRatio">Aspect Ratio: </label>
+        <select id="aspectRatio">
+            <option value="square" selected>Square (1:1)</option>
+            <option value="widescreen">Widescreen (16:9)</option>
+            <option value="portrait">Portrait (9:16)</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;
+        <input type="checkbox" id="enhanceDetail" checked>
+        <label for="enhanceDetail">Masterpiece Details</label>
+    </div>
     <br>
     <button onclick="generateImage()">EXECUTE RENDER</button>
     <button id="dlBtn" style="display:none;" onclick="downloadRender()">SAVE TO DEVICE</button>
@@ -51,6 +64,8 @@ HTML_UI = """<!DOCTYPE html>
     <script>
         async function generateImage() {
             const prompt = document.getElementById('prompt').value;
+            const aspectRatio = document.getElementById('aspectRatio').value;
+            const enhanceDetail = document.getElementById('enhanceDetail').checked;
             const loader = document.getElementById('loader');
             const img = document.getElementById('result');
             const dlBtn = document.getElementById('dlBtn');
@@ -65,7 +80,7 @@ HTML_UI = """<!DOCTYPE html>
                 const response = await fetch('/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: prompt, debug: isDebug })
+                    body: JSON.stringify({ prompt: prompt, aspectRatio: aspectRatio, enhanceDetail: enhanceDetail, debug: isDebug })
                 });
                 const data = await response.json();
                 
@@ -143,9 +158,13 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 req_json = json.loads(post_data.decode('utf-8'))
                 prompt = req_json.get('prompt', 'cybernetic dog navigating a decentralized physical mesh network')
+                aspectRatio = req_json.get('aspectRatio', 'square')
+                enhanceDetail = req_json.get('enhanceDetail', True)
                 isDebug = req_json.get('debug', False)
             except:
                 prompt = 'cybernetic dog navigating a decentralized physical mesh network'
+                aspectRatio = 'square'
+                enhanceDetail = True
                 isDebug = False
 
             debug_logs = []
@@ -153,11 +172,22 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                 print(msg)
                 debug_logs.append(str(msg))
 
-            log_debug(f"\n[ANCHOR] Requesting HD Flash CodeGen for: {prompt}")
+            if aspectRatio == 'widescreen':
+                width, height = 1920, 1080
+            elif aspectRatio == 'portrait':
+                width, height = 1080, 1920
+            else:
+                width, height = 1080, 1080
+            
+            actual_prompt = prompt
+            if enhanceDetail:
+                actual_prompt = f"{prompt}, masterpiece, highly detailed, vivid, professional digital art, fixins"
+
+            log_debug(f"\n[ANCHOR] Requesting HD Flash CodeGen for: {actual_prompt}")
 
             url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
             
-            sys_prompt = f"Write a complete valid Python script that generates a high-quality, photorealistic digital art representation of '{prompt}' by downloading it from the Pollinations.ai API. Construct the URL as 'https://image.pollinations.ai/prompt/[URL_ENCODED_PROMPT]?width=1920&height=1080&nologo=true' and save it as gemini_render.jpg. Use urllib.request and urllib.parse. CRITICAL: You MUST include a User-Agent header (e.g. Mozilla/5.0) in the Request or it will be blocked. Only output python code."
+            sys_prompt = f"Write a complete valid Python script that generates a photorealistic digital art representation of '{actual_prompt}' by downloading it from the Pollinations.ai API. Construct the URL as 'https://image.pollinations.ai/prompt/[URL_ENCODED_PROMPT]?width={width}&height={height}&nologo=true'. Use urllib.request with a 'User-Agent: Mozilla/5.0' header to download it. CRITICAL: After downloading, you MUST use the 'PIL' (Pillow) library to open the image, use ImageDraw to add the text 'Copyright 2026 pqr.info' to the bottom right corner (with a semi-transparent black background rectangle for text visibility), and save the final watermarked image as 'gemini_render.jpg'. Only output python code."
 
             payload = json.dumps({
                 "contents": [{"parts": [{"text": sys_prompt}]}],
