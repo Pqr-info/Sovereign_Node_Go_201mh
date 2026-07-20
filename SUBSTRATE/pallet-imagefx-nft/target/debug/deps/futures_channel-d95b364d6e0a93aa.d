@@ -1,0 +1,10 @@
+D:\pqr.info\SUBSTRATE\pallet-imagefx-nft\target\debug\deps\futures_channel-d95b364d6e0a93aa.d: C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\lib.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\lock.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\mod.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\queue.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\sink_impl.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\oneshot.rs
+
+D:\pqr.info\SUBSTRATE\pallet-imagefx-nft\target\debug\deps\libfutures_channel-d95b364d6e0a93aa.rmeta: C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\lib.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\lock.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\mod.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\queue.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\sink_impl.rs C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\oneshot.rs
+
+C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\lib.rs:
+C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\lock.rs:
+C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\mod.rs:
+C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\queue.rs:
+C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\mpsc\sink_impl.rs:
+C:\Users\theal\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-channel-0.3.33\src\oneshot.rs:
