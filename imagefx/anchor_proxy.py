@@ -173,21 +173,19 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                 debug_logs.append(str(msg))
 
             if aspectRatio == 'widescreen':
-                width, height = 1920, 1080
+                width, height = 1280, 720
             elif aspectRatio == 'portrait':
-                width, height = 1080, 1920
+                width, height = 720, 1280
             else:
                 width, height = 1080, 1080
             
             actual_prompt = prompt
             if enhanceDetail:
-                actual_prompt = f"{prompt}, masterpiece, highly detailed, vivid, professional digital art, fixins"
+                actual_prompt = f"{prompt}, (masterpiece:1.2, highly detailed:1.2, ultra-sharp, vivid lighting, digital art, intricate textures)"
 
             log_debug(f"\n[ANCHOR] Requesting HD Flash CodeGen for: {actual_prompt}")
 
-            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
-            
-            sys_prompt = f"Write a complete valid Python script that generates a photorealistic digital art representation of '{actual_prompt}' by downloading it from the Pollinations.ai API. Construct the URL as 'https://image.pollinations.ai/prompt/[URL_ENCODED_PROMPT]?width={width}&height={height}&nologo=true'. Use urllib.request with a 'User-Agent: Mozilla/5.0' header to download it. CRITICAL: After downloading, you MUST use the 'PIL' (Pillow) library to open the image, use ImageDraw to add the text 'Copyright 2026 pqr.info' to the bottom right corner (with a semi-transparent black background rectangle for text visibility), and save the final watermarked image as 'gemini_render.jpg'. Only output python code."
+            sys_prompt = f"Write a complete valid Python script that generates a photorealistic digital art representation of '{actual_prompt}' by downloading it from the Pollinations.ai API. Construct the URL as 'https://image.pollinations.ai/prompt/[URL_ENCODED_PROMPT]?width={width}&height={height}&nologo=true'. Use urllib.request with a 'User-Agent: Mozilla/5.0' header to download it. CRITICAL REQUIREMENTS: 1. SCRIPT MUST FAIL FAST: If the download fails, print an error and exit with a non-zero status without attempting watermarking. 2. WATERMARKING: After successfully downloading, you MUST use the 'PIL' (Pillow) library to open the image. Use ImageDraw and ImageFont (use a default font or arial) to render the text 'Copyright 2026 pqr.info' in the bottom right corner. Render the text TWICE: first in black at offset (x+2, y+2) for a drop shadow, then in white at (x,y). Save the final watermarked image strictly as 'gemini_render.jpg' (always as JPEG). Only output python code."
 
             payload = json.dumps({
                 "contents": [{"parts": [{"text": sys_prompt}]}],
