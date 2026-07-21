@@ -12,10 +12,10 @@ pub mod metrics;
 pub mod pallet {
     use frame_support::{
         pallet_prelude::*,
-        traits::{Currency, ReservableCurrency},
+        traits::{Currency, ReservableCurrency, Time},
     };
     use frame_system::pallet_prelude::*;
-    use crate::metadata::{NftMetadata, ImageMetadata, ProteinMetadata, NftClass};
+    use crate::metadata::{NftMetadata, ImageMetadata, ProteinMetadata, NftClass, NftRecord};
     use crate::types::{LicenseType, Listing};
 
     pub type BalanceOf<T> = <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -24,6 +24,7 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type Currency: Currency<Self::AccountId> + ReservableCurrency<Self::AccountId>;
+        type Time: Time;
         
         #[pallet::constant]
         type MaxMetadataLength: Get<u32>;
@@ -52,11 +53,11 @@ pub mod pallet {
     #[pallet::getter(fn treasury_account)]
     pub type TreasuryAccount<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
-    /// Store the NFTs (Polymorphic)
+    /// Store the NFTs (Polymorphic wrapper)
     #[pallet::storage]
     #[pallet::getter(fn nfts)]
     pub type NFTs<T: Config> = StorageMap<
-        _, Blake2_128Concat, T::Hash, NftMetadata<T>, OptionQuery
+        _, Blake2_128Concat, T::Hash, NftRecord<T>, OptionQuery
     >;
 
     /// Track which NFT Classes are strictly immutable
@@ -173,6 +174,27 @@ pub mod pallet {
         pub fn set_immutable_class(origin: OriginFor<T>, class: NftClass, is_immutable: bool) -> DispatchResult {
             ensure_root(origin)?;
             ImmutableClass::<T>::insert(class, is_immutable);
+            Ok(())
+        }
+
+        #[pallet::call_index(9)]
+        #[pallet::weight(10_000)]
+        pub fn update_metadata(origin: OriginFor<T>, hash: T::Hash, _new_data: Vec<u8>) -> DispatchResult {
+            let sender = ensure_signed(origin)?;
+            
+            let owner = NFTOwner::<T>::get(hash).ok_or(Error::<T>::NFTNotFound)?;
+            ensure!(owner == sender, Error::<T>::NotOwner);
+
+            let record = NFTs::<T>::get(hash).ok_or(Error::<T>::NFTNotFound)?;
+            
+            // Critical Immutability Enforcement
+            ensure!(
+                !ImmutableClass::<T>::get(record.class),
+                Error::<T>::ImmutableAsset
+            );
+
+            // ... update logic for mutable classes (e.g., ImageFX) ...
+            
             Ok(())
         }
 

@@ -3,7 +3,7 @@ use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 use frame_support::traits::{Currency, ExistenceRequirement};
 use sp_runtime::traits::{Saturating, Zero, CheckedMul};
-use crate::metadata::{NftMetadata, ImageMetadata, ProteinMetadata};
+use crate::metadata::{NftMetadata, ImageMetadata, ProteinMetadata, NftClass, NftRecord};
 
 pub fn do_mint_image<T: Config>(
     origin: OriginFor<T>,
@@ -28,7 +28,11 @@ pub fn do_mint_image<T: Config>(
             .map_err(|_| Error::<T>::InsufficientFunds)?;
     }
 
-    NFTs::<T>::insert(hash, NftMetadata::Image(metadata));
+    let record = NftRecord {
+        class: NftClass::ImageFx,
+        metadata: NftMetadata::Image(metadata),
+    };
+    NFTs::<T>::insert(hash, record);
     NFTOwner::<T>::insert(hash, creator.clone());
 
     Pallet::<T>::deposit_event(Event::MintedImage(hash, creator, total_fee));
@@ -63,7 +67,11 @@ pub fn do_mint_protein<T: Config>(
             .map_err(|_| Error::<T>::InsufficientFunds)?;
     }
 
-    NFTs::<T>::insert(hash, NftMetadata::Protein(metadata));
+    let record = NftRecord {
+        class: NftClass::Protein,
+        metadata: NftMetadata::Protein(metadata),
+    };
+    NFTs::<T>::insert(hash, record);
     NFTOwner::<T>::insert(hash, creator.clone());
 
     Pallet::<T>::deposit_event(Event::MintedProtein(hash, creator, total_fee));
