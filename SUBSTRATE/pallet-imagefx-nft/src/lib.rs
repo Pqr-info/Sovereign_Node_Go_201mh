@@ -15,7 +15,7 @@ pub mod pallet {
         traits::{Currency, ReservableCurrency},
     };
     use frame_system::pallet_prelude::*;
-    use crate::metadata::ImageMetadata;
+    use crate::metadata::{NftMetadata, ImageMetadata, ProteinMetadata, NftClass};
     use crate::types::{LicenseType, Listing};
 
     pub type BalanceOf<T> = <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -52,11 +52,18 @@ pub mod pallet {
     #[pallet::getter(fn treasury_account)]
     pub type TreasuryAccount<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
-    /// Store the NFTs
+    /// Store the NFTs (Polymorphic)
     #[pallet::storage]
     #[pallet::getter(fn nfts)]
     pub type NFTs<T: Config> = StorageMap<
-        _, Blake2_128Concat, T::Hash, ImageMetadata<T>, OptionQuery
+        _, Blake2_128Concat, T::Hash, NftMetadata<T>, OptionQuery
+    >;
+
+    /// Track which NFT Classes are strictly immutable
+    #[pallet::storage]
+    #[pallet::getter(fn immutable_class)]
+    pub type ImmutableClass<T: Config> = StorageMap<
+        _, Blake2_128Concat, NftClass, bool, ValueQuery
     >;
 
     /// Store owner balances (who owns which NFT hash)
@@ -104,7 +111,8 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        Minted(T::Hash, T::AccountId, BalanceOf<T>), // hash, minter, fee paid
+        MintedImage(T::Hash, T::AccountId, BalanceOf<T>), // hash, minter, fee paid
+        MintedProtein(T::Hash, T::AccountId, BalanceOf<T>), // hash, minter, fee paid
         Transferred(T::Hash, T::AccountId, T::AccountId),
         Burned(T::Hash),
         ListedForSale(T::Hash, Listing<BalanceOf<T>>),
@@ -125,6 +133,7 @@ pub mod pallet {
         TreasuryNotSet,
         RequireAdmin,
         LicenseNotAvailable,
+        ImmutableAsset,
     }
 
     #[pallet::call]
@@ -149,8 +158,22 @@ pub mod pallet {
 
         #[pallet::call_index(2)]
         #[pallet::weight(10_000)]
-        pub fn mint(origin: OriginFor<T>, metadata: ImageMetadata<T>) -> DispatchResult {
-            crate::mint::do_mint::<T>(origin, metadata)
+        pub fn mint_image(origin: OriginFor<T>, metadata: ImageMetadata<T>) -> DispatchResult {
+            crate::mint::do_mint_image::<T>(origin, metadata)
+        }
+
+        #[pallet::call_index(7)]
+        #[pallet::weight(10_000)]
+        pub fn mint_protein(origin: OriginFor<T>, metadata: ProteinMetadata<T>) -> DispatchResult {
+            crate::mint::do_mint_protein::<T>(origin, metadata)
+        }
+        
+        #[pallet::call_index(8)]
+        #[pallet::weight(10_000)]
+        pub fn set_immutable_class(origin: OriginFor<T>, class: NftClass, is_immutable: bool) -> DispatchResult {
+            ensure_root(origin)?;
+            ImmutableClass::<T>::insert(class, is_immutable);
+            Ok(())
         }
 
         #[pallet::call_index(3)]
