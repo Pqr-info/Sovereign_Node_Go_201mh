@@ -6,6 +6,7 @@ pub mod metadata;
 pub mod mint;
 pub mod gallery;
 pub mod types;
+pub mod metrics;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -73,6 +74,27 @@ pub mod pallet {
         _, Blake2_128Concat, T::Hash, Blake2_128Concat, T::AccountId, LicenseType, OptionQuery
     >;
 
+    /// Stated intrinsic value of the NFT
+    #[pallet::storage]
+    #[pallet::getter(fn stated_value)]
+    pub type StatedValue<T: Config> = StorageMap<
+        _, Blake2_128Concat, T::Hash, BalanceOf<T>, OptionQuery
+    >;
+
+    /// Longevity tokens assigned based on Stated Value
+    #[pallet::storage]
+    #[pallet::getter(fn longevity_tokens)]
+    pub type LongevityTokens<T: Config> = StorageMap<
+        _, Blake2_128Concat, T::Hash, BalanceOf<T>, OptionQuery
+    >;
+
+    /// Transport tokens assigned based on Stated Value
+    #[pallet::storage]
+    #[pallet::getter(fn transport_tokens)]
+    pub type TransportTokens<T: Config> = StorageMap<
+        _, Blake2_128Concat, T::Hash, BalanceOf<T>, OptionQuery
+    >;
+
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
@@ -84,6 +106,7 @@ pub mod pallet {
         LicensePurchased(T::Hash, T::AccountId, LicenseType, BalanceOf<T>), // hash, buyer, license, price
         FullCopyrightPurchased(T::Hash, T::AccountId, T::AccountId, BalanceOf<T>), // hash, old_owner, new_owner, price
         ConversionRateUpdated(BalanceOf<T>),
+        StatedValueUpdated(T::Hash, BalanceOf<T>), // hash, new stated value
     }
 
     #[pallet::error]
@@ -140,6 +163,12 @@ pub mod pallet {
         #[pallet::weight(10_000)]
         pub fn buy_license(origin: OriginFor<T>, hash: T::Hash, license: LicenseType) -> DispatchResult {
             crate::gallery::do_buy_license::<T>(origin, hash, license)
+        }
+
+        #[pallet::call_index(6)]
+        #[pallet::weight(10_000)]
+        pub fn set_stated_value(origin: OriginFor<T>, hash: T::Hash, value: BalanceOf<T>) -> DispatchResult {
+            crate::metrics::do_set_stated_value::<T>(origin, hash, value)
         }
     }
 }
