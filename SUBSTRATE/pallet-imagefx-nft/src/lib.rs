@@ -30,6 +30,12 @@ pub mod pallet {
         
         #[pallet::constant]
         type BaseMintFeeCents: Get<u32>;
+
+        #[pallet::constant]
+        type LongevityFactor: Get<u32>;
+
+        #[pallet::constant]
+        type TransportFactor: Get<u32>;
     }
 
     #[pallet::pallet]
