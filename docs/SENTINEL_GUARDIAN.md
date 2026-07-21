@@ -1,44 +1,59 @@
-# 🛡️ PQR Sentinel: Sovereign Guardian
-
-The **Sentinel** is a host-side guardian agent running on Windows that ensures the PQR Sovereign Mesh remains operational, even if the Docker Engine or specific containers fail.
-
-## 🛰️ Core Functions
-1.  **Engine Monitoring**: Periodically checks if the Docker Engine is responsive.
-2.  **Health Verification**: Polls the PQR REST 2.0 API health endpoint (`/health`).
-3.  **Auto-Recovery**: Automatically restarts the `pqr-server` if it becomes unreachable.
-4.  **Agent-Driven Signal Handling**: Watches for "triggers" from within the mesh to execute host-side operations (like a full rebuild).
-
-## 🚀 Deployment
-To start the Sentinel, run the following in a Windows PowerShell terminal:
-
-```powershell
+# )
+HostSide Watchdog for the SWEND Sovereign Mesh
+The Sentinel is a Windowsresident guardian agent responsible for ensuring that the SWEND Sovereign Mesh remains operational even when containerized components fail. It provides hostlevel resilience, autorecovery, and agentdriven orchestration across the entire stack.
+🛰️ Core Functions
+1. Engine Monitoring
+Continuously checks whether the Docker Engine is responsive. If Docker becomes unresponsive, the Sentinel initiates corrective action.
+2. Health Verification
+Polls the SWEND REST 2.0 API:
+Code
+/REST/2.0/health
+If the API becomes unreachable, the Sentinel escalates to recovery mode.
+3. AutoRecovery
+Automatically restarts the swend-server container or the entire stack when:
+the health endpoint fails
+the Docker Engine stalls
+the Mesh becomes unreachable
+This ensures continuous sovereign uptime.
+4. AgentDriven Signal Handling
+The Sentinel listens for “trigger files” created by agents inside containers. These triggers instruct the host to perform privileged operations such as:
+full rebuilds
+stack resets
+targeted container restarts
+This enables containertohost orchestration without exposing host privileges.
+🚀 Deployment
+Start the Sentinel from a Windows PowerShell terminal:
+powershell
 .\SENTINEL.ps1
-```
-
-It is recommended to keep this terminal visible or run it as a background scheduled task.
-
-## 🧬 Inter-Process Communication (Agent-to-Host)
-Agents inside the Docker containers can "signal" the host-side Sentinel by interacting with the shared `signals/` directory.
-
-### Triggering a Full Rebuild
-If an agent determines that the entire stack needs a hard reset (e.g., after a major code change or critical failure), it can create a file:
-
-**Inside Container:**
-```bash
+Recommended deployment modes:
+Visible terminal for realtime monitoring
+Scheduled Task for background, persistent operation
+The Sentinel should run continuously to maintain sovereign resilience.
+🧬 InterProcess Communication (Agent → Host)
+Agents inside Docker containers communicate with the host Sentinel via the shared:
+Code
+signals/
+directory.
+This directory acts as a unidirectional signaling bus for privileged hostside actions.
+Triggering a Full Rebuild
+Inside Container
+bash
 touch /app/signals/RESTART_TRIGGER
-```
-
-**Sentinel Reaction:**
-1. Detects the file.
-2. Logs the request.
-3. Executes `docker-compose up -d --build`.
-4. Clears the trigger.
-
-## 📋 Monitoring
-The Sentinel logs all its observations and recovery actions to:
-`C:\Users\drphi\pqr-info-swarm\sentinel.log`
-
----
-**Status**: 🟢 Active
-**Role**: Host-side Watchdog
-**System**: PQR Sovereign Mesh
+Sentinel Reaction
+Detects the trigger file
+Logs the request
+Executes:
+Code
+docker-compose up -d --build
+Clears the trigger file
+This enables autonomous, agentinitiated stack regeneration.
+📋 Monitoring & Logging
+All Sentinel observations, health checks, and recovery actions are logged to:
+Code
+C:\Users\theal\pqr-info-swarm\sentinel.log
+This provides:
+full forensic traceability
+historical uptime analysis
+debugging context for Meshlevel anomalies
+Status
+🟢 Active Role: HostSide Watchdog System: SWEND Sovereign Mesh

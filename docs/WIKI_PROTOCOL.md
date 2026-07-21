@@ -1,30 +1,40 @@
-# WIKI: Swarm Communication Protocols
-
-This document details the communication protocols, network boundaries, and messaging formats defined within the **SWEND** stack.
-
----
-
-## 1. Network Layer Specifications
-
-### 1.1. gRPC Control Plane (Port `1111`)
-Exposes the core synchronization, user administration, and process teleportation functions. By default, it requires TLS encryption with client certificates distributed by HashiCorp Vault.
-
-### 1.2. Neural Gossip Bus (Port `11111`)
-A high-throughput, low-latency UDP/TCP channel dedicated to memory page swaps and node vitality checks. It operates utilizing a zero-copy buffer model to support sub-millisecond deliberation cycles.
-
-### 1.3. iPN Stealth Multicast Backchannel (Port `9999`)
-Enables zero-discovery peer routing using link-local IPv6 multicast:
-* **Address**: `[ff02::c0ba:11]`
-* **Protocol**: UDP6
-* **Payload**: Rolling Pseudo-Noise (PN) challenge bytes.
-* **Mechanism**: Nodes verify their timing constraints against a shared generator polynomial. Only nodes whose guesses match the rolling hash are allowed to write consensus state changes.
-
----
-
-## 2. Main gRPC Signatures
-
-### 2.1. `AgentSync` Service
-```protobuf
+# Network Boundaries, Messaging Formats, and Communication Standards for the SWEND Stack
+This document defines the communication protocols, network layers, and gRPC service signatures that govern internode coordination within the SWEND execution fabric.
+1. Network Layer Specifications
+1.1. gRPC Control Plane (Port 1111)
+The authoritative control channel for:
+synchronization
+user administration
+process teleportation
+mutation proposals
+state negotiation
+Security
+TLS enforced
+Client certificates issued by HashiCorp Vault
+Mutual authentication required
+This channel forms the sovereign command backbone of the Mesh.
+1.2. Neural Gossip Bus (Port 11111)
+A highthroughput, lowlatency channel supporting:
+memory page swaps
+vitality slope monitoring
+submillisecond deliberation cycles
+Characteristics
+UDP/TCP hybrid
+Zerocopy buffer model
+Designed for ephemeral, highspeed swarm coordination
+This is the Mesh’s neural layer, enabling rapid preconsensus communication.
+1.3. iPN Stealth Multicast Backchannel (Port 9999)
+A stealth, linklocal IPv6 multicast channel used for zerodiscovery peer routing.
+Specifications
+Address: [ff02::c0ba:11]
+Protocol: UDP6
+Payload: Rolling PseudoNoise (PN) challenge bytes
+Mechanism: Nodes validate timing constraints against a shared generator polynomial. Only nodes whose PN guesses match the rolling hash may write consensus state changes.
+This ensures cryptographic timingbased admission control without explicit authentication.
+2. Main gRPC Signatures
+The SWEND stack exposes three primary gRPC services: AgentSync, NeuralTraining, and SovereignCity.
+2.1. AgentSync Service
+protobuf
 service AgentSync {
     rpc Ping (PingRequest) returns (PingResponse);
     rpc HandshakeState (StatePayload) returns (SyncAck);
@@ -33,20 +43,33 @@ service AgentSync {
     rpc TeleportProcess (TeleportProcessRequest) returns (TeleportProcessResponse);
     rpc ProposeSwarmMutation (MutationRequest) returns (MutationResponse);
 }
-```
-
-### 2.2. `NeuralTraining` Service
-```protobuf
+Purpose
+Node liveness
+State synchronization
+Remote command execution
+Process teleportation
+Mutation proposals for sovereign consensus
+This is the primary operational interface for SWEND agents.
+2.2. NeuralTraining Service
+protobuf
 service NeuralTraining {
     rpc InitiateTraining(TrainingRequest) returns (TrainingSession);
     rpc GetTrainingStatus(TrainingStatusRequest) returns (TrainingStatus);
 }
-```
-
-### 2.3. `SovereignCity` Service
-```protobuf
+Purpose
+Launches training sessions
+Tracks training progress
+Supports ondevice or distributed finetuning
+This service powers adaptive model evolution within the Mesh.
+2.3. SovereignCity Service
+protobuf
 service SovereignCity {
     rpc RegisterCitizen(CitizenRegistration) returns (CitizenPassport);
     rpc RequestService(ServiceRequest) returns (ServiceAllocation);
 }
-```
+Purpose
+Identity registration
+Resource allocation
+Service provisioning
+This service models the civic layer of the Sovereign Mesh.
+This version is fully polished and ready for ingestion by your import script.

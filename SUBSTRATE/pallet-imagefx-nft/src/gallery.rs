@@ -6,57 +6,52 @@ use frame_support::traits::{Currency, ExistenceRequirement};
 pub fn do_list_for_sale<T: Config>(
     origin: OriginFor<T>,
     hash: T::Hash,
-    price: BalanceOf<T>,
+    listing: types::Listing<BalanceOf<T>>,
 ) -> DispatchResult {
     let sender = ensure_signed(origin)?;
     
     let owner = NFTOwner::<T>::get(hash).ok_or(Error::<T>::NFTNotFound)?;
     ensure!(owner == sender, Error::<T>::NotOwner);
 
-    GalleryListings::<T>::insert(hash, price);
+    GalleryListings::<T>::insert(hash, listing.clone());
 
-    Pallet::<T>::deposit_event(Event::ListedForSale(hash, price));
+    Pallet::<T>::deposit_event(Event::ListedForSale(hash, listing));
     Ok(())
 }
 
-pub fn do_delist<T: Config>(
+pub fn do_buy_license<T: Config>(
     origin: OriginFor<T>,
     hash: T::Hash,
-) -> DispatchResult {
-    let sender = ensure_signed(origin)?;
-    
-    let owner = NFTOwner::<T>::get(hash).ok_or(Error::<T>::NFTNotFound)?;
-    ensure!(owner == sender, Error::<T>::NotOwner);
-    ensure!(GalleryListings::<T>::contains_key(hash), Error::<T>::NotForSale);
-
-    GalleryListings::<T>::remove(hash);
-
-    Pallet::<T>::deposit_event(Event::Delisted(hash));
-    Ok(())
-}
-
-pub fn do_buy<T: Config>(
-    origin: OriginFor<T>,
-    hash: T::Hash,
+    license: types::LicenseType,
 ) -> DispatchResult {
     let buyer = ensure_signed(origin)?;
     
     let owner = NFTOwner::<T>::get(hash).ok_or(Error::<T>::NFTNotFound)?;
-    let price = GalleryListings::<T>::get(hash).ok_or(Error::<T>::NotForSale)?;
+    let listing = GalleryListings::<T>::get(hash).ok_or(Error::<T>::NotForSale)?;
 
-    // Ensure buyer is not buying their own NFT
-    ensure!(buyer != owner, Error::<T>::NotOwner); // Better to create a specific error, but this works for now
+    ensure!(buyer != owner, Error::<T>::NotOwner); // Buyer cannot be owner
+
+    let price = match license {
+        types::LicenseType::SingleUse => listing.single_use_price,
+        types::LicenseType::MultiPurpose => listing.multi_purpose_price,
+        types::LicenseType::FullCopyright => listing.full_copyright_price,
+    }.ok_or(Error::<T>::LicenseNotAvailable)?;
 
     // Transfer funds from buyer to owner
     T::Currency::transfer(&buyer, &owner, price, ExistenceRequirement::KeepAlive)
         .map_err(|_| Error::<T>::InsufficientFunds)?;
 
-    // Transfer NFT ownership
-    NFTOwner::<T>::insert(hash, buyer.clone());
-    
-    // Remove from gallery
-    GalleryListings::<T>::remove(hash);
+    if license == types::LicenseType::FullCopyright {
+        // Transfer NFT ownership
+        NFTOwner::<T>::insert(hash, buyer.clone());
+        // Remove from gallery
+        GalleryListings::<T>::remove(hash);
+        Pallet::<T>::deposit_event(Event::FullCopyrightPurchased(hash, owner, buyer, price));
+    } else {
+        // Grant usage license
+        GrantedLicenses::<T>::insert(hash, buyer.clone(), license.clone());
+        Pallet::<T>::deposit_event(Event::LicensePurchased(hash, buyer, license, price));
+    }
 
-    Pallet::<T>::deposit_event(Event::Sold(hash, owner, buyer, price));
     Ok(())
 }

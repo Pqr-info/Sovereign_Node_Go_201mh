@@ -21,6 +21,10 @@ type TicketRepository interface {
 	Search(ctx context.Context, criteria map[string]interface{}) ([]FabricTicket, error)
 	IncrementMetric(ctx context.Context, key string, amount float64) error
 	GetMetric(ctx context.Context, key string) (float64, float64, error)
+	UpsertState(ctx context.Context, scope, owner, agentID, source string, payload map[string]interface{}, checksum string) (StateSnapshot, error)
+	GetState(ctx context.Context, scope, owner string) (*StateSnapshot, error)
+	SendMessage(ctx context.Context, scope, sender, receiver, kind, body string, payload map[string]interface{}) (AgentMessage, error)
+	ListMessages(ctx context.Context, scope, receiver string) ([]AgentMessage, error)
 }
 
 // AgentMemoryRepository defines the interface for agent-specific memory storage

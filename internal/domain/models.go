@@ -73,11 +73,34 @@ type FabricContent struct {
 	FailedAttempts []string               `json:"failed_attempts,omitempty"`
 }
 
+// StateSnapshot tracks the latest shared editor/agent state for a scope and owner.
+type StateSnapshot struct {
+	Scope     string                 `json:"scope"`
+	Owner     string                 `json:"owner"`
+	AgentID   string                 `json:"agent_id"`
+	Source    string                 `json:"source"`
+	Payload   map[string]interface{} `json:"payload"`
+	Checksum  string                 `json:"checksum"`
+	UpdatedAt time.Time              `json:"updated_at"`
+}
+
+// AgentMessage is a lightweight durable message that can be exchanged between active agents.
+type AgentMessage struct {
+	ID        uuid.UUID              `json:"id"`
+	Scope     string                 `json:"scope"`
+	Sender    string                 `json:"sender"`
+	Receiver  string                 `json:"receiver"`
+	Kind      string                 `json:"kind"`
+	Body      string                 `json:"body"`
+	Payload   map[string]interface{} `json:"payload,omitempty"`
+	CreatedAt time.Time              `json:"created_at"`
+}
+
 // Agent represents an autonomous entity in the swarm
 type Agent struct {
-	ID       string `json:"id"`
-	Role     string `json:"role"`
-	Level    int    `json:"level"`
+	ID       string                 `json:"id"`
+	Role     string                 `json:"role"`
+	Level    int                    `json:"level"`
 	Metadata map[string]interface{} `json:"metadata"`
 }
 

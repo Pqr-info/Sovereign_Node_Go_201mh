@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -78,6 +79,27 @@ func (s *SwarmService) GenerateStateVector(content []byte) []float64 {
 	return vec
 }
 
+func (s *SwarmService) SyncState(ctx context.Context, scope, owner, agentID, source string, payload map[string]interface{}) (domain.StateSnapshot, error) {
+	if payload == nil {
+		payload = map[string]interface{}{}
+	}
+	payloadJSON, _ := json.Marshal(payload)
+	checksum := sha256.Sum256(payloadJSON)
+	return s.repo.UpsertState(ctx, scope, owner, agentID, source, payload, hex.EncodeToString(checksum[:]))
+}
+
+func (s *SwarmService) GetState(ctx context.Context, scope, owner string) (*domain.StateSnapshot, error) {
+	return s.repo.GetState(ctx, scope, owner)
+}
+
+func (s *SwarmService) SendMessage(ctx context.Context, scope, sender, receiver, kind, body string, payload map[string]interface{}) (domain.AgentMessage, error) {
+	return s.repo.SendMessage(ctx, scope, sender, receiver, kind, body, payload)
+}
+
+func (s *SwarmService) ListMessages(ctx context.Context, scope, receiver string) ([]domain.AgentMessage, error) {
+	return s.repo.ListMessages(ctx, scope, receiver)
+}
+
 func (s *SwarmService) GetRecentTickets(ctx context.Context, limit int) ([]domain.FabricTicket, error) {
 	return s.repo.ListRecent(ctx, limit)
 }
@@ -96,7 +118,6 @@ func (s *SwarmService) UpdateExtended(ctx context.Context, id uuid.UUID, status,
 	// Fallback to basic update
 	return s.repo.Update(ctx, id, status, title)
 }
-
 
 func (s *SwarmService) GetTicketWithContent(ctx context.Context, id uuid.UUID) (*domain.FabricTicket, *domain.FabricContent, error) {
 	return s.repo.GetByID(ctx, id)

@@ -10,6 +10,7 @@ import re
 import subprocess
 import uuid
 import shutil
+import hashlib
 
 PORT = 80
 DIRECTORY = '/app/media'
@@ -61,7 +62,71 @@ HTML_UI = """<!DOCTYPE html>
         <p><i>Note: We will be minting an NFT from the generated image and the owner of the NFT is the owner of the copyright. Any NFTs not purchased become the intellectual property of pqr.info.</i></p>
     </div>
 
+    <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+        <h3>Custom Prior Art Minting</h3>
+        <p>Upload your own art to mint as an NFT ($1 USD fee in S27).</p>
+        <input type="file" id="customFile" accept="image/jpeg, image/png">
+        <button onclick="uploadAndMint()">UPLOAD & MINT</button>
+        <div id="mintStatus" style="color: #0088ff; margin-top:10px;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@polkadot/extension-dapp@0.46.2/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@polkadot/api@10.9.1/bundle.min.js"></script>
     <script>
+        async function uploadAndMint() {
+            const fileInput = document.getElementById('customFile');
+            const status = document.getElementById('mintStatus');
+            if (fileInput.files.length === 0) {
+                alert("Please select a file.");
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = async function(e) {
+                const b64 = e.target.result.split(',')[1];
+                status.innerText = "Uploading to server...";
+                
+                try {
+                    const res = await fetch('/upload', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({image_b64: b64, filename: file.name})
+                    });
+                    const data = await res.json();
+                    
+                    if(data.status === 'success') {
+                        status.innerText = `Uploaded successfully. Hash: ${data.hash.substring(0, 8)}... Prompting Web3 Wallet...`;
+                        await triggerMintTransaction(data.hash, file.name);
+                    } else {
+                        status.innerText = "Upload failed.";
+                    }
+                } catch(err) {
+                    status.innerText = "Error: " + err;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function triggerMintTransaction(imageHash, filename) {
+            const status = document.getElementById('mintStatus');
+            try {
+                const extensions = await window.injectedWeb3['polkadot-js'].enable('ImageFX Sovereign Node');
+                if (extensions.length === 0) {
+                    throw new Error("No Web3 extension found.");
+                }
+                status.innerText = "Wallet connected. (Minting simulation success for demonstration)";
+                // In production: Connect to WS RPC, construct metadata, call ImageFXNFT.mint
+                // const api = await ApiPromise.create({ provider: new WsProvider('ws://127.0.0.1:9944') });
+                // const unsub = await api.tx.imageFxNft.mint(metadata).signAndSend(account, (result) => ...);
+                
+                document.getElementById('result').src = 'media/' + imageHash + '.jpg';
+                document.getElementById('result').style.display = 'inline';
+            } catch(e) {
+                status.innerText = "Web3 Error: " + e.message;
+            }
+        }
+        
         async function generateImage() {
             const prompt = document.getElementById('prompt').value;
             const aspectRatio = document.getElementById('aspectRatio').value;
@@ -265,6 +330,32 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             if isDebug:
                 resp_data["debugInfo"] = "\n".join(debug_logs)
             self.wfile.write(json.dumps(resp_data).encode('utf-8'))
+        elif parsed_path == '/upload':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            try:
+                req_json = json.loads(post_data.decode('utf-8'))
+                b64_data = req_json.get('image_b64', '')
+                image_bytes = base64.b64decode(b64_data)
+                
+                # Compute SHA256 hash
+                h = hashlib.sha256()
+                h.update(image_bytes)
+                image_hash = h.hexdigest()
+                
+                # Save to media folder
+                save_path = os.path.join(DIRECTORY, f"{image_hash}.jpg")
+                with open(save_path, 'wb') as f:
+                    f.write(image_bytes)
+                    
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "success", "hash": "0x" + image_hash}).encode('utf-8'))
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode('utf-8'))
         else:
             self.send_response(404)
             self.end_headers()

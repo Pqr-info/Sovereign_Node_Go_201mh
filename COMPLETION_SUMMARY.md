@@ -162,8 +162,8 @@ $env:DATABASE_URL = "postgresql://root@localhost:26257/antigravity?sslmode=disab
 ### 3. Start PQR Server
 ```powershell
 cd c:\Users\drphi\pqr-info-swarm\cmd\\pqr
-go build -o pqr.exe
-.\pqr.exe
+go build -o swend.exe
+.\swend.exe
 ```
 
 ### 4. Test System
@@ -177,7 +177,7 @@ curl -X GET http://localhost:8080/REST/2.0/health
 
 ### 5. Integrate Your Agent
 ```go
-import "github.com/thealanphipps-del/pqr"
+import "github.com/pqr-info/swend"
 
 session := pqr.NewAgentSession("http://localhost:8080", "my-agent")
 ticket, _ := session.CreateMemory(ctx, "Task", map[string]interface{}{...})

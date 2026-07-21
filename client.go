@@ -62,14 +62,14 @@ func (c *Client) CreateTicket(ctx context.Context, subject, queue, content strin
 // StoreMemory stores agent context/memory for a ticket
 func (c *Client) StoreMemory(ctx context.Context, agentID string, ticketID string, memType string, data map[string]interface{}, relevance float64) error {
 	payload := map[string]interface{}{
-		"memory_type":      memType,
-		"data":             data,
-		"relevance_score":  relevance,
+		"memory_type":     memType,
+		"data":            data,
+		"relevance_score": relevance,
 	}
 
 	body, _ := json.Marshal(payload)
-	req, _ := http.NewRequestWithContext(ctx, "POST", 
-		fmt.Sprintf("%s/REST/2.0/agent/%s/memory/%s", c.BaseURL, agentID, ticketID), 
+	req, _ := http.NewRequestWithContext(ctx, "POST",
+		fmt.Sprintf("%s/REST/2.0/agent/%s/memory/%s", c.BaseURL, agentID, ticketID),
 		bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -243,6 +243,111 @@ func (c *Client) UpdateTicketExtended(ctx context.Context, ticketID string, stat
 }
 
 // ListTickets retrieves the recent list of tickets
+func (c *Client) SyncState(ctx context.Context, scope, owner, agentID, source string, payload map[string]interface{}) (map[string]interface{}, error) {
+	body, _ := json.Marshal(map[string]interface{}{
+		"scope":    scope,
+		"owner":    owner,
+		"agent_id": agentID,
+		"source":   source,
+		"payload":  payload,
+	})
+	req, _ := http.NewRequestWithContext(ctx, "POST",
+		fmt.Sprintf("%s/REST/2.0/state/sync", c.BaseURL),
+		bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to sync state: %s", string(body))
+	}
+
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	return result, nil
+}
+
+func (c *Client) GetState(ctx context.Context, scope, owner string) (map[string]interface{}, error) {
+	req, _ := http.NewRequestWithContext(ctx, "GET",
+		fmt.Sprintf("%s/REST/2.0/state/%s?owner=%s", c.BaseURL, scope, owner),
+		nil)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("state not found")
+	}
+
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	return result, nil
+}
+
+func (c *Client) SendMessage(ctx context.Context, scope, sender, receiver, kind, body string, payload map[string]interface{}) (map[string]interface{}, error) {
+	payloadBody, _ := json.Marshal(map[string]interface{}{
+		"scope":    scope,
+		"sender":   sender,
+		"receiver": receiver,
+		"kind":     kind,
+		"body":     body,
+		"payload":  payload,
+	})
+
+	req, _ := http.NewRequestWithContext(ctx, "POST",
+		fmt.Sprintf("%s/REST/2.0/state/message", c.BaseURL),
+		bytes.NewReader(payloadBody))
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusAccepted {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to send message: %s", string(body))
+	}
+
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	return result, nil
+}
+
+func (c *Client) ListMessages(ctx context.Context, scope, receiver string) ([]map[string]interface{}, error) {
+	req, _ := http.NewRequestWithContext(ctx, "GET",
+		fmt.Sprintf("%s/REST/2.0/state/%s/messages/%s", c.BaseURL, scope, receiver),
+		nil)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to list messages")
+	}
+
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	messages := result["messages"].([]interface{})
+	var out []map[string]interface{}
+	for _, msg := range messages {
+		out = append(out, msg.(map[string]interface{}))
+	}
+	return out, nil
+}
+
 func (c *Client) ListTickets(ctx context.Context) ([]map[string]interface{}, error) {
 	req, _ := http.NewRequestWithContext(ctx, "GET",
 		fmt.Sprintf("%s/REST/2.0/tickets", c.BaseURL),
@@ -294,7 +399,6 @@ func (c *Client) CommentTicket(ctx context.Context, ticketID string, agentID str
 	return nil
 }
 
-
 // GetAuditTrail retrieves the audit trail for a ticket
 func (c *Client) GetAuditTrail(ctx context.Context, ticketID string) ([]map[string]interface{}, error) {
 	req, _ := http.NewRequestWithContext(ctx, "GET",
@@ -314,10 +418,19 @@ func (c *Client) GetAuditTrail(ctx context.Context, ticketID string) ([]map[stri
 		return nil, fmt.Errorf("failed to get audit trail")
 	}
 
-	trail := result["audit_trail"].([]interface{})
+	rawTrail := result["audit_trail"]
+	if rawTrail == nil {
+		return nil, nil
+	}
+	trail, ok := rawTrail.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid audit trail format")
+	}
 	var auditList []map[string]interface{}
 	for _, entry := range trail {
-		auditList = append(auditList, entry.(map[string]interface{}))
+		if m, ok := entry.(map[string]interface{}); ok {
+			auditList = append(auditList, m)
+		}
 	}
 
 	return auditList, nil
@@ -397,5 +510,3 @@ func (as *AgentSession) RecallMemory(ctx context.Context, ticketID string) (map[
 func (as *AgentSession) GetAllMemories(ctx context.Context) ([]map[string]interface{}, error) {
 	return as.client.GetContext(ctx, as.agentID)
 }
-
-

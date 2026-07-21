@@ -11,16 +11,25 @@ import (
 // TestExampleAgentUsage demonstrates how agents use the ticketing system for memory
 func TestExampleAgentUsage(t *testing.T) {
 	// Initialize client
-	client := NewClient("http://localhost:8080")
+	// Check standard ports 3196 (Nginx Gateway) and 8080 (direct fallback)
+	baseUrl := "http://localhost:3196"
+	client := NewClient(baseUrl)
 	agentID := "processing-agent-001"
 	ctx := context.Background()
 
 	// 1. Check service health
 	healthy, err := client.Health(ctx)
 	if !healthy {
-		log.Fatal("Service not healthy:", err)
+		baseUrl = "http://localhost:8080"
+		client = NewClient(baseUrl)
+		healthy, err = client.Health(ctx)
 	}
-	fmt.Println("✓ Service healthy")
+
+	if !healthy {
+		t.Skip("PQR ticketing service is not online or responsive. Skipping integration test. Error:", err)
+		return
+	}
+	fmt.Printf("✓ Service healthy at %s\n", baseUrl)
 
 	// 2. Create a task ticket (working memory)
 	ticketID, err := client.CreateTicket(ctx,

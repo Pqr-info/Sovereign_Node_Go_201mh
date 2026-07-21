@@ -1,4 +1,4 @@
-# SENTINEL.ps1 - PQR Sovereign Guardian
+# SENTINEL.ps1 - SWEND Sovereign Guardian
 # Monitors the PQR Mesh from the Windows Host side.
 
 $ErrorActionPreference = "Continue"
@@ -55,7 +55,7 @@ while ($true) {
         Write-Log "Attempting recovery of Gateway and Server Cluster..." -Color Cyan
         
         # Re-lift the gateway and servers
-        docker-compose up -d gateway pqr-server
+        docker-compose up -d gateway swend-server
         
         Start-Sleep -Seconds 20 # Allow cluster to synchronize
     }

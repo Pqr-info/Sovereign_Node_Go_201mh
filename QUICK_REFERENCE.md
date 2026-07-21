@@ -12,7 +12,7 @@ $env:DATABASE_URL = "postgresql://root@localhost:26257/antigravity?sslmode=disab
 
 # 3. Start server
 cd c:\Users\drphi\pqr-info-swarm\cmd\\pqr
-go build && .\pqr.exe
+go build && .\swend.exe
 
 # 4. Test
 curl http://localhost:8080/REST/2.0/health
@@ -26,7 +26,7 @@ package main
 import (
     "context"
     "log"
-    "github.com/thealanphipps-del/pqr"
+    "github.com/pqr-info/swend"
 )
 
 func main() {
@@ -263,8 +263,8 @@ cd c:\Users\drphi\pqr-info-swarm
 
 ```bash
 cd c:\Users\drphi\pqr-info-swarm\cmd\\pqr
-go build -o pqr.exe
-.\pqr.exe
+go build -o swend.exe
+.\swend.exe
 
 # Or run directly
 go run main.go

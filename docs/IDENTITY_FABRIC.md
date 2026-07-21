@@ -1,25 +1,32 @@
-# 🛡️ PQR Identity Fabric
-
-The Identity Fabric ensures that only authorized entities can interact with the Sovereign Node, while allowing the Node itself to interact with the global enterprise ecosystem.
-
-## 🔐 SAML Identity Provider (IdP)
-The node acts as a standalone SAML IdP.
-- **Metadata URL**: `https://pqr.info/saml/metadata`
-- **SSO URL**: `https://pqr.info/saml/sso`
-- **Certificate**: Self-signed RSA-2048 (Stored in Vault).
-
-### 🔄 Autonomous Certificate Rotation
-The **MonitoringService** checks the SAML certificate health every minute. If the certificate is within 7 days of expiration, the **HealingService** triggers an autonomous rotation:
-1. Generate new Key/Cert pair.
-2. Update Vault.
-3. Reload the live `AuthService` in-memory.
-
-## 🧱 Cloudflare Access Bypass
-The `pqr.info` domain is protected by Cloudflare Access. To allow the **Healing Agents** to perform health checks from the outside, they use **Service Tokens**.
-
-### Credentials (Stored in Vault)
-- **CF-Access-Client-Id**: `c98ca7026f54305b05cd24975a3ce6d2.access`
-- **CF-Access-Client-Secret**: `ebf3177d992adb0c3db7b088fb5b9e3d83e96649fb9bc5b86a25301af5c8e744`
-
-### Usage
-Every internal request to `pqr.info` from the Monitoring Service automatically injects these headers to "pierce" the Access wall for forensic probing.
+# The Identity & Access Control Backbone of the Sovereign Mesh
+The PQR Identity Fabric governs authentication, authorization, and secure crossboundary communication for the Sovereign Node. It ensures that only verified entities can interact with the Mesh while enabling the Node to safely interface with the global enterprise ecosystem.
+🔐 SAML Identity Provider (IdP)
+The Sovereign Node operates as a standalone SAML Identity Provider, enabling federated authentication across internal and external systems.
+Endpoints
+Metadata URL: https://pqr.info/saml/metadata
+SSO URL: https://pqr.info/saml/sso
+Certificate: Selfsigned RSA2048 (stored securely in Vault)
+🔄 Autonomous Certificate Rotation
+The MonitoringService performs continuous certificate health checks (every 60 seconds). If the certificate is within 7 days of expiration, the HealingService initiates an autonomous rotation:
+Generate a new RSA2048 Key/Cert pair
+Store the new pair in Vault
+Reload the live AuthService inmemory without downtime
+This ensures uninterrupted authentication and zerotrust continuity.
+🧱 Cloudflare Access Bypass
+The pqr.info domain is protected by Cloudflare Access, enforcing identityaware zerotrust boundaries.
+To allow internal Mesh components (especially Healing Agents) to perform external health checks, the system uses Service Tokens stored in Vault.
+Service Token Credentials (VaultStored)
+CFAccessClientId: c98ca7026f54305b05cd24975a3ce6d2.access
+CFAccessClientSecret: ebf3177d992adb0c3db7b088fb5b9e3d83e96649fb9bc5b86a25301af5c8e744
+Usage
+Every outbound request from the Monitoring Service to pqr.info automatically injects:
+Code
+CF-Access-Client-Id: <id>
+CF-Access-Client-Secret: <secret>
+This allows the request to pierce the Cloudflare Access wall for:
+forensic probing
+uptime verification
+certificate checks
+external health diagnostics
+All without exposing credentials or weakening the zerotrust perimeter.
+This version is ready for ingestion by your import script.

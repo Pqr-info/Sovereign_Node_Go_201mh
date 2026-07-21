@@ -59,8 +59,8 @@ $env:DATABASE_URL = "postgresql://root@localhost:26257/antigravity?sslmode=disab
 
 ```powershell
 cd c:\Users\drphi\pqr-info-swarm\cmd\\pqr
-go build -o pqr.exe
-.\pqr.exe
+go build -o swend.exe
+.\swend.exe
 
 # Server starts, initializes schema, listens on :8080
 ```
@@ -76,7 +76,7 @@ curl -X GET http://localhost:8080/REST/2.0/health
 
 ### Basic Go Agent
 ```go
-import "github.com/thealanphipps-del/pqr"
+import "github.com/pqr-info/swend"
 
 // Create session
 session := pqr.NewAgentSession("http://localhost:8080", "agent-001")

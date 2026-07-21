@@ -47,7 +47,7 @@ $env:DATABASE_URL = "postgresql://root@localhost:26257/antigravity?sslmode=disab
 
 # 3. Start server
 cd c:\Users\drphi\pqr-info-swarm\cmd\\pqr
-go build && .\pqr.exe
+go build && .\swend.exe
 
 # 4. In another terminal, test
 curl http://localhost:8080/REST/2.0/health

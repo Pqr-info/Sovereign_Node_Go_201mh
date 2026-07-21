@@ -39,14 +39,30 @@ func NewServer(svc *service.SwarmService, healing *service.HealingService, auth 
 		Router:  r,
 	}
 
-	// Static UI serving
-	r.StaticFile("/", "./web/dashboard.html")
-	r.StaticFile("/legacy", "./web/index.html")
-	r.StaticFile("/wiki", "./web/wiki.html")
-	r.StaticFile("/hud", "./web/hud.html")
-	r.Static("/static", "./web")
-	
-	api := r.Group("/REST/2.0")
+	// Public Health endpoints
+	r.GET("/health", s.handleHealth)
+	r.GET("/REST/2.0/health", s.handleHealth)
+
+	basicUser := os.Getenv("BASIC_AUTH_USER")
+	basicPass := os.Getenv("BASIC_AUTH_PASSWORD")
+
+	var secure *gin.RouterGroup
+	if basicUser != "" && basicPass != "" {
+		log.Printf("🔒 Enforcing HTTP Basic Authentication for secure UI and REST 2.0 endpoints")
+		secure = r.Group("/", gin.BasicAuth(gin.Accounts{basicUser: basicPass}))
+	} else {
+		log.Printf("⚠️ Warning: BASIC_AUTH_USER and BASIC_AUTH_PASSWORD not set. Running without HTTP Basic Auth.")
+		secure = &r.RouterGroup
+	}
+
+	// Static UI serving (secured if basic auth is set)
+	secure.StaticFile("/", "./web/dashboard.html")
+	secure.StaticFile("/legacy", "./web/index.html")
+	secure.StaticFile("/wiki", "./web/wiki.html")
+	secure.StaticFile("/hud", "./web/hud.html")
+	secure.Static("/static", "./web")
+
+	api := secure.Group("/REST/2.0")
 	{
 		// Ticket CRUD
 		api.POST("/ticket", s.handleCreateTicket)
@@ -54,19 +70,24 @@ func NewServer(svc *service.SwarmService, healing *service.HealingService, auth 
 		api.PUT("/ticket/:id", s.handleUpdateTicket)
 		api.POST("/ticket/:id/comment", s.handleCreateComment)
 		api.GET("/tickets", s.handleSearchTickets)
-		
+
 		// Agent memory operations
 		api.POST("/agent/:agentID/memory/:ticketID", s.handleStoreMemory)
 		api.GET("/agent/:agentID/memory/:ticketID", s.handleGetMemory)
 		api.GET("/agent/:agentID/context", s.handleGetAgentContext)
-		
+
+		// Shared state sync
+		api.POST("/state/sync", s.handleSyncState)
+		api.GET("/state/:scope", s.handleGetState)
+		api.POST("/state/message", s.handleSendMessage)
+		api.GET("/state/:scope/messages/:receiver", s.handleListMessages)
+
 		// Audit and relationships
 		api.GET("/ticket/:id/audit", s.handleGetAuditTrail)
 		api.GET("/ticket/:id/links", s.handleGetLinks)
 		api.POST("/ticket/:id/link/:childID", s.handleLinkTickets)
-		
+
 		// Health
-		api.GET("/health", s.handleHealth)
 		api.GET("/health/gemma", s.handleGemmaHealth)
 
 		// Chat & Swarm Balancing
@@ -76,13 +97,13 @@ func NewServer(svc *service.SwarmService, healing *service.HealingService, auth 
 		api.GET("/health/lmstudio", s.handleLMStudioHealth)
 		api.POST("/agent/:agentID/message", s.handleAgentMessage)
 		api.GET("/agent/:agentID/conversation", s.handleAgentConversation)
-		
+
 		// Self-healing
 		api.POST("/healing/ticket", s.handleCreateHealingTicket)
 		api.POST("/healing/iterate/:id", s.handleProcessHealingIteration)
 		api.POST("/healing/failure", s.handleRecordHealingFailure)
 		api.POST("/healing/resolve", s.handleResolveHealingTicket)
-		
+
 		// Metrics
 		api.GET("/metrics/tokens", s.handleGetMetrics)
 
@@ -104,6 +125,10 @@ func NewServer(svc *service.SwarmService, healing *service.HealingService, auth 
 		// Domain Registrar Reseller (PQR + Cloudflare)
 		api.GET("/registrar/search", s.handleRegistrarSearch)
 		api.POST("/registrar/register", s.handleRegistrarRegister)
+
+		// SOS state and timeline endpoints
+		api.GET("/sos/state", s.handleGetSOSState)
+		api.GET("/sos/timeline", s.handleGetSOSTimeline)
 	}
 
 	// SAML Endpoints
@@ -271,21 +296,21 @@ func (s *Server) handleSearchTickets(c *gin.Context) {
 	for _, t := range tickets {
 		// Fetch full content for each ticket to show subject in UI
 		_, content, _ := s.Service.GetTicketWithContent(c.Request.Context(), t.ID)
-		
+
 		item := gin.H{
-			"id":         t.ID.String(),
-			"layer":      t.LayerID,
-			"creator":    t.CreatorAgentID,
-			"status":     t.Status,
-			"created_at": t.CreatedAt,
+			"id":          t.ID.String(),
+			"layer":       t.LayerID,
+			"creator":     t.CreatorAgentID,
+			"status":      t.Status,
+			"created_at":  t.CreatedAt,
 			"assigned_to": t.AssignedTo,
 		}
-		
+
 		if content != nil {
 			item["intent"] = content.IntentBlob
 			item["content"] = string(content.RawContent)
 		}
-		
+
 		response = append(response, item)
 	}
 	c.JSON(http.StatusOK, response)
@@ -295,32 +320,142 @@ func (s *Server) Run(addr string) error {
 	return s.Router.Run(addr)
 }
 
-func (s *Server) handleStoreMemory(c *gin.Context) {
-	agentID := c.Param("agentID")
-	ticketID := c.Param("ticketID")
-	
+func (s *Server) handleSyncState(c *gin.Context) {
 	var req struct {
-		MemType         string                 `json:"memory_type"`
-		Data            map[string]interface{} `json:"data"`
-		RelevanceScore  float64                `json:"relevance_score"`
+		Scope   string                 `json:"scope"`
+		Owner   string                 `json:"owner"`
+		AgentID string                 `json:"agent_id"`
+		Source  string                 `json:"source"`
+		Payload map[string]interface{} `json:"payload"`
 	}
-	
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+	if req.Scope == "" {
+		req.Scope = "default"
+	}
+	if req.Owner == "" {
+		req.Owner = "default"
+	}
+	if req.AgentID == "" {
+		req.AgentID = "rest"
+	}
+	if req.Source == "" {
+		req.Source = "rest"
+	}
+	if req.Payload == nil {
+		req.Payload = map[string]interface{}{}
+	}
+
+	snap, err := s.Service.SyncState(c.Request.Context(), req.Scope, req.Owner, req.AgentID, req.Source, req.Payload)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "synced", "snapshot": snap})
+}
+
+func (s *Server) handleGetState(c *gin.Context) {
+	scope := c.Param("scope")
+	owner := c.Query("owner")
+	if owner == "" {
+		owner = "default"
+	}
+	if scope == "" {
+		scope = "default"
+	}
+
+	snap, err := s.Service.GetState(c.Request.Context(), scope, owner)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "state not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"scope": scope, "owner": owner, "snapshot": snap})
+}
+
+func (s *Server) handleSendMessage(c *gin.Context) {
+	var req struct {
+		Scope    string                 `json:"scope"`
+		Sender   string                 `json:"sender"`
+		Receiver string                 `json:"receiver"`
+		Kind     string                 `json:"kind"`
+		Body     string                 `json:"body"`
+		Payload  map[string]interface{} `json:"payload"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if req.Scope == "" {
+		req.Scope = "default"
+	}
+	if req.Sender == "" {
+		req.Sender = "rest"
+	}
+	if req.Receiver == "" {
+		req.Receiver = "default"
+	}
+	if req.Kind == "" {
+		req.Kind = "note"
+	}
+
+	msg, err := s.Service.SendMessage(c.Request.Context(), req.Scope, req.Sender, req.Receiver, req.Kind, req.Body, req.Payload)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{"status": "queued", "message": msg})
+}
+
+func (s *Server) handleListMessages(c *gin.Context) {
+	scope := c.Param("scope")
+	receiver := c.Param("receiver")
+	if scope == "" {
+		scope = "default"
+	}
+	if receiver == "" {
+		receiver = "default"
+	}
+
+	messages, err := s.Service.ListMessages(c.Request.Context(), scope, receiver)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"scope": scope, "receiver": receiver, "messages": messages})
+}
+
+func (s *Server) handleStoreMemory(c *gin.Context) {
+	agentID := c.Param("agentID")
+	ticketID := c.Param("ticketID")
+
+	var req struct {
+		MemType        string                 `json:"memory_type"`
+		Data           map[string]interface{} `json:"data"`
+		RelevanceScore float64                `json:"relevance_score"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	id, err := uuid.Parse(ticketID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ticket id"})
 		return
 	}
-	
+
 	if err := s.Service.StoreAgentMemory(c.Request.Context(), agentID, id, req.MemType, req.Data, req.RelevanceScore); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"message": "memory stored", "agent": agentID, "ticket": ticketID})
 }
 
@@ -328,35 +463,35 @@ func (s *Server) handleGetMemory(c *gin.Context) {
 	agentID := c.Param("agentID")
 	ticketID := c.Param("ticketID")
 	memType := c.Query("type")
-	
+
 	if memType == "" {
 		memType = "context"
 	}
-	
+
 	id, err := uuid.Parse(ticketID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ticket id"})
 		return
 	}
-	
+
 	data, err := s.Service.GetAgentMemory(c.Request.Context(), agentID, id, memType)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "memory not found"})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, data)
 }
 
 func (s *Server) handleGetAgentContext(c *gin.Context) {
 	agentID := c.Param("agentID")
-	
+
 	tickets, err := s.Service.GetAgentContext(c.Request.Context(), agentID, 10)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"agent": agentID, "context_tickets": tickets})
 }
 
@@ -367,52 +502,52 @@ func (s *Server) handleGetAuditTrail(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ticket id"})
 		return
 	}
-	
+
 	trail, err := s.Service.GetAuditTrail(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"ticket": idStr, "audit_trail": trail})
 }
 
 func (s *Server) handleLinkTickets(c *gin.Context) {
 	parentID := c.Param("id")
 	childID := c.Param("childID")
-	
+
 	var req struct {
 		RelationType string `json:"relationship_type"`
 		AgentID      string `json:"agent_id"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	pID, err := uuid.Parse(parentID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid parent id"})
 		return
 	}
-	
+
 	cID, err := uuid.Parse(childID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid child id"})
 		return
 	}
-	
+
 	relType := domain.RelationshipType(req.RelationType)
 	if relType != domain.RelEvolution && relType != domain.RelConsequence && relType != domain.RelContext && relType != domain.RelGenesis {
 		relType = domain.RelEvolution
 	}
-	
+
 	if err := s.Service.LinkTicketsWithAudit(c.Request.Context(), pID, cID, relType, req.AgentID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"message": "tickets linked", "parent": parentID, "child": childID})
 }
 
@@ -444,7 +579,7 @@ func (s *Server) handleInitSchema(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"message": "schema initialized"})
 }
 
@@ -602,7 +737,7 @@ func (s *Server) handleGemmaChat(c *gin.Context) {
 	}
 
 	prompt := fmt.Sprintf("%s\nUser: %s\nAssistant:", contextText, req.Message)
-	
+
 	log.Printf("[GEMMA] Requesting model %s with prompt length %d", modelName, len(prompt))
 
 	performRequest := func(m string) (map[string]interface{}, error) {
@@ -615,26 +750,25 @@ func (s *Server) handleGemmaChat(c *gin.Context) {
 		}
 
 		body, _ := json.Marshal(ollamaReq)
-		
+
 		reqObj, _ := http.NewRequest("POST", gemmaURL+"/api/chat", bytes.NewBuffer(body))
 		reqObj.Header.Set("Content-Type", "application/json")
 		reqObj.Header.Set("Accept", "application/json")
-		
+
 		client := &http.Client{Timeout: 30 * time.Second}
 		resp, err := client.Do(reqObj)
 		if err != nil {
 			return nil, err
 		}
 		defer resp.Body.Close()
-		
+
 		respBytes, _ := io.ReadAll(resp.Body)
 		log.Printf("[GEMMA] Raw Response: %s", string(respBytes))
-		
+
 		var result map[string]interface{}
 		json.Unmarshal(respBytes, &result)
 		return result, nil
 	}
-
 
 	result, err := performRequest(modelName)
 	if err != nil {
@@ -655,7 +789,7 @@ func (s *Server) handleGemmaChat(c *gin.Context) {
 
 	if errMsg, ok := result["error"].(string); ok {
 		log.Printf("[GEMMA] Error from node: %s", errMsg)
-		
+
 		// Create a ticket for the failure (Layer 4)
 		ticketContent := domain.FabricContent{
 			IntentBlob: map[string]interface{}{
@@ -686,7 +820,7 @@ func (s *Server) handleGemmaChat(c *gin.Context) {
 	}
 
 	log.Printf("[GEMMA] Response received (%d bytes). Creating ticket...", len(respText))
-	
+
 	ticketContent := domain.FabricContent{
 		IntentBlob: map[string]interface{}{
 			"type":  "CHAT_VOLLEY",
@@ -698,7 +832,7 @@ func (s *Server) handleGemmaChat(c *gin.Context) {
 	s.Service.CreateFabricTicket(c.Request.Context(), 4, "gemma-ai", ticketContent)
 
 	// Estimate tokens (chars / 4 as a heuristic)
-	tokenEstimate := float64(len(req.Message) + len(respText)) / 4.0
+	tokenEstimate := float64(len(req.Message)+len(respText)) / 4.0
 	_ = s.Service.IncrementMetric(c.Request.Context(), "tokens_used", tokenEstimate)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -730,10 +864,10 @@ func (s *Server) handleLMStudioChat(c *gin.Context) {
 		"stream": false,
 	}
 	body, _ := json.Marshal(ollamaReq)
-	
+
 	reqObj, _ := http.NewRequest("POST", lmURL+"/v1/chat/completions", bytes.NewBuffer(body))
 	reqObj.Header.Set("Content-Type", "application/json")
-	
+
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(reqObj)
 	if err != nil {
@@ -744,7 +878,7 @@ func (s *Server) handleLMStudioChat(c *gin.Context) {
 
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
-	
+
 	var respText string
 	if choices, ok := result["choices"].([]interface{}); ok && len(choices) > 0 {
 		if choice, ok := choices[0].(map[string]interface{}); ok {
@@ -755,7 +889,7 @@ func (s *Server) handleLMStudioChat(c *gin.Context) {
 	}
 
 	// Estimate tokens
-	tokenEstimate := float64(len(req.Message) + len(respText)) / 4.0
+	tokenEstimate := float64(len(req.Message)+len(respText)) / 4.0
 	_ = s.Service.IncrementMetric(c.Request.Context(), "tokens_used", tokenEstimate)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -794,7 +928,7 @@ func (s *Server) handleSwarmChat(c *gin.Context) {
 	}
 
 	// Estimate tokens
-	tokenEstimate := float64(len(req.Message) + len(resp)) / 4.0
+	tokenEstimate := float64(len(req.Message)+len(resp)) / 4.0
 	_ = s.Service.IncrementMetric(c.Request.Context(), "tokens_used", tokenEstimate)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -803,9 +937,6 @@ func (s *Server) handleSwarmChat(c *gin.Context) {
 		"tokens":   tokenEstimate,
 	})
 }
-
-
-
 
 func (s *Server) handleEmergencyBridge(c *gin.Context) {
 	// Verify Gemini API Key for Emergency Access
@@ -833,11 +964,13 @@ func (s *Server) handleEmergencyBridge(c *gin.Context) {
 	switch req.Command {
 	case "GET_SYSTEM_HEALTH":
 		status := "HEALTHY"
-		if s.Auth == nil { status = "AUTH_DEGRADED" }
+		if s.Auth == nil {
+			status = "AUTH_DEGRADED"
+		}
 		c.JSON(http.StatusOK, gin.H{
-			"status": status,
-			"node": "pqr-sovereign-001",
-			"uptime": time.Now().Format(time.RFC3339),
+			"status":  status,
+			"node":    "pqr-sovereign-001",
+			"uptime":  time.Now().Format(time.RFC3339),
 			"version": Version,
 		})
 
@@ -860,17 +993,14 @@ func (s *Server) handleEmergencyBridge(c *gin.Context) {
 	}
 }
 
-
-
-
 func (s *Server) handleStatus(c *gin.Context) {
 	// Simple telemetry mirroring S25
 	c.JSON(http.StatusOK, gin.H{
-		"node_id":   "ΩX9R2#",
-		"status":    "SINGULARITY",
-		"vitality":  98.4,
-		"up_time":   "12:44:12",
-		"logic":     "AELLOK-V10",
+		"node_id":  "ΩX9R2#",
+		"status":   "SINGULARITY",
+		"vitality": 98.4,
+		"up_time":  "12:44:12",
+		"logic":    "AELLOK-V10",
 	})
 }
 
@@ -989,9 +1119,9 @@ func (s *Server) handleRegistrarSearch(c *gin.Context) {
 	// Fake cloudflare API call since we don't have the real API key in environment
 	// In production, this would call Cloudflare Registrar API.
 	// We simulate the 25% upcharge logic here.
-	basePrice := 8.00 // $8 wholesale price
+	basePrice := 8.00               // $8 wholesale price
 	retailPrice := basePrice * 1.25 // 25% markup
-	
+
 	// Simulate an available domain for the demo
 	available := true
 	if strings.Contains(domainName, "taken") {
@@ -999,11 +1129,11 @@ func (s *Server) handleRegistrarSearch(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"domain":    domainName,
-		"available": available,
-		"price_usd": retailPrice,
-		"wholesale": basePrice,
-		"currency":  "USD",
+		"domain":          domainName,
+		"available":       available,
+		"price_usd":       retailPrice,
+		"wholesale":       basePrice,
+		"currency":        "USD",
 		"accepted_crypto": []string{"SOL", "PQR_COIN"},
 	})
 }
@@ -1014,7 +1144,7 @@ func (s *Server) handleRegistrarRegister(c *gin.Context) {
 		PaymentMethod string `json:"payment_method"`
 		TxHash        string `json:"tx_hash"`
 	}
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -1025,7 +1155,7 @@ func (s *Server) handleRegistrarRegister(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported payment method. We accept SOL and our private chain coins only."})
 		return
 	}
-	
+
 	if req.TxHash == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Transaction hash is required for verification."})
 		return
@@ -1033,13 +1163,38 @@ func (s *Server) handleRegistrarRegister(c *gin.Context) {
 
 	// 1. Verify Transaction Hash on Solana or Private Ledger (Mocked)
 	log.Printf("[REGISTRAR] Verifying payment of %s for domain %s via TxHash %s...", req.PaymentMethod, req.Domain, req.TxHash)
-	
+
 	// 2. Call Cloudflare Registrar API to actually register the domain (Mocked)
 	log.Printf("[REGISTRAR] Purchasing domain %s wholesale from Cloudflare...", req.Domain)
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "REGISTERED",
 		"domain":  req.Domain,
 		"message": "Domain successfully registered. DNS propagation may take up to 24 hours.",
 	})
+}
+
+func (s *Server) handleGetSOSState(c *gin.Context) {
+	snap, err := s.Service.GetState(c.Request.Context(), "sos", "state")
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"active_crises":         []string{},
+			"ruptured_corridors":    0,
+			"contraction_intensity": 0.0,
+			"corridors":             []interface{}{},
+		})
+		return
+	}
+	c.JSON(http.StatusOK, snap.Payload)
+}
+
+func (s *Server) handleGetSOSTimeline(c *gin.Context) {
+	snap, err := s.Service.GetState(c.Request.Context(), "sos", "timeline")
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"events": []interface{}{},
+		})
+		return
+	}
+	c.JSON(http.StatusOK, snap.Payload)
 }

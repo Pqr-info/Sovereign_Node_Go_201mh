@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	
+
 	"github.com/google/uuid"
-	"github.com/thealanphipps-del/pqr/internal/domain"
 	"github.com/lib/pq"
+	"github.com/thealanphipps-del/pqr/internal/domain"
 )
 
 type CockroachRepository struct {
@@ -20,6 +20,18 @@ type CockroachRepository struct {
 }
 
 func NewCockroachRepository(connStr string) (*CockroachRepository, error) {
+	// Bootstrap the database if it doesn't exist yet
+	if strings.Contains(connStr, "/antigravity") {
+		bootstrapConn := strings.Replace(connStr, "/antigravity", "/defaultdb", 1)
+		tempDB, err := sql.Open("postgres", bootstrapConn)
+		if err == nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			_, _ = tempDB.ExecContext(ctx, "CREATE DATABASE IF NOT EXISTS antigravity")
+			cancel()
+			tempDB.Close()
+		}
+	}
+
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to cockroachdb: %v", err)
@@ -40,6 +52,88 @@ func (r *CockroachRepository) GetMetric(ctx context.Context, key string) (float6
 	var value, quota float64
 	err := r.db.QueryRowContext(ctx, "SELECT value, quota FROM metrics WHERE key = $1", key).Scan(&value, &quota)
 	return value, quota, err
+}
+
+func (r *CockroachRepository) UpsertState(ctx context.Context, scope, owner, agentID, source string, payload map[string]interface{}, checksum string) (domain.StateSnapshot, error) {
+	payloadJSON, _ := json.Marshal(payload)
+	_, err := r.db.ExecContext(ctx, `
+		INSERT INTO agent_state_sync (scope, owner, agent_id, source, payload, checksum, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+		ON CONFLICT (scope, owner) DO UPDATE SET
+			agent_id = EXCLUDED.agent_id,
+			source = EXCLUDED.source,
+			payload = EXCLUDED.payload,
+			checksum = EXCLUDED.checksum,
+			updated_at = CURRENT_TIMESTAMP
+	`, scope, owner, agentID, source, payloadJSON, checksum)
+	if err != nil {
+		return domain.StateSnapshot{}, err
+	}
+	snap, err := r.GetState(ctx, scope, owner)
+	if err != nil {
+		return domain.StateSnapshot{}, err
+	}
+	return *snap, nil
+}
+
+func (r *CockroachRepository) GetState(ctx context.Context, scope, owner string) (*domain.StateSnapshot, error) {
+	var snap domain.StateSnapshot
+	var payloadJSON []byte
+	err := r.db.QueryRowContext(ctx, `
+		SELECT scope, owner, agent_id, source, payload, checksum, updated_at
+		FROM agent_state_sync
+		WHERE scope = $1 AND owner = $2
+	`, scope, owner).Scan(&snap.Scope, &snap.Owner, &snap.AgentID, &snap.Source, &payloadJSON, &snap.Checksum, &snap.UpdatedAt)
+	if err != nil {
+		return nil, err
+	}
+	if len(payloadJSON) > 0 {
+		_ = json.Unmarshal(payloadJSON, &snap.Payload)
+	}
+	if snap.Payload == nil {
+		snap.Payload = map[string]interface{}{}
+	}
+	return &snap, nil
+}
+
+func (r *CockroachRepository) SendMessage(ctx context.Context, scope, sender, receiver, kind, body string, payload map[string]interface{}) (domain.AgentMessage, error) {
+	msgID := uuid.New()
+	payloadJSON, _ := json.Marshal(payload)
+	_, err := r.db.ExecContext(ctx, `
+		INSERT INTO agent_messages (id, scope, sender, receiver, kind, body, payload, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
+	`, msgID, scope, sender, receiver, kind, body, payloadJSON)
+	if err != nil {
+		return domain.AgentMessage{}, err
+	}
+	return domain.AgentMessage{ID: msgID, Scope: scope, Sender: sender, Receiver: receiver, Kind: kind, Body: body, Payload: payload}, nil
+}
+
+func (r *CockroachRepository) ListMessages(ctx context.Context, scope, receiver string) ([]domain.AgentMessage, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, scope, sender, receiver, kind, body, payload, created_at
+		FROM agent_messages
+		WHERE scope = $1 AND receiver = $2
+		ORDER BY created_at DESC
+	`, scope, receiver)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var messages []domain.AgentMessage
+	for rows.Next() {
+		var msg domain.AgentMessage
+		var payloadJSON []byte
+		if err := rows.Scan(&msg.ID, &msg.Scope, &msg.Sender, &msg.Receiver, &msg.Kind, &msg.Body, &payloadJSON, &msg.CreatedAt); err != nil {
+			return nil, err
+		}
+		if len(payloadJSON) > 0 {
+			_ = json.Unmarshal(payloadJSON, &msg.Payload)
+		}
+		messages = append(messages, msg)
+	}
+	return messages, nil
 }
 
 func (r *CockroachRepository) CreateTicket(ctx context.Context, t *domain.FabricTicket, c *domain.FabricContent) error {
@@ -76,12 +170,13 @@ func (r *CockroachRepository) GetByID(ctx context.Context, id uuid.UUID) (*domai
 	var failedAttemptsJSON []byte
 
 	err := r.db.QueryRowContext(ctx, `
-		SELECT t.ticket_id, t.layer_id, t.creator_agent_id, t.status, t.iteration, t.escalation_level, t.resolution, t.resolved_by, t.assigned_to, t.created_at,
-		       c.intent_blob, c.raw_content, c.consensus_score, c.summary_hash, c.payload_hash, c.failed_attempts
+		SELECT t.ticket_id, t.layer_id, t.creator_agent_id, t.status, t.iteration, t.escalation_level, 
+		       coalesce(t.resolution, ''), coalesce(t.resolved_by, ''), coalesce(t.assigned_to, ''), t.created_at,
+		       c.intent_blob, c.raw_content, coalesce(c.consensus_score, 0.0), coalesce(c.summary_hash, ''), coalesce(c.payload_hash, ''), c.failed_attempts
 		FROM tickets t
 		LEFT JOIN ticket_content c ON t.ticket_id = c.ticket_id
 		WHERE t.ticket_id = $1
-	`, id).Scan(&t.ID, &t.LayerID, &t.CreatorAgentID, &t.Status, &t.Iteration, &t.EscalationLevel, &t.Resolution, &t.ResolvedBy, &t.AssignedTo, &t.CreatedAt, 
+	`, id).Scan(&t.ID, &t.LayerID, &t.CreatorAgentID, &t.Status, &t.Iteration, &t.EscalationLevel, &t.Resolution, &t.ResolvedBy, &t.AssignedTo, &t.CreatedAt,
 		&intentJSON, &c.RawContent, &c.ConsensusScore, &c.SummaryHash, &c.PayloadHash, &failedAttemptsJSON)
 
 	if err != nil {
@@ -110,8 +205,8 @@ func (r *CockroachRepository) UpdateIteration(ctx context.Context, id uuid.UUID,
 	return err
 }
 
-func (r *CockroachRepository) UpdateExtended(ctx context.Context, id uuid.UUID, status string, title string, 
-resolution string, resolvedBy string, assignedTo string, priority string, queue string) error {
+func (r *CockroachRepository) UpdateExtended(ctx context.Context, id uuid.UUID, status string, title string,
+	resolution string, resolvedBy string, assignedTo string, priority string, queue string) error {
 	if status != "" {
 		_, err := r.db.ExecContext(ctx, `UPDATE tickets SET status = $1 WHERE ticket_id = $2`, status, id)
 		if err != nil {
@@ -176,7 +271,6 @@ resolution string, resolvedBy string, assignedTo string, priority string, queue 
 	return nil
 }
 
-
 func (r *CockroachRepository) AddFailedAttempt(ctx context.Context, id uuid.UUID, attempt string) error {
 	_, err := r.db.ExecContext(ctx, `
 		UPDATE ticket_content 
@@ -190,7 +284,7 @@ func (r *CockroachRepository) FindSimilarResolutions(ctx context.Context, vector
 	// This would use vector similarity in a real CockroachDB instance with vector support
 	// For now we'll just return the last successful resolutions
 	rows, err := r.db.QueryContext(ctx, `
-		SELECT t.ticket_id, t.resolution, t.resolved_by
+		SELECT t.ticket_id, coalesce(t.resolution, ''), coalesce(t.resolved_by, '')
 		FROM tickets t
 		WHERE t.status = 'COMPLETED' AND t.resolution IS NOT NULL
 		ORDER BY t.created_at DESC LIMIT $1
@@ -222,7 +316,7 @@ func (r *CockroachRepository) Link(ctx context.Context, parentID, childID uuid.U
 
 func (r *CockroachRepository) ListRecent(ctx context.Context, limit int) ([]domain.FabricTicket, error) {
 	rows, err := r.db.QueryContext(ctx, `
-		SELECT ticket_id, layer_id, creator_agent_id, status, assigned_to, created_at 
+		SELECT ticket_id, layer_id, creator_agent_id, status, coalesce(assigned_to, ''), created_at 
 		FROM tickets ORDER BY created_at DESC LIMIT $1
 	`, limit)
 	if err != nil {
@@ -260,11 +354,11 @@ func (r *CockroachRepository) Get(ctx context.Context, agentID string, ticketID 
 		SELECT memory_data FROM agent_memory
 		WHERE agent_id = $1 AND ticket_id = $2 AND memory_type = $3
 	`, agentID, ticketID, memType).Scan(&memJSON)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var data map[string]interface{}
 	json.Unmarshal(memJSON, &data)
 	return data, nil
@@ -279,12 +373,12 @@ func (r *CockroachRepository) GetContext(ctx context.Context, agentID string, li
 		ORDER BY am.relevance_score DESC, t.created_at DESC
 		LIMIT $2
 	`, agentID, limit)
-	
+
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var tickets []domain.FabricTicket
 	for rows.Next() {
 		var t domain.FabricTicket
@@ -304,21 +398,21 @@ func (r *CockroachRepository) GetAuditTrail(ctx context.Context, id uuid.UUID) (
 		WHERE ticket_id = $1
 		ORDER BY created_at DESC
 	`, id)
-	
+
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var trail []domain.AuditEntry
 	for rows.Next() {
 		var entry domain.AuditEntry
 		var oldVal, newVal sql.NullString
-		
+
 		if err := rows.Scan(&entry.ID, &entry.AgentID, &entry.Action, &oldVal, &newVal, &entry.CreatedAt); err != nil {
 			return nil, err
 		}
-		
+
 		if oldVal.Valid {
 			json.Unmarshal([]byte(oldVal.String), &entry.OldValue)
 		}
@@ -448,6 +542,28 @@ func (r *CockroachRepository) InitSchema(ctx context.Context) error {
 			INDEX idx_agent (agent_id),
 			INDEX idx_created (created_at DESC)
 		)`,
+		`CREATE TABLE IF NOT EXISTS agent_state_sync (
+			scope STRING NOT NULL,
+			owner STRING NOT NULL,
+			agent_id STRING NOT NULL,
+			source STRING NOT NULL,
+			payload JSONB,
+			checksum STRING,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (scope, owner)
+		)`,
+		`CREATE TABLE IF NOT EXISTS agent_messages (
+			id UUID PRIMARY KEY,
+			scope STRING NOT NULL,
+			sender STRING NOT NULL,
+			receiver STRING NOT NULL,
+			kind STRING NOT NULL DEFAULT 'note',
+			body STRING NOT NULL,
+			payload JSONB,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			INDEX idx_messages_receiver (receiver),
+			INDEX idx_messages_scope (scope)
+		)`,
 		`CREATE TABLE IF NOT EXISTS metrics (
 			key STRING PRIMARY KEY,
 			value FLOAT8 NOT NULL,
@@ -498,6 +614,18 @@ func (r *CockroachRepository) InitSchema(ctx context.Context) error {
 			embedding JSONB,
 			tags TEXT[]
 		)`,
+		`CREATE TABLE IF NOT EXISTS antigravity_backchannel (
+			sync_version VARCHAR(50) DEFAULT '1.1.0',
+			last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+			active_agent VARCHAR(100) DEFAULT 'Antigravity/Gemini',
+			platform VARCHAR(100) DEFAULT 'Windows-Local',
+			fsm_state VARCHAR(100) DEFAULT 'READY',
+			last_action_performed TEXT,
+			next_blocking_step TEXT,
+			owner VARCHAR(50) DEFAULT 'bcpd',
+			copilot_sync BOOLEAN DEFAULT TRUE,
+			heartbeat BOOLEAN DEFAULT TRUE
+		)`,
 	}
 
 	for _, table := range tables {
@@ -513,7 +641,7 @@ func (r *CockroachRepository) InitSchema(ctx context.Context) error {
 
 	// Seed metrics
 	_, _ = r.db.ExecContext(ctx, "INSERT INTO metrics (key, value, quota) VALUES ('tokens_used', 0.0, 1000000.0) ON CONFLICT DO NOTHING")
-	
+
 	return nil
 }
 
@@ -525,8 +653,10 @@ func (r *CockroachRepository) Search(ctx context.Context, criteria map[string]in
 		// Basic sanitization: check against allowed column names
 		allowedColumns := map[string]bool{"status": true, "layer_id": true, "creator_agent_id": true}
 		columnName := k
-		if k == "layer" { columnName = "layer_id" } // Map friendly name
-		
+		if k == "layer" {
+			columnName = "layer_id"
+		} // Map friendly name
+
 		if allowedColumns[columnName] {
 			query += fmt.Sprintf(" AND %s = $%d", columnName, i)
 			args = append(args, v)
@@ -551,7 +681,6 @@ func (r *CockroachRepository) Search(ctx context.Context, criteria map[string]in
 	}
 	return tickets, nil
 }
-
 
 // LogErrorSolution stores a failure + synthesized fix (or placeholder) for learning.
 func (c *CockroachRepository) LogErrorSolution(signature string, msg interface{}, res interface{}, execErr error) error {

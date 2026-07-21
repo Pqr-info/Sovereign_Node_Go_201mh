@@ -58,13 +58,13 @@ export DATABASE_URL="postgresql://root@localhost:26257/antigravity?sslmode=disab
 
 ```bash
 cd c:\Users\drphi\pqr-info-swarm\cmd\\pqr
-go build -o pqr.exe
-.\pqr.exe
+go build -o swend.exe
+.\swend.exe
 
 # Expected output:
 # ✓ Database schema initialized
 # ✓ Agent memory tables ready
-# Starting PQR REST 2.0 API Server on :8080...
+# Starting SWEND REST 2.0 API Server on :8080...
 # Endpoints:
 #   POST   /REST/2.0/ticket
 #   ... (rest of endpoints)
@@ -100,7 +100,7 @@ package main
 import (
 	"context"
 	"log"
-	"github.com/thealanphipps-del/pqr"
+	"github.com/pqr-info/swend"
 )
 
 func main() {
@@ -364,7 +364,7 @@ if !healthy {
 ## Support
 
 For issues or questions:
-1. Check logs: `pqr.exe` output
+1. Check logs: `swend.exe` output
 2. Test endpoint: `GET /REST/2.0/health`
 3. Verify DB: `cockroach sql --insecure`
 4. Review API docs in README.md

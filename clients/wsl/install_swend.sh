@@ -56,8 +56,8 @@ echo "[WSL Launcher] Resolved WSL IP: $WSL_IP"
 # 2. Set environment parameters
 export DATABASE_URL="postgresql://root@localhost:26257/antigravity?sslmode=disable"
 export VAULT_ADDR="http://localhost:8200"
-export PQR_SWARM_ADDR="localhost:1111"
-export PQR_API_URL="http://localhost:8196"
+export SWEND_SWARM_ADDR="localhost:1111"
+export SWEND_API_URL="http://localhost:8196"
 export NODE_IP="$WSL_IP"
 
 # 3. Execute

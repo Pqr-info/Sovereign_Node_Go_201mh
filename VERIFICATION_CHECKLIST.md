@@ -370,7 +370,7 @@ c:\Users\drphi\pqr-info-swarm\
 
 1. Start CockroachDB: `cockroach.exe start-single-node --insecure`
 2. Set DATABASE_URL environment variable
-3. Build and run: `go build && ./pqr.exe`
+3. Build and run: `go build && ./swend.exe`
 4. Deploy first agent using client library or HTTP API
 5. Monitor via `/health` and `/audit` endpoints
 

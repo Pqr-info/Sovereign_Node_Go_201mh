@@ -61,8 +61,8 @@ $RunnerContent = @"
 
 `$env:DATABASE_URL = "postgresql://root@localhost:26257/antigravity?sslmode=disable"
 `$env:VAULT_ADDR = "http://localhost:8200"
-`$env:PQR_SWARM_ADDR = "localhost:1111"
-`$env:PQR_API_URL = "http://localhost:8196"
+`$env:SWEND_SWARM_ADDR = "localhost:1111"
+`$env:SWEND_API_URL = "http://localhost:8196"
 
 Set-Location "$InstallDir"
 Start-Process -FilePath ".\swend.exe" -ArgumentList "menu" -NoNewWindow -Wait >> "$LogDir\swend_output.log" 2>&1

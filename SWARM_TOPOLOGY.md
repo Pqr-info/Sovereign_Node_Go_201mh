@@ -13,7 +13,7 @@
 
 **Network Fabric:**
 - **Backbone:** Gigabit Ethernet (LAN)
-- **Protocol:** PQR Sovereign Mesh (gRPC Neural Gossip + REST 2.0)
+- **Protocol:** SWEND Sovereign Mesh (gRPC Neural Gossip + REST 2.0)
 - **Identity:** Distributed Orchestration Agent (`GEMA2#`)
 
 **Performance State:**
