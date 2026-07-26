@@ -21,3 +21,7 @@ pqr-server
 # OS files
 .DS_Store
 Thumbs.db
+
+# Nested Git Repositories
+mev/
+

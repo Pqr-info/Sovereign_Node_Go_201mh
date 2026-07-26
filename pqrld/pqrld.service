@@ -1,0 +1,12 @@
+[Unit]
+Description=PQR Runlevel Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/pqrld --config /etc/sos/runlevels.toml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
