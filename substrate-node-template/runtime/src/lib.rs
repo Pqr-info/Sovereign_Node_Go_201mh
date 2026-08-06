@@ -328,3 +328,11 @@ impl frame_system::offchain::CreateInherent<pallet_5d_hcp::Call<Runtime>> for Ru
         }
     }
 }
+
+impl<LocalCall> frame_system::offchain::CreateTransactionBase<LocalCall> for Runtime
+where
+	RuntimeCall: From<LocalCall>,
+{
+	type RuntimeCall = RuntimeCall;
+	type Extrinsic = UncheckedExtrinsic;
+}
