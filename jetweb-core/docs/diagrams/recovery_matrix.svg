@@ -1,0 +1,36 @@
+<svg width="600" height="300" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: bold 20px sans-serif; fill: #333; }
+    .label { font: 14px sans-serif; fill: #333; }
+    .box { fill: #eef2f7; stroke: #333; stroke-width: 1.5; rx: 6; }
+    .arrow { stroke: #333; stroke-width: 2; marker-end: url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7"
+            refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="40" class="title">SovereignKey Derivation</text>
+
+  <!-- RecoveryMatrix -->
+  <rect x="40" y="100" width="200" height="140" class="box"/>
+  <text x="60" y="130" class="label">RecoveryMatrix</text>
+  <text x="60" y="160" class="label">K1 · K2 · K3 · K4 · K5</text>
+
+  <!-- Arrow -->
+  <line x1="240" y1="170" x2="360" y2="170" class="arrow"/>
+
+  <!-- Blake2b -->
+  <rect x="360" y="130" width="140" height="80" class="box"/>
+  <text x="380" y="170" class="label">Blake2b‑256</text>
+
+  <!-- Arrow -->
+  <line x1="500" y1="170" x2="560" y2="170" class="arrow"/>
+
+  <!-- SK -->
+  <rect x="560" y="140" width="60" height="60" class="box"/>
+  <text x="570" y="175" class="label">SK</text>
+</svg>

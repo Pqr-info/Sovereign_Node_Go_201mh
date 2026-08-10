@@ -1,0 +1,8 @@
+---
+
+### Server integration snippets
+
+- **Serve static files**: ensure `login.html` and `auth-client.js` are served from a static directory or via `res.sendFile`.  
+- **Protect routes**: replace demo headers in the Admin UI and API calls with session or Authorization Bearer usage. Use `requireJwt` or `ensureSession` and `requireRole` as previously added.  
+- **User info endpoint**: add a small `/api/me` route that returns the current user from `req.user` for the UI to confirm login.
+

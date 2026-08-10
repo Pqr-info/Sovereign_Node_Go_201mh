@@ -1,0 +1,8 @@
+This allows the healer to treat shell errors as first-class citizens.
+
+---
+
+# ⭐ 6. `/bin/sh` compatibility
+
+Add a fake `/bin/sh` entrypoint:
+

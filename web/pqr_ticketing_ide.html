@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PQR Ticketgraph | Antigravity IDE Client</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-glass: rgba(15, 17, 26, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --bg-dark: #07080d;
+            --accent-primary: #8a2be2;
+            --accent-secondary: #00ffff;
+            --text-main: #f1f3f9;
+            --text-muted: #8c97ad;
+            --success: #00ff87;
+            --warning: #ffb700;
+            --danger: #ff4a6b;
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 40%);
+        }
+
+        .ide-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-glass);
+            border-right: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            border-color: var(--border-glass);
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.1);
+        }
+
+        /* Main Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            height: 70px;
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            background: rgba(15, 17, 26, 0.3);
+        }
+
+        .title-group h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), rgba(138, 43, 226, 0.6));
+            border: none;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
+        }
+
+        /* Content Area Split */
+        .content-split {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .ticket-list-panel {
+            flex: 1.2;
+            border-right: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .ticket-detail-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            background: rgba(7, 8, 13, 0.4);
+            overflow-y: auto;
+        }
+
+        .ticket-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .glass-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+        }
+
+        .status-pill {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pill.pending { background: rgba(255, 183, 0, 0.15); color: var(--warning); }
+        .status-pill.inprogress { background: rgba(0, 255, 255, 0.15); color: var(--accent-secondary); }
+        .status-pill.completed { background: rgba(0, 255, 135, 0.15); color: var(--success); }
+
+        .ticket-subject {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Detail Panel Styles */
+        .detail-header {
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .meta-val {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .desc-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-glass);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* Token Gauge */
+        .token-gauge-container {
+            margin-top: auto;
+            border-top: 1px solid var(--border-glass);
+            padding-top: 1.5rem;
+        }
+
+        .gauge-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            width: 0%;
+            border-radius: 4px;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            width: 500px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            outline: none;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--accent-secondary);
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        .audit-trail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .audit-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.8rem;
+        }
+
+        .audit-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="ide-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i data-lucide="shield-alert"></i>
+                <span>PQR IDE CLIENT</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-btn active">
+                    <i data-lucide="layers"></i>
+                    <span>Ticketgraph</span>
+                </a>
+                <a href="#" class="nav-btn">
+                    <i data-lucide="git-pull-request"></i>
+                    <span>Lineage Tree</span>
+                </a>
+                <a href="#" class="nav-btn">
+                    <i data-lucide="terminal"></i>
+                    <span>Metaprogramming</span>
+                </a>
+            </nav>
+
+            <div class="token-gauge-container">
+                <div class="gauge-label">
+                    <span>Token Budget Usage</span>
+                    <span id="token-usage-pct">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="token-progress-fill"></div>
+                </div>
+                <div class="gauge-label" style="margin-top: 0.5rem; font-size: 0.7rem;">
+                    <span id="token-usage-text">0 / 1,000,000</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <header class="top-bar">
+                <div class="title-group">
+                    <h2>Fabric Operations</h2>
+                </div>
+                <div class="actions-group">
+                    <button class="btn" onclick="refreshTickets()">
+                        <i data-lucide="refresh-cw"></i> Sync Fabric
+                    </button>
+                    <button class="btn btn-primary" onclick="openNewTicketModal()">
+                        <i data-lucide="plus-circle"></i> Create Ticket
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-split">
+                <!-- Left Panel: Ticket List -->
+                <section class="ticket-list-panel">
+                    <h3 class="section-title">Open Directives</h3>
+                    <div class="ticket-grid" id="ticket-grid-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Right Panel: Ticket Detail View -->
+                <section class="ticket-detail-panel" id="ticket-detail-container">
+                    <div style="display: flex; flex-direction: column; height: 100%; justify-content: center; align-items: center; color: var(--text-muted);" id="detail-placeholder">
+                        <i data-lucide="ticket" style="width: 48px; height: 48px; margin-bottom: 1rem;"></i>
+                        <span>Select a ticket to view parameters</span>
+                    </div>
+                    <div id="detail-content" style="display: none;">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Ticket Modal -->
+    <div class="modal-overlay" id="new-ticket-modal">
+        <div class="modal">
+            <h3 style="margin-bottom: 1.5rem; display:flex; align-items:center; gap:0.5rem;">
+                <i data-lucide="plus-circle" style="color:var(--accent-secondary)"></i> Create New Directive
+            </h3>
+            <div class="form-group">
+                <label class="meta-label">Subject</label>
+                <input type="text" id="ticket-subject-input" class="form-input" placeholder="e.g., Fix build warnings in pallet-affinity">
+            </div>
+            <div class="form-group">
+                <label class="meta-label">Genealogy Layer</label>
+                <select id="ticket-layer-input" class="form-select">
+                    <option value="0">Layer 0 (Build / Compiler)</option>
+                    <option value="2" selected>Layer 2 (User Actions)</option>
+                    <option value="4">Layer 4 (Metaprogramming / LLM)</option>
+                    <option value="7">Layer 7 (Swarm Consensus)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="meta-label">Forensic Description</label>
+                <textarea id="ticket-content-input" class="form-textarea" placeholder="Provide raw execution log details or directives..."></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn" onclick="closeNewTicketModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitTicket()">Submit to Swarm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/REST/2.0';
+        let currentTickets = [];
+
+        async function refreshTickets() {
+            try {
+                const res = await fetch(`${API_BASE}/tickets`);
+                if (res.ok) {
+                    currentTickets = await res.json();
+                    renderTickets();
+                }
+                const metricsRes = await fetch(`${API_BASE}/metrics/tokens`);
+                if (metricsRes.ok) {
+                    const metrics = await metricsRes.json();
+                    updateMetrics(metrics);
+                }
+            } catch (e) {
+                console.error("Refresh failed", e);
+            }
+        }
+
+        function updateMetrics(data) {
+            const used = data.tokens_used || 0;
+            const quota = data.token_quota || 1000000;
+            const pct = Math.min(100, Math.round((used / quota) * 100));
+
+            document.getElementById('token-usage-pct').innerText = `${pct}%`;
+            document.getElementById('token-progress-fill').style.width = `${pct}%`;
+            document.getElementById('token-usage-text').innerText = `${Math.round(used).toLocaleString()} / ${Math.round(quota).toLocaleString()}`;
+        }
+
+        function renderTickets() {
+            const container = document.getElementById('ticket-grid-container');
+            container.innerHTML = '';
+
+            if (currentTickets.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 2rem; color:var(--text-muted)">No active tickets found.</div>`;
+                return;
+            }
+
+            currentTickets.forEach(ticket => {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.onclick = () => showTicketDetail(ticket);
+
+                const status = (ticket.status || 'pending').toLowerCase();
+                const subject = ticket.intent?.subject || ticket.content || 'No Subject';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="ticket-tag">PQR-${ticket.id.substring(0, 8)}</span>
+                        <span class="status-pill ${status}">${status}</span>
+                    </div>
+                    <div class="ticket-subject">${subject}</div>
+                    <div class="card-footer">
+                        <span>Creator: ${ticket.creator || 'unknown'}</span>
+                        <span>Layer: ${ticket.layer || 2}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function showTicketDetail(ticket) {
+            document.getElementById('detail-placeholder').style.display = 'none';
+            const contentDiv = document.getElementById('detail-content');
+            contentDiv.style.display = 'block';
+
+            const status = (ticket.status || 'pending').toLowerCase();
+            const subject = ticket.intent?.subject || 'No Subject';
+
+            contentDiv.innerHTML = `
+                <div class="detail-header">
+                    <span class="ticket-tag" style="font-size:1.1rem;">PQR-${ticket.id.substring(0,8)}</span>
+                    <h3 style="margin-top:0.5rem; font-size:1.3rem;">${subject}</h3>
+                </div>
+                <div class="detail-meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Status</span>
+                        <span class="status-pill ${status}" style="align-self: flex-start;">${status}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Genealogy Layer</span>
+                        <span class="meta-val">${ticket.layer || 2}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Assigned To</span>
+                        <span class="meta-val">${ticket.assigned_to || 'None'}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Created At</span>
+                        <span class="meta-val">${new Date(ticket.created_at).toLocaleString()}</span>
+                    </div>
+                </div>
+                <h4 class="section-title">Raw Content</h4>
+                <div class="desc-box">${ticket.content || 'No description provided.'}</div>
+                
+                <h4 class="section-title">Forensic Audit Log</h4>
+                <div class="audit-trail" id="audit-trail-container">
+                    <span>Loading logs...</span>
+                </div>
+            `;
+
+            // Load audit logs dynamically
+            try {
+                const res = await fetch(`${API_BASE}/ticket/${ticket.id}/audit`);
+                if (res.ok) {
+                    const data = await res.json();
+                    renderAuditTrail(data.audit_trail || []);
+                }
+            } catch (e) {
+                console.error("Failed to load audit logs", e);
+            }
+        }
+
+        function renderAuditTrail(logs) {
+            const container = document.getElementById('audit-trail-container');
+            container.innerHTML = '';
+
+            if (logs.length === 0) {
+                container.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No entries found.</span>';
+                return;
+            }
+
+            logs.forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'audit-item';
+                item.innerHTML = `
+                    <div style="font-weight:600;">${log.action}</div>
+                    <div class="audit-meta">
+                        <span>Agent: ${log.agent_id}</span>
+                        <span>${new Date(log.created_at).toLocaleString()}</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openNewTicketModal() {
+            document.getElementById('new-ticket-modal').style.display = 'flex';
+        }
+
+        function closeNewTicketModal() {
+            document.getElementById('new-ticket-modal').style.display = 'none';
+        }
+
+        async function submitTicket() {
+            const subject = document.getElementById('ticket-subject-input').value;
+            const content = document.getElementById('ticket-content-input').value;
+            const layer = parseInt(document.getElementById('ticket-layer-input').value);
+
+            if (!subject) {
+                alert("Subject is required");
+                return;
+            }
+
+            try {
+                const resp = await fetch(`${API_BASE}/ticket`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Subject: subject,
+                        Text: content,
+                        Layer: layer,
+                        Queue: 'General',
+                        AgentID: 'DASHBOARD-USER'
+                    })
+                });
+
+                if (resp.ok) {
+                    closeNewTicketModal();
+                    document.getElementById('ticket-subject-input').value = '';
+                    document.getElementById('ticket-content-input').value = '';
+                    await refreshTickets();
+                }
+            } catch (e) {
+                console.error("Failed to submit ticket", e);
+            }
+        }
+
+        window.onload = () => {
+            lucide.createIcons();
+            refreshTickets();
+            setInterval(refreshTickets, 5000);
+        };
+    </script>
+</body>
+</html>

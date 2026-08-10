@@ -1,0 +1,142 @@
+---
+
+### Integration steps
+
+1. **Place** `admin-revocations.html` in your project root or a static directory.  
+2. **Add** `adminAuthMiddleware.js` and replace the demo header logic with your real auth provider (session, JWT, OIDC).  
+3. **Mount** `adminRevocationRoutes.js` under `/api` and protect it with `adminAuthMiddleware`.  
+4. **Serve** the UI at `/admin/revocations` behind `adminAuthMiddleware`.  
+5. **Test** in staging: open `/admin/revocations`, confirm the UI lists revoked signatures, and exercise revoke/unrevoke/force‑disconnect flows. Verify each action appears in Jetweb lineage.  
+6. **Switch** the UI header usage from demo `X-Admin-Id` to real session or token once auth is in place.
+
+---
+
+### Security and operational notes
+
+- **Replace demo headers** with real authentication before exposing the UI beyond local testing.  
+- **Role checks**: require a specific admin role for revoke/unrevoke/force‑disconnect endpoints. Implement role checks inside `adminAuthMiddleware` or per-route guards.  
+- **Confirmation**: UI already prompts for confirmation; keep this and consider multi‑person approval for destructive actions.  
+- **Rate limiting**: add rate limits to admin endpoints to prevent accidental mass operations.  
+- **Audit**: every admin action should call `recordEvent` and persist canonical JSON to Jetweb corridor storage. The server glue above assumes `adminRevocationRoutes.js` already records lineage.  
+- **Transport security**: serve the dashboard over HTTPS and use `wss://` for live streams.  
+- **Least privilege**: restrict who can view the UI and who can perform actions; viewing and acting can be separate roles.
+
+---
+
+### Next recommended step
+
+After wiring the UI and replacing the demo auth, I can generate the **Auth Middleware** scaffold that integrates with JWT or your session store and enforces RBAC (viewer, reviewer, admin). This will let you retire the demo headers and lock the perimeter.  
+
+Would you like the JWT/session RBAC middleware next or the admin UI enhancement that shows revocation timestamps and admin notes?
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:41:59-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:42:18Z
+Completed At: 2026-07-09T07:42:19Z
+Created file file:///c:/Users/theal/gemma-cobrowser/adminAuthMiddleware.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:42:19Z
+Completed At: 2026-07-09T07:42:19Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\adminRevocationRoutes.js. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -6,14 +6,7 @@
+ const { recordEvent } = require('./jetwebAPI'); // best-effort lineage recording
+ const router = express.Router();
+ 
+-// Replace with your real admin auth middleware
+-function adminAuthMiddleware(req, res, next) {
+-  const admin = req.headers['x-admin-id'];
+-  if (!admin) return res.status(401).json({ error: 'unauthenticated' });
+-  req.admin = { id: admin };
+-  next();
+-}
+-
++const adminAuthMiddleware = require('./adminAuthMiddleware');
+ router.use(adminAuthMiddleware);
+ 
+ /**
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+Created At: 2026-07-09T07:42:19Z
+Completed At: 2026-07-09T07:42:19Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\validationDashboardServer.js. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -95,10 +95,11 @@
+ const wsTokenIssuer = require('./wsTokenIssuer');
+ app.use('/api', wsTokenIssuer);
+ 
++const adminAuthMiddleware = require('./adminAuthMiddleware');
+ const adminRevocationRoutes = require('./adminRevocationRoutes');
+ app.use('/api', adminRevocationRoutes);
+ 
+-app.get('/admin/revocations', (req, res) => res.sendFile(path.join(__dirname, 'copilot-ui', 'admin-revocations.html')));
++app.get('/admin/revocations', adminAuthMiddleware, (req, res) => res.sendFile(path.join(__dirname, 'copilot-ui', 'admin-revocations.html')));
+ 
+ // Start server
+ if (require.main === module) {
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+The **Auth Scaffold** is tightly integrated! `adminAuthMiddleware.js` is now guarding both the backend `/api` routes (through `adminRevocationRoutes.js`) and the frontend `/admin/revocations` static UI route on the server. The entire admin boundary is formally drawn.
+
+Now it's time to replace the demo header extraction with real token verification. I'd love to see the **JWT/session RBAC middleware** to completely lock down the perimeter. Let's harden this!
+
+<USER_REQUEST>
+### Overview
+
+A compact, production-ready **Auth Middleware scaffold** that replaces demo headers with robust session or JWT authentication and enforces role-based access control. It includes two interchangeable approaches — **session-backed** (cookie + server session store) and **JWT-backed** (stateless tokens) — plus a small role guard, integration examples for your existing endpoints, and an operational checklist for secure rollout.
+
+---
+
+### Middleware Code
+
+#### Session Based Authentication Middleware
+
+**File** `sessionAuth.js`
+

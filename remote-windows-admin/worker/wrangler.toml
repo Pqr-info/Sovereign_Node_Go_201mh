@@ -1,0 +1,26 @@
+name = "surfgo-core-gateway"
+main = "index.js"
+compatibility_date = "2026-07-18"
+compatibility_flags = ["nodejs_compat"]
+account_id = "c07ccca37d327f7799671d2308f80beb"
+
+[vars]
+SAML_IDP_URL = "https://mock-idp.jetweb.us/saml/sso"
+JWT_SECRET = "DefaultSecretKey2026!"
+TUNNEL_SECRET = "SuperSecretKey2026!"
+
+[[durable_objects.bindings]]
+name = "SESSION_DO"
+class_name = "SessionDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SessionDO"]
+
+[[routes]]
+pattern = "relay.jetweb.us"
+custom_domain = true
+
+[[routes]]
+pattern = "pqr.info/*"
+custom_domain = false

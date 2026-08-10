@@ -10,8 +10,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gorilla/websocket"
 
-	"github.com/pqr-info/pqr-info-swarm/cockpit/internal/adapter"
-	"github.com/pqr-info/pqr-info-swarm/cockpit/internal/config"
+	"pqr.info/cockpit/internal/adapter"
+	"pqr.info/cockpit/internal/config"
 )
 
 type WSConnMsg *websocket.Conn

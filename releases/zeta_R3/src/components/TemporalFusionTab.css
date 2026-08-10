@@ -1,0 +1,96 @@
+.fusion-tab-container {
+  padding: 20px;
+  color: #c9d1d9;
+  font-family: 'Inter', sans-serif;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.fusion-tab-container h3 {
+  color: #8b5cf6;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 10px;
+  margin-top: 0;
+}
+
+.fusion-desc {
+  color: #8b949e;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.fusion-form {
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #c9d1d9;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  background: #8b5cf6;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #7c3aed;
+}
+
+.session-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-left: 4px solid #8b5cf6;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.session-card h5 {
+  margin-top: 0;
+  color: #d2a8ff;
+  font-size: 1.1rem;
+}
+
+.session-actions {
+  margin-top: 15px;
+}
+
+.btn-inject {
+  background: #238636;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btn-inject:hover {
+  background: #2ea043;
+}

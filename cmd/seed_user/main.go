@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/thealanphipps-del/pqr/internal/domain"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/db"
+	"pqr.info/internal/domain"
+	"pqr.info/internal/infrastructure/db"
 )
 
 func main() {

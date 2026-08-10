@@ -1,0 +1,6 @@
+---
+
+### Client Integration Snippet
+
+Embed this in `copilot-validation-dashboard.html` (or your dashboard webview). It connects, handles reconnection, and prepends new items deterministically.
+

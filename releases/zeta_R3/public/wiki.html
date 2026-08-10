@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQR SG-DAO // RC-1 Core Protocol & Wiki</title>
+  <meta name="description" content="PQR Sovereign Mesh Core Protocol, Governance, Metaprogramming, and REST 2.0 API Specification." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --panel-bg: rgba(15, 23, 42, 0.75);
+      --panel-border: rgba(56, 189, 248, 0.2);
+      --accent-primary: #00f3ff;
+      --accent-secondary: #3b82f6;
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+    }
+
+    .main-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--panel-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: var(--accent-primary);
+      letter-spacing: 3px;
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent-primary); }
+
+    .btn-hud {
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+      color: #000 !important;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 800 !important;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    }
+
+    .btn-login {
+      border: 1px solid var(--panel-border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+
+    .wiki-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      max-width: 1600px;
+      margin: 0 auto;
+      min-height: calc(100vh - 80px);
+    }
+
+    .wiki-sidebar {
+      padding: 2rem 1.5rem;
+      border-right: 1px solid var(--panel-border);
+      background: rgba(15, 23, 42, 0.4);
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+
+    .sidebar-section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-primary);
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu li a {
+      display: block;
+      padding: 0.4rem 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .sidebar-menu li a:hover {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-primary);
+    }
+
+    .wiki-content {
+      padding: 3rem 4rem;
+      max-width: 1000px;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--text-main);
+    }
+
+    h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--accent-primary); }
+    h2 { font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.5rem; }
+
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+
+    pre { padding: 1.25rem; overflow-x: auto; color: var(--accent-primary); }
+
+    .card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="main-nav">
+    <div class="logo">PQR.INFO</div>
+    <div class="nav-links">
+      <a href="/wiki.html">Manifesto</a>
+      <a href="/hud.html" class="btn-hud">Enter HUD</a>
+      <a href="#" class="btn-login"><i class="fab fa-github"></i> GHE Sync</a>
+    </div>
+  </nav>
+
+  <div class="wiki-container">
+    <aside class="wiki-sidebar">
+      <div class="sidebar-section-title">Core Infrastructure</div>
+      <ul class="sidebar-menu">
+        <li><a href="#README">Overview (RC-1)</a></li>
+        <li><a href="#ARCHITECTURE">Architecture</a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Governance</div>
+      <ul class="sidebar-menu">
+        <li><a href="#GOVERNANCE">Sticky Rules</a></li>
+        <li><a href="#HYPERDEVELOPMENT">Self-Healing</a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Synthesis</div>
+      <ul class="sidebar-menu">
+        <li><a href="#METAPROGRAMMING">Metaprogramming</a></li>
+        <li><a href="#SOVEREIGN_SCRIPT">Sovereign Script</a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Developers</div>
+      <ul class="sidebar-menu">
+        <li><a href="#API_REFERENCE">REST 2.0 Reference</a></li>
+      </ul>
+    </aside>
+
+    <main class="wiki-content">
+      <h1 id="README">PQR SG-DAO // RC-1 Core Protocol</h1>
+      <p class="hero-tagline">Autonomous self-healing ticketing fabric. Powered by Gemma Orchestration and Forensic Lineage.</p>
+
+      <div class="card">
+        <h3>⚡ Mesh Node v1.08 Operational</h3>
+        <p>Pre-Qualified Record (PQR) is a deterministic state transition primitive. Every target future state (\(\omega = T_{\text{NEXT}}\)) must pre-qualify against present state (\(\alpha = T_{\text{NOW}}\)) with score \(Q \ge 0.9500\).</p>
+      </div>
+
+      <h2 id="ARCHITECTURE">5-Layer Architecture</h2>
+      <pre>
+Layer 1: TEMPORAL LAYER       (T_NOW, T_NEXT, Linear Sequence)
+Layer 2: QUALIFICATION LAYER  (PQR Stateflow, PQR-ORO Ouroboros Loop)
+Layer 3: ECONOMIC LAYER       (SEU Substrate, TVM Opcodes)
+Layer 4: MESH LAYER           (256 Cubit MIDI Lanes, ZETAFOLDED Contraction)
+Layer 5: GOVERNANCE LAYER     (Certified Dolphin Safe, GOV-ROOT Merkle)
+      </pre>
+
+      <h2 id="GOVERNANCE">Sticky Rules & Governance</h2>
+      <p>PQR-GOV enforces efficiency-weighted voting where node voting power is bound strictly to physical compute efficiency (\(\eta\)).</p>
+
+      <h2 id="HYPERDEVELOPMENT">Autonomous Self-Healing</h2>
+      <p>The Ouroboros Sentinel probes ports 9080, 8200, and 4052 every 10s and automatically heals broken process states.</p>
+
+      <h2 id="METAPROGRAMMING">Metaprogramming Engine</h2>
+      <p>Dynamic runtime code mutation via pre-emptive auditor validation and LPV codex header emission.</p>
+
+      <h2 id="SOVEREIGN_SCRIPT">Sovereign Script</h2>
+      <pre>
+# Execute PQR State Transition
+pqr.qualify(target="omega", score=0.9850)
+pqr.emit_lpv_header(corridor="T2", audit_hash="9f2caa1d")
+      </pre>
+
+      <h2 id="API_REFERENCE">REST 2.0 Reference</h2>
+      <p>Endpoints exposed by Sovereign Mesh daemons:</p>
+      <ul>
+        <li><code>GET /api/health</code> — Bootloader health & manifest hash</li>
+        <li><code>GET /api/gmi/stadium/feed</code> — Stadium gossip bus live feed</li>
+        <li><code>POST /api/v1/tickets</code> — Ouroboros self-healing ticket submission</li>
+      </ul>
+    </main>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 PQR Info Swarm Wiki. Part of the Sovereign Node Ecosystem. Authenticated via SG-DAO Genesis.</p>
+  </footer>
+
+</body>
+</html>

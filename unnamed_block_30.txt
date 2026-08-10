@@ -1,0 +1,9 @@
+No heuristics.  
+No inference.  
+No behavioral simulation.  
+Just structural comparison.
+
+---
+
+# 🧩 **domDiffEngine.js**
+

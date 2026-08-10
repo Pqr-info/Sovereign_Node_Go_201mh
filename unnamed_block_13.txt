@@ -1,0 +1,168 @@
+We want to keep the local scraping and normalize logic, but bypass raw cockroach processes since CockroachDB is no longer running or referenced.
+
+Let's modify `migration_funnel.py` to make CockroachDB exports stubbed or bypassed since Substrate is now the active layer.
+
+I will replace the main execution block of `migration_funnel.py` to bypass cockroach connections:
+
+
+
+Created At: 2026-07-11T20:23:48Z
+Completed At: 2026-07-11T20:23:53Z
+The following changes were made by the replace_file_content tool to: C:\Users\theal\SWEND-MESH\SUBSTRATE\grpc_node\migration_funnel.py. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -166,23 +166,12 @@
+ 
+     all_normalized = []
+     
+-    # 1. WSL on Yoga
+-    wsl_rows = dump_cockroach("cockroach-wsl", "--host=192.168.12.236:26257")
+-    all_normalized.extend(normalize_memories(wsl_rows, "cockroach-wsl"))
+-    
+-    # 2. Docker
+-    # Assume docker instance mapped to localhost port 26257 or script executed via `docker exec`
+-    docker_rows = dump_cockroach("cockroach-docker", "--host=localhost:26257")
+-    all_normalized.extend(normalize_memories(docker_rows, "cockroach-docker"))
+-    
+-    # 3. Windows Native
+-    windows_rows = dump_cockroach("cockroach-windows", "--host=localhost:26257")
+-    all_normalized.extend(normalize_memories(windows_rows, "cockroach-windows"))
+-    
+-    # 4. GCP
+-    # Requires an active SSH tunnel to the GCP instance or direct public IP routing
+-    gcp_rows = dump_cockroach("cockroach-gcp", "cockroachdb://root@localhost:26258/defaultdb?sslmode=disable") # example tunnel port
+-    all_normalized.extend(normalize_memories(gcp_rows, "cockroach-gcp"))
++    # Bypassed Cockroach DB extraction (Legacy Persistent Layer officially replaced by Substrate)
++    print("[*] Bypassing legacy CockroachDB targets (cockroach-wsl, cockroach-docker, cockroach-windows, cockroach-gcp)...")
++    wsl_rows = []
++    docker_rows = []
++    windows_rows = []
++    gcp_rows = []
+     
+     # 5. Local .gemini Files
+     gemini_home = os.path.expanduser("~/.gemini")
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+We did our best to apply changes despite some inaccuracies. Double check if the edit applied is what you intended.
+
+Now let's check `C:\Users\theal\SWEND-MESH\SUBSTRATE\grpc_node\index.html` to locate any cockroach references and clean them up. I will run a grep search or powershell select-string to locate the line numbers:
+
+
+
+Created At: 2026-07-11T20:23:55Z
+Completed At: 2026-07-11T20:23:56Z
+
+				The command completed successfully.
+				Output:
+				
+LineNumber Line                                                                                                        
+---------- ----                                                                                                        
+      1143                 <!-- PQR Marshall Islands DAO Tickets (CockroachDB) -->                                     
+      1147                             <span>⚖️</span> PQR Sovereign DAO Registrar Tickets (CockroachDB)               
+      1152                         DAO Registry: Distributed atomic tickets stored globally in CockroachDB (v23.1.13)  
+      1773         // Fetch dynamic PQR tickets from CockroachDB via REST 2.0 Bridge                                   
+      1788                     container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--text-...
+
+
+
+
+
+Let's view `C:\Users\theal\SWEND-MESH\SUBSTRATE\grpc_node\index.html` around line 1143 and line 1773.
+
+
+
+Created At: 2026-07-11T20:23:57Z
+Completed At: 2026-07-11T20:23:58Z
+File Path: `file:///C:/Users/theal/SWEND-MESH/SUBSTRATE/grpc_node/index.html`
+Total Lines: 3051
+Total Bytes: 142628
+Showing lines 1135 to 1165
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1135:                             <span>📂</span> Swarm Relational Tickets
+1136:                         </div>
+1137:                     </div>
+1138:                     <div class="ticket-list" id="tickets-container" style="max-height: 250px; overflow-y: auto; gap: 8px;">
+1139:                         <!-- Dynamic -->
+1140:                     </div>
+1141:                 </div>
+1142: 
+1143:                 <!-- PQR Marshall Islands DAO Tickets (CockroachDB) -->
+1144:                 <div class="glass-panel">
+1145:                     <div class="panel-header">
+1146:                         <div class="panel-title" style="color: var(--cyan);">
+1147:                             <span>⚖️</span> PQR Sovereign DAO Registrar Tickets (CockroachDB)
+1148:                         </div>
+1149:                         <button class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, var(--cyan), #3b82f6);" onclick="loadPQRTickets()">Refresh PQR Tickets</button>
+1150:                     </div>
+1151:                     <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom: 0.5rem; font-family:'JetBrains Mono', monospace;">
+1152:                         DAO Registry: Distributed atomic tickets stored globally in CockroachDB (v23.1.13)
+1153:                     </div>
+1154:                     <div class="ticket-list" id="pqr-tickets-container" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+1155:                         <div style="text-align:center; padding:1rem; color:var(--text-secondary); font-size:0.9rem;">Connecting to PQR DAO registry...</div>
+1156:                     </div>
+1157:                 </div>
+1158: 
+1159:                 <!-- Best Practical RT Transactions Live Audit Trail -->
+1160:                 <div class="glass-panel">
+1161:                     <div class="panel-header">
+1162:                         <div class="panel-title" style="color: var(--purple);">
+1163:                             <span>📊</span> Best Practical RT Live Audit Trail (Transactions)
+1164:                         </div>
+1165:                         <button class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, var(--purple), #6366f1);" onclick="loadTransactions()">Refresh Audit Trail</button>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+
+
+Let's also view `index.html` around line 1773 to see the `loadPQRTickets` script definition.
+
+
+
+Created At: 2026-07-11T20:23:59Z
+Completed At: 2026-07-11T20:24:00Z
+File Path: `file:///C:/Users/theal/SWEND-MESH/SUBSTRATE/grpc_node/index.html`
+Total Lines: 3051
+Total Bytes: 142628
+Showing lines 1765 to 1800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1765:                     container.appendChild(card);
+1766:                 });
+1767:             } catch (err) {
+1768:                 console.error(err);
+1769:                 logToConsole(`Failed to load active tickets: ${err}`, 'error');
+1770:             }
+1771:         }
+1772: 
+1773:         // Fetch dynamic PQR tickets from CockroachDB via REST 2.0 Bridge
+1774:         async function loadPQRTickets() {
+1775:             try {
+1776:                 const res = await fetch('/api/v2/pqr/tickets');
+1777:                 const response = await res.json();
+1778:                 const container = document.getElementById('pqr-tickets-container');
+1779:                 container.innerHTML = '';
+1780:                 
+1781:                 if (!response.success) {
+1782:                     container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--rose); font-size:0.9rem;">${response.error.message}</div>`;
+1783:                     return;
+1784:                 }
+1785:                 
+1786:                 const data = response.data || [];
+1787:                 if (data.length === 0) {
+1788:                     container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--text-secondary); font-size:0.9rem;">No PQR tickets found in CockroachDB.</div>`;
+1789:                     return;
+1790:                 }
+1791:                 
+1792:                 // Show latest first
+1793:                 data.forEach(t => {
+1794:                     const card = document.createElement('div');
+1795:                     card.className = `ticket-card ${t.status.toLowerCase().includes('reject') ? 'rejected' : t.status.toLowerCase().includes('complete') ? 'committed' : 'proposed'}`;
+1796:                     
+1797:                     const creatorLabel = t.creator ? t.creator : 'unknown-agent';
+1798:                     const contentText = t.content ? t.content : (t.intent && t.intent.details ? t.intent.details : 'No detail text');
+1799:                     const severity = t.intent && t.intent.severity ? t.intent.severity : 'NORMAL';
+1800:                     const ticketType = t.intent && t.intent.type ? t.intent.type : 'GENERIC_TICKET';
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+
+
+Let's update the titles and text descriptions in `C:\Users\theal\SWEND-MESH\SUBSTRATE\grpc_node\index.html` to reflect the transition to **Substrate Distributed Ledger** instead of CockroachDB. We will change "CockroachDB" references in those headers and warnings to "Substrate".
+
+First, let's update lines 1143 to 1157:

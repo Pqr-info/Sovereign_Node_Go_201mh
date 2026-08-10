@@ -1,0 +1,156 @@
+**Mounting note**: mount `authRoutes` on `/api` and protect `/auth/revoke-refresh` with your `requireRole('admin')` middleware.
+
+---
+
+### 3) Client flows (browser)
+
+**Login (browser)**  
+- POST `/api/auth/login` with credentials.  
+- Server sets `httpOnly` refresh cookie and returns `accessToken` in JSON.  
+- Client stores `accessToken` in memory (never localStorage) and uses `Authorization: Bearer <accessToken>` for API calls.
+
+**Automatic refresh**  
+- When access token expires (or on 401), client calls `POST /api/auth/refresh`.  
+- Browser sends `httpOnly` refresh cookie automatically.  
+- Server rotates refresh token, sets new cookie, and returns new access token.  
+- Client replaces in‑memory access token.
+
+**Logout**  
+- POST `/api/auth/logout` to clear cookie and remove server record.
+
+**Notes**  
+- For WebSocket token issuance, call protected `/api/ws-token` while authenticated (session or access JWT). The issuer should embed `operator.id` and `roles` in the short‑lived WS token payload.
+
+---
+
+### 4) Revocation and Forced‑Disconnect Integration
+
+- **Revocation**: call `POST /api/auth/revoke-refresh` with `tokenHash` (or raw token) to mark a refresh token revoked. This prevents future refresh and can be combined with `revocationStore` for access JWTs if you track them.  
+- **Forced disconnect**: after revoking a refresh token, call your broadcaster’s internal admin endpoint (already implemented) to close active WebSocket sessions tied to the token signature. Use the same deterministic token signature/hash mapping you store in `refreshTokenStore` or the WS token signature.
+
+---
+
+### 5) Security Checklist and Best Practices
+
+- **Store secrets securely**: `JWT_SECRET`, `SESSION_SECRET`, and any admin secrets must be in a vault.  
+- **Use HTTPS/WSS** in production; set `secure: true` on cookies.  
+- **Short access TTLs** (e.g., 5 minutes) and rotate refresh tokens on every use.  
+- **Persist refresh tokens server‑side** (Redis or DB) and store only hashed values if you must persist raw tokens. The example stores raw token hashes.  
+- **Revoke on suspicious activity**: revoke refresh tokens and force disconnect active sessions immediately.  
+- **Protect revoke endpoints** with `requireRole('admin')`.  
+- **Audit**: record login, refresh, rotation, revoke, and logout events to Jetweb lineage with canonical JSON.  
+- **Rate limit** login and refresh endpoints to mitigate brute force and replay attempts.  
+- **CSRF**: using httpOnly cookies for refresh tokens requires CSRF protection on state‑changing endpoints; keep refresh endpoint POST and consider sameSite cookie policy. For extra safety, require a double submit CSRF token for refresh in high‑risk deployments.
+
+---
+
+### Next steps I can generate
+
+- **Redis-backed refresh store** (swap file store for Redis with TTLs).  
+- **Concrete login UI + client refresh helper** (JS snippet that transparently refreshes on 401).  
+- **End‑to‑end tests** for rotation, reuse detection, and revocation.  
+
+Which one should I produce next?
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:44:36-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:45:04Z
+Completed At: 2026-07-09T07:45:13Z
+Created file file:///c:/Users/theal/gemma-cobrowser/jwtIssuer.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:45:13Z
+Completed At: 2026-07-09T07:45:14Z
+Created file file:///c:/Users/theal/gemma-cobrowser/refreshTokenStore.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:45:14Z
+Completed At: 2026-07-09T07:45:14Z
+Created file file:///c:/Users/theal/gemma-cobrowser/authRoutes.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:45:14Z
+Completed At: 2026-07-09T07:45:14Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\validationDashboardServer.js. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -92,6 +92,9 @@
+ const validationActions = require('./validationActions');
+ app.use('/api', validationActions);
+ 
++const authRoutes = require('./authRoutes');
++app.use('/api', authRoutes);
++
+ const wsTokenIssuer = require('./wsTokenIssuer');
+ app.use('/api', wsTokenIssuer);
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+The **JWT Refresh Token Flow** is locked in! 
+- `jwtIssuer.js` stands ready.
+- `refreshTokenStore.js` is persisting opaque refresh hashes.
+- `authRoutes.js` is actively listening for `/api/auth/login`, `/api/auth/refresh`, `/api/auth/logout`, and `/api/auth/revoke-refresh`.
+
+Let's complete the final loop of the operator UX! Please generate the **Concrete login UI + client refresh helper** so the dashboard can transparently obtain and rotate tokens when it encounters 401s.
+
+<USER_REQUEST>
+### Overview
+
+A complete, deterministic implementation of **login**, **access JWT issuance**, **refresh token rotation**, and **logout** endpoints wired to a simple user store. Uses short‑lived access JWTs and server‑side refresh tokens stored via the existing `refreshTokenStore.js`. Includes secure cookie handling, password hashing, and example client flows.
+
+---
+
+### Files to add
+
+- **`userStore.js`** — simple file‑backed user store with bcrypt password hashing.  
+- **`jwtIssuer.js`** — helper to issue access JWTs.  
+- **`authRoutes.js`** — Express routes: `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `POST /api/auth/revoke-refresh` (admin).  
+- Reuses **`refreshTokenStore.js`** you already added.
+
+---
+
+### userStore.js
+

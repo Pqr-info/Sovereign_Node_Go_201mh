@@ -1,0 +1,18 @@
+[package]
+name = "os-spark-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
+scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
+sp-arithmetic = { version = "23.0.0", default-features = false }
+midly = { version = "0.5.3", default-features = false, features = ["alloc"] }
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "scale-info/std",
+    "sp-arithmetic/std"
+]

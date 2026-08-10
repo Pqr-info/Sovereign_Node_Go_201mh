@@ -1,0 +1,6 @@
+---
+
+# ✅ **4. gemma_specialty_spawner.go — Russian Agent Factory**
+
+Drop this into `SUBSTRATE/gemma_specialty_spawner.go`:
+

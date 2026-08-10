@@ -1,0 +1,6 @@
+---
+
+# ✅ **6. substrate.go — Wiring Gemma Into the Mesh**
+
+Add this near your other global initializations:
+

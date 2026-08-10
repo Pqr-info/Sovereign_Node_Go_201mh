@@ -1,0 +1,13 @@
+---
+
+### Frontend Enhancements
+
+Enhance `copilot-validation-dashboard.html` with:
+
+- **Filters** for `taskId`, `source`, `corridor`, and date range.  
+- **Reviewer UI**: a small form to add reviewer name and note that POSTs to `/api/validation-logs/:eventId/review`.  
+- **Export button**: downloads canonical JSON from `/api/validation-logs/:eventId/export`.  
+- **Highlighting**: show `errors.length` badge and `review` status.  
+
+Minimal reviewer UI snippet to embed in the detail pane:
+

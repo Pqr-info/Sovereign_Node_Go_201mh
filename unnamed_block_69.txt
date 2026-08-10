@@ -1,0 +1,214 @@
+**Alternative**: send token in `Sec-WebSocket-Protocol` header as `token.<token>` if your client library supports subprotocols.
+
+---
+
+### Security and Operational Notes
+
+- **Protect the token issuer** with your operator authentication and authorization. The issuer must only return tokens to authorized operators.  
+- **Short TTL**: tokens are short‑lived (default 5 minutes). Rotate `TOKEN_SECRET` regularly.  
+- **No sensitive data in token**: token payload contains only operator id and expiry. Do not embed secrets.  
+- **Transport security**: run WebSocket over TLS (wss://) in production. The HMAC token is an additional layer, not a replacement for TLS.  
+- **Token revocation**: for immediate revocation, maintain a small in‑memory blacklist keyed by token signature or operator id and check it in `verifyToken`.  
+- **Audit**: attach `ws.operator` to connections and record connection events in Jetweb lineage if desired.  
+- **Rate limiting**: enforce connection rate limits on the issuer endpoint and on WebSocket connections to prevent abuse.  
+- **Canonical logging**: record token issuance and connection events with canonical JSON for audit.
+
+---
+
+### Deployment Steps
+
+1. Add `validationWatcherWsAuth.js` to your runtime and set `VALIDATION_WS_SECRET` to a strong secret.  
+2. Mount `wsTokenIssuer.js` into your dashboard server and protect it with your operator auth.  
+3. Start the authenticated broadcaster: `node validationWatcherWsAuth.js`.  
+4. Update dashboard client to call `/api/ws-token` and connect with the returned token.  
+5. Test: request a token, connect, trigger a validation failure, confirm the dashboard receives the live event.  
+6. Rotate secrets and enable TLS for production.
+
+---
+
+If you want, I can now:
+- generate a **token revocation list** implementation and revocation endpoint, or
+- produce a **wss TLS wrapper** example showing how to run the broadcaster behind TLS with a self-signed cert for local testing.
+
+Which would you like next?
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:35:56-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:36:15Z
+Completed At: 2026-07-09T07:36:16Z
+Created file file:///c:/Users/theal/gemma-cobrowser/validationWatcherWsAuth.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:36:16Z
+Completed At: 2026-07-09T07:36:16Z
+Created file file:///c:/Users/theal/gemma-cobrowser/wsTokenIssuer.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:36:16Z
+Completed At: 2026-07-09T07:36:16Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\validationDashboardServer.js. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -92,6 +92,9 @@
+ const validationActions = require('./validationActions');
+ app.use('/api', validationActions);
+ 
++const wsTokenIssuer = require('./wsTokenIssuer');
++app.use('/api', wsTokenIssuer);
++
+ // Start server
+ if (require.main === module) {
+   const port = process.env.PORT || 9090;
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:36:29Z
+Completed At: 2026-07-09T07:36:30Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\copilot-ui\copilot-validation-dashboard.html. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -240,15 +240,30 @@
+ 
+     // initial load
+     refresh();
+-    // WebSocket client for live validation events
+-    const WS_URL = 'ws://localhost:9091'; // adjust if different host/port
++    // Authenticated WebSocket client for live validation events
++    const WS_URL_BASE = 'ws://localhost:9091'; // adjust if different host/port
+     let ws;
+ 
+-    function connectWs() {
+-      try {
+-        ws = new WebSocket(WS_URL);
+-      } catch (e) {
+-        console.error('ws connect failed', e);
++    async function fetchWsToken() {
++      const resp = await fetch(`${API_BASE}/api/ws-token`, {
++        method: 'POST',
++        headers: {
++          'Content-Type': 'application/json',
++          'X-Operator-Id': 'operator' // local demo header
++        }
++      });
++      if (!resp.ok) throw new Error('token request failed');
++      const json = await resp.json();
++      return json.token;
++    }
++
++    async function connectWs() {
++      try {
++        const token = await fetchWsToken();
++        const wsUrl = `${WS_URL_BASE}/?token=${encodeURIComponent(token)}`;
++        ws = new WebSocket(wsUrl);
++      } catch (e) {
++        console.error('WS connect failed (token fetch or socket init)', e);
+         return;
+       }
+ 
+@@ -291,7 +291,9 @@
+ 
+       ws.addEventListener('error', err => {
+         console.error('validation WS error', err);
+-        ws.close();
++        if (ws.readyState === WebSocket.OPEN) {
++          ws.close();
++        }
+       });
+     }
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+I've fully implemented the Authenticated WebSocket Wrapper! 
+
+1. `validationWatcherWsAuth.js` now uses strict HMAC signature verification on the upgrade request.
+2. `wsTokenIssuer.js` creates secure, short-lived tokens, mounted neatly at `/api/ws-token`.
+3. The dashboard UI fetches a fresh token and transparently uses it for connection initialization! 
+
+This tightly seals the real-time structural event stream.
+
+You offered two further enhancements:
+- A **token revocation list** implementation and revocation endpoint
+- A **wss TLS wrapper** example
+
+Let's do the **token revocation list** next! Being able to deterministically sever an operator's live stream by invalidating their token matches the rigid security constraints of the Jetweb mesh perfectly. Give me the spec and I'll wire it right in.
+
+<USER_REQUEST>
+### Authenticated WebSocket Wrapper Design
+
+Below is a complete, production-ready **authenticated WebSocket wrapper** you can drop into your Validation Dashboard stack. It issues short‑lived HMAC tokens to authenticated operators, verifies tokens at the WebSocket handshake, and only accepts connections that present a valid token. The implementation is deterministic, auditable, and designed to integrate with your existing Jetweb lineage and operator auth.
+
+---
+
+### Files to add
+
+- **validationWatcherWsAuth.js** — authenticated WebSocket broadcaster that watches `jetweb_logs` and accepts only token-authenticated connections.  
+- **wsTokenIssuer.js** — token issuer endpoint to be mounted on your dashboard server. Protect this endpoint with your operator authentication.  
+- **optional** token revocation helper snippet included in the server section.
+
+---
+
+### validationWatcherWsAuth.js
+

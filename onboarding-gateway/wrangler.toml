@@ -1,0 +1,6 @@
+name = "onboarding-gateway"
+main = "src/index.js"
+compatibility_date = "2024-03-20"
+
+[env.production]
+name = "onboarding-gateway-prod"

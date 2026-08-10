@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package gemma4;
+
+option go_package = "github.com/pqr-info/swend/proto/gemma4;gemma4";
+
+service GemmaBrain {
+    // Health / identity
+    rpc Ping (PingRequest) returns (PingResponse);
+    rpc GetCapabilities (CapabilitiesRequest) returns (CapabilitiesResponse);
+
+    // Core reasoning
+    rpc Plan (PlanRequest) returns (PlanResponse);
+    rpc RouteAgents (RouteRequest) returns (RouteResponse);
+    rpc HealTicket (HealRequest) returns (HealResponse);
+
+    // Memory integration (PQR ticketing)
+    rpc IngestContext (ContextRequest) returns (ContextAck);
+    rpc SuggestNextActions (NextActionRequest) returns (NextActionResponse);
+
+    // Learning / substrate hooks
+    rpc SubmitExperience (ExperienceBatch) returns (ExperienceAck);
+    rpc TriggerTraining (TrainingTrigger) returns (TrainingStatus);
+}
+
+message PingRequest {
+    string client_id = 1;
+}
+
+message PingResponse {
+    string status = 1;
+    int64 timestamp = 2;
+}
+
+message CapabilitiesRequest {}
+
+message CapabilitiesResponse {
+    repeated string capabilities = 1;
+    repeated string supported_backends = 2;
+}
+
+message PlanRequest {
+    string goal = 1;
+    string context_json = 2;
+}
+
+message PlanResponse {
+    repeated string steps = 1;
+    string strategy = 2;
+    double confidence = 3;
+}
+
+message RouteRequest {
+    string task = 1;
+    repeated string available_agents = 2;
+}
+
+message RouteResponse {
+    string chosen_agent = 1;
+    repeated string execution_order = 2;
+    string reasoning = 3;
+}
+
+message HealRequest {
+    string ticket_id = 1;
+    string snapshot = 2;
+}
+
+message HealResponse {
+    bool healed = 1;
+    string proposed_fix = 2;
+    string logs = 3;
+}
+
+message ContextRequest {
+    string session_id = 1;
+    string key = 2;
+    string value_json = 3;
+}
+
+message ContextAck {
+    bool success = 1;
+    string message = 2;
+}
+
+message NextActionRequest {
+    string agent_id = 1;
+    string ticket_id = 2;
+    string history_json = 3;
+}
+
+message NextActionResponse {
+    repeated string actions = 1;
+    string reasoning = 2;
+}
+
+message ExperienceBatch {
+    string batch_id = 1;
+    repeated Experience experiences = 2;
+}
+
+message Experience {
+    string type = 1;
+    string source = 2;
+    string content = 3;
+    string metadata_json = 4;
+}
+
+message ExperienceAck {
+    bool success = 1;
+    int32 processed_count = 2;
+}
+
+message TrainingTrigger {
+    string epoch_id = 1;
+    string hyperparameters_json = 2;
+}
+
+message TrainingStatus {
+    string status = 1;
+    double loss = 2;
+    int32 current_epoch = 3;
+}

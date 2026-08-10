@@ -8,7 +8,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/db"
+	"pqr.info/internal/infrastructure/db"
 )
 
 type DashboardService struct {

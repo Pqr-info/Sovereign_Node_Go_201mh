@@ -1,0 +1,79 @@
+---
+
+This wrapper gives you deterministic, auditable, and operator‑gated live streaming of validation events. It integrates cleanly with your existing dashboard and Jetweb lineage flow while enforcing that only authorized operators receive live notifications.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:36:48-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:37:06Z
+Completed At: 2026-07-09T07:37:06Z
+Created file file:///c:/Users/theal/gemma-cobrowser/validationWatcherWsAuth.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:37:06Z
+Completed At: 2026-07-09T07:37:06Z
+Created file file:///c:/Users/theal/gemma-cobrowser/adminRevoke.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+The **Token Revocation List** logic is locked in! I added the in-memory revocation set to `validationWatcherWsAuth.js` and the `adminRevoke.js` script so that any rogue token signature can be deterministically dropped on the floor before upgrade. The system is structurally impermeable to revoked identities.
+
+You also offered a **wss TLS wrapper** example showing how to run the broadcaster behind TLS with a self-signed cert for local testing. That sounds perfect as the absolute final piece of the architecture. Let's finish the puzzle with TLS!
+
+<USER_REQUEST>
+### Token Revocation List — Design and Code
+
+Below is a deterministic, auditable **token revocation list** implementation and admin API you can wire into your existing WebSocket auth stack. It provides:
+
+- **persistent revocation store** (file-backed JSON) so revocations survive restarts  
+- **admin endpoints** to revoke a token signature, unrevoke, and list revoked signatures  
+- **integration helpers** to check revocation during WebSocket handshake (compatible with `validationWatcherWsAuth.js`)  
+- **audit logging** of revocation actions into Jetweb lineage via `recordEvent` (best‑effort)  
+- **simple admin auth placeholder** you must replace with your real operator auth
+
+Files to add: `revocationStore.js`, `adminRevocationRoutes.js`. Below are the implementations and mounting instructions.
+
+---
+
+#### `revocationStore.js` — persistent revocation list (file-backed)
+

@@ -1,0 +1,72 @@
+.glass-panel {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Layer 1: Blur (Backdrop Filter) */
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: -3;
+}
+
+/* Layer 2: Background (Neural Matte) */
+.glass-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(16, 20, 29, 0.4);
+  z-index: -2;
+}
+
+/* Layer 3: Border */
+.glass-border {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 2;
+  transition: border-color 0.3s ease;
+}
+
+/* Layer 4: Glow */
+.glass-glow {
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 12px 40px -10px rgba(0, 229, 255, 0.15);
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: -4;
+  opacity: 0.8;
+  transition: opacity 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover .glass-border {
+  border-color: rgba(0, 229, 255, 0.4);
+}
+
+.glass-panel:hover .glass-glow {
+  opacity: 1;
+  box-shadow: 0 12px 40px -10px rgba(0, 229, 255, 0.3);
+}
+
+/* Active Drift State */
+.glass-panel.drift-active .glass-border {
+  border-color: rgba(255, 0, 127, 0.6);
+  animation: jitter 0.2s infinite alternate;
+}
+
+.glass-panel.drift-active .glass-glow {
+  box-shadow: 0 12px 40px -10px rgba(255, 0, 127, 0.4);
+}
+
+@keyframes jitter {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(1px, -1px); }
+}

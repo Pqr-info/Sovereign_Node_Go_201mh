@@ -1,0 +1,110 @@
+# GraphQL Schema for ADER Knowledge Graph (Apollo Federation)
+
+type Problem @key(fields: "id") {
+  id: ID!
+  createdAt: String!
+  tags: [String!]!
+  sourceSystem: String!
+  title: String!
+  severity: Int!
+  description: String!
+  status: String!
+}
+
+type Observation @key(fields: "id") {
+  id: ID!
+  createdAt: String!
+  tags: [String!]!
+  sourceSystem: String!
+  rawDataRef: String
+  extractedSignal: String!
+  confidenceScore: Float!
+  anomalyType: String
+}
+
+type Hypothesis @key(fields: "id") {
+  id: ID!
+  createdAt: String!
+  tags: [String!]!
+  sourceSystem: String!
+  statement: String!
+  plausibility: Float!
+  falsifiabilityScore: Float
+  complexity: Int
+  validationCost: Float
+}
+
+type Action @key(fields: "id") {
+  id: ID!
+  createdAt: String!
+  tags: [String!]!
+  sourceSystem: String!
+  command: String!
+  environment: String!
+  rollbackPlan: String
+  isReversible: Boolean!
+  sideEffects: [String!]
+}
+
+type Result @key(fields: "id") {
+  id: ID!
+  createdAt: String!
+  tags: [String!]!
+  sourceSystem: String!
+  outcome: String!
+  metricsBefore: String
+  metricsAfter: String
+  logsRef: String
+  recurrenceProbability: Float
+}
+
+union PathStep = Observation | Hypothesis | Action | Result
+
+type SuccessPath @key(fields: "pathId") {
+  pathId: ID!
+  id: ID!
+  createdAt: String!
+  tags: [String!]!
+  sourceSystem: String!
+  title: String!
+  totalSteps: Int!
+  avgConfidence: Float!
+  reusabilityScore: Float!
+  pathSignatureHash: String
+  
+  steps(orderBy: String): [PathStep!]!
+}
+
+type Mutation {
+  ingestTicket(
+    ticketId: ID!
+    agentId: ID!
+    label: String!
+    severity: Int!
+    description: String
+    sourceSystem: String
+  ): Problem!
+
+  rateSuccessPath(id: ID!, success: Boolean!): SuccessPath!
+}
+
+type ResolutionStep {
+  x: Int!
+  y: Int!
+  z: Int!
+  confidence: Float!
+}
+
+type FallbackPlan {
+  startX: Int!
+  startY: Int!
+  startZ: Int!
+  resolutionPaths: [[ResolutionStep!]!]!
+  bestSuccessPath: SuccessPath
+}
+
+type Query {
+  successPaths(tags: [String!], minReusabilityScore: Float, limit: Int): [SuccessPath!]!
+  resolutionPaths(ticketId: ID!, startX: Int!, startY: Int!, startZ: Int!, maxDepth: Int): [[ResolutionStep!]!]!
+  fallbackPlan(ticketId: ID!, startX: Int!, startY: Int!, startZ: Int!, maxDepth: Int = 4, minReusabilityScore: Float = 0.75): FallbackPlan!
+}

@@ -1,0 +1,6 @@
+---
+
+# ⭐ Jetweb API Contract (jetwebAPI.js)
+
+This is the structural contract Jetweb expects — you can implement these however you want inside Jetweb.
+

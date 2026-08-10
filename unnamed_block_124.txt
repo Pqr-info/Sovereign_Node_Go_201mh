@@ -1,0 +1,77 @@
+---
+
+You now have:
+
+- A **precise JSON schema** for Antigravity’s checkpoint state.  
+- A **clear recovery protocol** that RT/timeslip can support.  
+
+Once you wire this into the mesh ledger and Antigravity’s entrypoint, you’ll have an agent that:
+
+- Crashes,  
+- Diagnoses,  
+- Wakes up,  
+- Explains what happened,  
+- And continues the plan without losing the thread.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T19:19:02-05:00.
+</ADDITIONAL_METADATA>
+
+{{ CHECKPOINT 17 }}
+ **The earlier parts of this conversation have been truncated due to its long length. The following content summarizes the truncated context so that you may continue your work. **
+
+
+# User Requests
+The following were user requests from the truncated conversation in chronological order:
+1. build a RT Rest 2.0 ticketing ->/timeslip-generator (that checks if /timeslip artifact exists) -> send the raw ticket to copilot for markup/comments -> copilot response -> ticketing/timeslip -> antigravity -> gemma (for delegation/specialized subagent hallucination(allowed hallucination) -> antigravity -> work done -> Ticket/timeslip closed -.> Rinse and repeat workflow, start with this actual workflow to get it approved and/or modified by copilot and/or gemma 
+2. oh no , priority 1A ticket to restore the required services and make them persistent across reboots and create assign that /timeslip to the doc agent at the end of it
+3. actually write it into ouroboros and the port authority, this should get the perm ports assigned and be started and kept alive as needed by ouroboros
+4. Short answer: **I approve this plan.**
+
+Here’s the crisp verdict, point by point:
+
+- **Port Authority integration:**  
+  Adding `copilot_receiver` and `gemma_cobrowser` to `loadDefaults()` with canonical ports is exactly right. It makes them first‑class mesh citizens and removes any ambiguity about where they live.
+
+- **Ouroboros Sentinel integration:**  
+  - Extending `c.watchlist` with the two Node commands is correct.  
+  - Swapping `pgrep` for Windows‑native process checks is necessary and aligned with the host environment.  
+  - Using non‑blocking `Start-Process`‑style resurrection keeps Ouroboros as the supervising daemon instead of turning it into a process runner.
+
+- **Compilation & execution:**  
+  Rebuilding `mesh_server.exe` after modifying `port_authority.go` and `substrate.go` is required and correctly captured. The described behavior—Sentinel detecting missing services and triggering resurrection on the new ports—is exactly what we want.
+
+- **Timeslip delegation:*
+<truncated 965 bytes>
+5. ok figure out what the antigravity crash that just happened looks like and code that into ouroboros for detection and analysis in coordination with windows administration agent and mcse to see if it was a preventable crash, such as out of memory error which can be mitigated by adding more swap file and active cleanup of idle processes that aren't presently needed ... if we can develop a process sleep mode for windows processes that would be optimal 
+6. Perfect — I’ll update the plan and generate the **swap_manager.go** stub with the correct, safe caps.
+
+Below is the **finalized memory‑safety policy** for Ouroboros, followed by the **Go module skeleton** you asked for.
+
+---
+
+# ✅ **Updated Swap Policy (Safe & Approved)**
+
+### **Physical RAM:** 16 GB  
+### **GPU VRAM:** 8 GB × 2 (ignored for swap calculations)  
+
+### **Normal Pagefile Cap:** **24 GB**  
+- This is **1.5× physical RAM**, the ideal stability point.  
+- Prevents thrashing.  
+- Gives Windows enough commit headroom for WSL, Docker, Node, and mesh processes.
+
+### **Emergency Pagefile Cap:** **32 GB**  
+- This is the **absolute safe ceiling** for a 16 GB system.  
+- Only triggered when Crash Analytics Daemon confirms a real distress pattern.  
+- Logged via `/timeslip`.
+
+### **Never exceed:** **32 GB**  
+- Anything beyond this becomes catastrophic I/O thrash.  
+- VRAM does **not** increase safe swap limits.
+
+---
+
+# 🧠 **Updated Implementation Plan (Swap Section
+<truncated 3624 bytes>
+7. ### A. `windows_sleep.go` skeleton
+

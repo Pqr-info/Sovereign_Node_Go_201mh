@@ -1,0 +1,1 @@
+{"rustc":1562763049001146449,"features":"[\"std\"]","declared_features":"[\"default\", \"std\"]","target":7391441437648552791,"profile":2241668132362809309,"path":612786036872700731,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug\\.fingerprint\\tuplex-938e8028c675319c\\dep-lib-tuplex","checksum":false}}],"rustflags":[],"config":8247474407144887393,"compile_kind":0}

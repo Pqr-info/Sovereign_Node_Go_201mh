@@ -1,0 +1,6 @@
+---
+
+# **C. substrate.go Wiring Diff**
+
+Add this right after initializing the CheckpointManager and RecoveryNarrativeEngine:
+

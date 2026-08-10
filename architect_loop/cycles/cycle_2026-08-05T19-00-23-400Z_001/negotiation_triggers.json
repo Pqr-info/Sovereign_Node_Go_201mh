@@ -1,0 +1,15 @@
+{
+  "sessions_to_create": [
+    {
+      "reason": "Routine governance invariant review.",
+      "topic_id": "mesh_architecture",
+      "participants": [
+        "MAX",
+        "TED",
+        "ZETA",
+        "DeepSeek",
+        "Qwen"
+      ]
+    }
+  ]
+}

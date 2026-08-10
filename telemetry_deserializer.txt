@@ -1,0 +1,38 @@
+Using `encoding/json` forces reflection, interface allocations, and heavy GC overhead, which is fatal for ultra-low latency tick propagation.
+
+* **The Fix**: We can swap reflection-based unmarshaling for:
+  * **Option A (Binary Protobuf/SBE)**: Transitioning the internal teleporter stream to Protobuf or Simple Binary Encoding (SBE) directly mapping to structures without dynamic allocations.
+  * **Option B (Zero-Allocation JSON)**: If we must consume raw WebSocket JSON text blocks, we can rewrite the parser using a fast zero-allocation token iterator like `buger/jsonparser` or codegen-based `easyjson`.
+  * **Option C (Shared Memory/Ring Buffer)**: Direct IPC using a memory-mapped lock-free ring buffer (e.g., LMAX Disruptor pattern translated to Go) for local co-located node execution.
+
+---
+
+### 2. State Management: Cache-Line Bouncing & Sharding
+
+In MEV execution, tracking the unified cross-venue order books introduces heavy cache coherence traffic (cache-line bouncing) when multiple workers write to a central state structure.
+
+* **Thread-Safe Map Pitfalls**: A global `sync.Map` relies on pointer boxing and map promotion mechanics, which triggers GC scanning and cache-line invalidation across cores.
+* **The Optimization**:
+  * **Sharded Locks**: Hash the asset ID (e.g., `SOV-AI` $\rightarrow$ shard index) to route events to independent, CPU cache-aligned shards.
+  * **False Sharing Mitigation**: Pad state structures using `golang.org/x/sys/cpu.CacheLinePad` to ensure concurrent writes to adjacent shard metrics do not invalidate L1/L2 caches on neighboring cores.
+  * **Lock-Free Pointer Swapping**: Update price points or book states using `atomic.Pointer` swaps rather than holding exclusive mutexes during calculations.
+
+---
+
+### Whiteboard Action Plan
+
+Where do we want to perform this surgery? We can:
+1. **Re-engineer `telemetry_deserializer.go`** to use a zero-allocation parsing pathway.
+2. **Optimize the Router/Coordinator wiring** using a sharded ring buffer to parallelize analysis worker execution without channel contention.
+
+<USER_REQUEST>
+This architecture cuts straight to the core of an independent, low-latency execution node. By framing this around a **Mesh Citizen Shell (MCSH)** wrapper, a local **Gemma Semantic Router**, and decoupled execution hooks, you are creating an incredibly resilient, air-gapped trading system.
+
+Let’s lay down the foundational codebase for `pqr.info/mev`. We will build out the core architecture skeleton in pure, highly concurrent Go, optimized to plug directly into your local tools over MCP.
+
+---
+
+## 1. Configuration: `organ.toml`
+
+This manifest defines the node boundaries within the Sovereign-OS mesh, mapping local gRPC interfaces for the agent and coordinator.
+

@@ -1,0 +1,58 @@
+<svg width="900" height="500" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: bold 22px sans-serif; fill: #333; }
+    .label { font: 14px sans-serif; fill: #333; }
+    .box { fill: #f3f7fa; stroke: #333; stroke-width: 1.5; rx: 10; }
+    .arrow { stroke: #333; stroke-width: 2; marker-end: url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7"
+            refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="40" class="title">JetWeb Sovereign Organism Architecture</text>
+
+  <!-- Identity -->
+  <rect x="40" y="120" width="200" height="120" class="box"/>
+  <text x="60" y="160" class="label">Identity Layer</text>
+  <text x="60" y="190" class="label">5D‑PIKR</text>
+
+  <!-- Arrow -->
+  <line x1="240" y1="180" x2="360" y2="180" class="arrow"/>
+
+  <!-- Runtime -->
+  <rect x="360" y="120" width="200" height="120" class="box"/>
+  <text x="380" y="160" class="label">Runtime Layer</text>
+  <text x="380" y="190" class="label">Go · JS · Rust</text>
+
+  <!-- Arrow -->
+  <line x1="560" y1="180" x2="680" y2="180" class="arrow"/>
+
+  <!-- Organism -->
+  <rect x="680" y="120" width="200" height="120" class="box"/>
+  <text x="700" y="160" class="label">Sovereign Organism</text>
+  <text x="700" y="190" class="label">Mesh · Edge · Substrate</text>
+
+  <!-- Bottom arrows -->
+  <line x1="140" y1="240" x2="140" y2="340" class="arrow"/>
+  <line x1="460" y1="240" x2="460" y2="340" class="arrow"/>
+  <line x1="780" y1="240" x2="780" y2="340" class="arrow"/>
+
+  <!-- CI -->
+  <rect x="40" y="340" width="200" height="120" class="box"/>
+  <text x="60" y="380" class="label">CI Enforcement</text>
+  <text x="60" y="410" class="label">Identity Invariance</text>
+
+  <!-- Docs -->
+  <rect x="360" y="340" width="200" height="120" class="box"/>
+  <text x="380" y="380" class="label">Documentation</text>
+  <text x="380" y="410" class="label">Protocol · Vectors</text>
+
+  <!-- Security -->
+  <rect x="680" y="340" width="200" height="120" class="box"/>
+  <text x="700" y="380" class="label">Security Policy</text>
+  <text x="700" y="410" class="label">Public vs Confidential</text>
+</svg>

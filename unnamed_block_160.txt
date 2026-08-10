@@ -1,0 +1,6 @@
+---
+
+### `gemma_agent.go` integration with router (Mode A)
+
+In `GemmaSemanticRouter.Orchestrate`, extend the Healer branch:
+

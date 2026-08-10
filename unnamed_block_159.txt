@@ -1,0 +1,6 @@
+---
+
+### `gemma_specialty_spawner.go` patch (Mode A healer v2)
+
+Add:
+

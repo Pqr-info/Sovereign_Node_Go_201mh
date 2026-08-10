@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/thealanphipps-del/pqr/internal/domain"
+	"pqr.info/internal/domain"
 )
 
 func (r *CockroachRepository) SeedGovernanceAgents(ctx context.Context) error {

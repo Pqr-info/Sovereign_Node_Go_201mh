@@ -1,0 +1,4 @@
+#### 3. Deterministic request headers for UI calls
+
+The UI uses `X-Admin-Id` for local testing. Ensure the server accepts the header only in dev or maps session identity to `req.admin.id` in production. Example mapping for session-based auth:
+

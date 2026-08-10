@@ -1,0 +1,10 @@
+---
+
+You can now drop:
+
+- `windows_sleep.go`  
+- `crash_analytics.go`  
+- the `substrate.go` wiring changes  
+
+into `C:\Users\theal\SWEND-MESH\SUBSTRATE`, then:
+

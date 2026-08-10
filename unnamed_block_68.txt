@@ -1,0 +1,2 @@
+**2. Connect to WebSocket with token in query**
+

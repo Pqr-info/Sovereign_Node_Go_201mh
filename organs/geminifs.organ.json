@@ -1,0 +1,29 @@
+{
+  "name": "GeminiFS",
+  "id": "organ.geminifs.phase24",
+  "version": "24.0.0",
+  "type": "filesystem",
+  "mount_path": "C:\\pqr.info\\geminifs",
+  "source": {
+    "kind": "rclone_local",
+    "remote_name": "geminifs",
+    "output_path": "C:\\Users\\theal\\geminifs-output"
+  },
+  "subsystems": [
+    "TSRE"
+  ],
+  "policies": {
+    "default_priority_tags": [
+      "decay_fast"
+    ],
+    "decay_profile": "tsre_fast",
+    "allow_compaction": true,
+    "allow_drop": true
+  },
+  "capabilities": {
+    "list_files": true,
+    "read_files": true,
+    "inject_into_context": true,
+    "time_machine_snapshot": false
+  }
+}

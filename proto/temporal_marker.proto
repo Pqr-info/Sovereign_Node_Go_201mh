@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sovereign.temporal;
+
+enum TemporalStability {
+  STABILITY_UNSPECIFIED = 0;
+  STABLE                = 1;
+  CHAOTIC               = 2;
+  METASTABLE            = 3;
+}
+
+message TemporalMarker {
+  string id           = 1;  // UUID v4
+  uint32 track_id     = 2;  // 0–255
+  uint64 tick         = 3;  // logical or wall-clock tick
+  int64  created_at   = 4;  // Unix millis
+  uint32 echo_cycle   = 5;  // 7s cadence index
+  TemporalStability stability = 6;
+}

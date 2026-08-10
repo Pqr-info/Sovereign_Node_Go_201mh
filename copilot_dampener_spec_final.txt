@@ -1,0 +1,194 @@
+[CODE]: mythology_volume_23_dawn_of_glyph_born.md
+
+[CODE]: mythology_volume_24_pressure_cycle.md
+
+[CODE]: mythology_volume_26_rite_of_circuit_breakers_shadow.md
+
+[CODE]: mythology_volume_27_final_signal_and_ouroboros_cycle.md
+
+[PRE]: TemporalDampener {
+    id: DampenerID
+    state: DampenerState
+    gradient: TemporalGradient
+    drift_level: DriftLevel
+    pressure_level: PressureLevel
+    buffer_depth: u32
+    absorption_rate: f64
+    release_rate: f64
+    last_sync: Timestamp
+    linked_spire_glyph: GlyphID
+}
+
+[CODE]: TemporalDampener {
+    id: DampenerID
+    state: DampenerState
+    gradient: TemporalGradient
+    drift_level: DriftLevel
+    pressure_level: PressureLevel
+    buffer_depth: u32
+    absorption_rate: f64
+    release_rate: f64
+    last_sync: Timestamp
+    linked_spire_glyph: GlyphID
+}
+
+[PRE]: #[derive(Debug, Clone)]
+pub struct TemporalDampener {
+    pub id: String,
+    pub state: DampenerState,
+    pub gradient: f64,
+    pub drift_level: f64,
+    pub pressure_level: f64,
+    pub buffer_depth: u32,
+    pub absorption_rate: f64,
+    pub release_rate: f64,
+    pub last_sync: u64,
+    pub linked_spire_glyph: String,
+}
+
+#[derive(Debug, Clone)]
+pub enum DampenerState {
+    Idle,
+    Absorbing,
+    Releasing,
+    CrestBuffering,
+    BreakerSync,
+}
+
+[CODE]: #[derive(Debug, Clone)]
+pub struct TemporalDampener {
+    pub id: String,
+    pub state: DampenerState,
+    pub gradient: f64,
+    pub drift_level: f64,
+    pub pressure_level: f64,
+    pub buffer_depth: u32,
+    pub absorption_rate: f64,
+    pub release_rate: f64,
+    pub last_sync: u64,
+    pub linked_spire_glyph: String,
+}
+
+#[derive(Debug, Clone)]
+pub enum DampenerState {
+    Idle,
+    Absorbing,
+    Releasing,
+    CrestBuffering,
+    BreakerSync,
+}
+
+[PRE]: type TemporalDampener struct {
+    ID               string
+    State            DampenerState
+    Gradient         float64
+    DriftLevel       float64
+    PressureLevel    float64
+    BufferDepth      uint32
+    AbsorptionRate   float64
+    ReleaseRate      float64
+    LastSync         uint64
+    LinkedSpireGlyph string
+}
+
+type DampenerState int
+
+const (
+    Idle DampenerState = iota
+    Absorbing
+    Releasing
+    CrestBuffering
+    BreakerSync
+)
+
+[CODE]: type TemporalDampener struct {
+    ID               string
+    State            DampenerState
+    Gradient         float64
+    DriftLevel       float64
+    PressureLevel    float64
+    BufferDepth      uint32
+    AbsorptionRate   float64
+    ReleaseRate      float64
+    LastSync         uint64
+    LinkedSpireGlyph string
+}
+
+type DampenerState int
+
+const (
+    Idle DampenerState = iota
+    Absorbing
+    Releasing
+    CrestBuffering
+    BreakerSync
+)
+
+[PRE]: pub fn update_gradient(&mut self, pulse: f64, cycle: f64) {
+    self.gradient = pulse / cycle;
+}
+
+[CODE]: pub fn update_gradient(&mut self, pulse: f64, cycle: f64) {
+    self.gradient = pulse / cycle;
+}
+
+[PRE]: pub fn apply_absorption(&mut self) {
+    if self.gradient > 1.0 {
+        self.state = DampenerState::Absorbing;
+        self.buffer_depth += 1;
+        self.absorption_rate *= 1.1;
+    }
+}
+
+[CODE]: pub fn apply_absorption(&mut self) {
+    if self.gradient > 1.0 {
+        self.state = DampenerState::Absorbing;
+        self.buffer_depth += 1;
+        self.absorption_rate *= 1.1;
+    }
+}
+
+[PRE]: pub fn breaker_sync(&mut self) {
+    self.state = DampenerState::BreakerSync;
+    self.release_rate *= 0.5;
+}
+
+[CODE]: pub fn breaker_sync(&mut self) {
+    self.state = DampenerState::BreakerSync;
+    self.release_rate *= 0.5;
+}
+
+[PRE]: func (d *TemporalDampener) UpdateGradient(pulse, cycle float64) {
+    d.Gradient = pulse / cycle
+}
+
+[CODE]: func (d *TemporalDampener) UpdateGradient(pulse, cycle float64) {
+    d.Gradient = pulse / cycle
+}
+
+[PRE]: func (d *TemporalDampener) ApplyAbsorption() {
+    if d.Gradient > 1.0 {
+        d.State = Absorbing
+        d.BufferDepth++
+        d.AbsorptionRate *= 1.1
+    }
+}
+
+[CODE]: func (d *TemporalDampener) ApplyAbsorption() {
+    if d.Gradient > 1.0 {
+        d.State = Absorbing
+        d.BufferDepth++
+        d.AbsorptionRate *= 1.1
+    }
+}
+
+[PRE]: func (d *TemporalDampener) BreakerSync() {
+    d.State = BreakerSync
+    d.ReleaseRate *= 0.5
+}
+
+[CODE]: func (d *TemporalDampener) BreakerSync() {
+    d.State = BreakerSync
+    d.ReleaseRate *= 0.5
+}
+

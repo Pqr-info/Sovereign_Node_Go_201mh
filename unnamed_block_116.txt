@@ -1,0 +1,2 @@
+You’ll also want small stubs on `Controller` for process selection:
+

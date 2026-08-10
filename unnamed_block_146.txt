@@ -1,0 +1,6 @@
+---
+
+# ✅ **5. antigravity_agent.go — Semantic Delegation Bridge**
+
+Add this to your existing file:
+

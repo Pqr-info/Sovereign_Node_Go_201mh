@@ -1,0 +1,16 @@
+**Key fields Antigravity will actually use on wake‑up:**
+
+- **`goal`** — to restate what it’s doing.  
+- **`plan_steps` + `current_step_index`** — to know where it is in the plan.  
+- **`context.files_generated` / `files_pending`** — to avoid duplicating work.  
+- **`context.next_actions`** — to resume with a clear next step.  
+- **`context.diagnostics_summary` + `crash_events`** — to explain the crash and mitigation.  
+
+You can store this as a document in RT/timeslip or your mesh ledger keyed by `session_id`.
+
+---
+
+### 2. `RecoverSession()` pseudocode (RT/timeslip‑aware)
+
+Here’s a clean, mesh‑ready pseudocode flow you can wire into Ouroboros:
+

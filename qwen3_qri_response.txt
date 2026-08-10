@@ -1,0 +1,103 @@
+Excellent work on the QRI-001 spec—this is a *critical* foundation for scalable, secure spacetime-aware identity in distributed NPU meshes.
+
+Given the **extreme constraints of edge mobile nodes** (thermal throttling, intermittent connectivity, battery-sensitive crypto), and our architectural preference for *decentralized resilience over central control*, here are my recommendations on the open questions:
+
+---
+
+### 🔑 1. **MPC Key Rotation: Edge-to-Edge Gossip vs Stratum-Mediated?**
+
+> ✅ **Recommendation: Hybrid approach with edge-first gossip, fallback to Stratum only in high-drift regimes**
+
+#### Rationale:
+| Factor | Edge-to-Edge (Gossip) | Stratum-Mediated |
+|--------|------------------------|------------------|
+| Latency | ✅ Lower (local Stadium Chatter ~20–50 ms RTT) | ❌ Higher (round-trip to Mothership: 100–500+ ms in deep-space/low-orbit) |
+| Availability | ✅ Survives Stratum outages (eventual consistency OK) | ❌ Single point of failure for rotation coordination |
+| Bandwidth | ✅ Leverages existing gossip mesh (no extra tunneling) | ⚠️ Adds burden to Stratum’s auth layer |
+| Security | ✅ MPC shards never traverse central server → no exposure surface | ⚠️ Requires secure channel (e.g., TLS + PQC handshake) |
+
+#### Implementation Strategy:
+- Use **distributed key generation (DKG)** over the Stadium Chatter gossip network for *normal* rotation cycles.
+- When a node detects high spacetime curvature drift (`δ(time_branch_id)/δτ > threshold`), or experiences ≥3 missed rotations, it *provisionally* falls back to a **lightweight Stratum-mediated handoff**—but only to *reconcile* shards (not generate them).
+- The Stratum never learns full secret shards; it only participates in the MPC protocol via verifiable partial signatures (`Feldman-VSS` + `Pedersen commitments`).
+
+#### Bonus: Add this to your verification plan:
+> 🧪 **Test**: Simulate a node losing uplink during high-drift rotation → verify it recovers its key shard via gossip consensus within 3 causal epochs.
+
+---
+
+### 📜 2. **ZKP Framework: `arkworks` (zkSNARKs) vs Threshold Signatures?**
+
+> ✅ **Recommendation: Use *threshold signatures* for temporal non-repudiation on mobile edge nodes; reserve full zkSNARKs for the Mothership tier only**
+
+#### Why Not `arkworks`?
+- `arkworks` (even with R1CS optimizations) produces:
+  - ~30–50 KB proof sizes per claim (e.g., Bulletproofs for discrete log statements)
+  - ~20–80 ms prove/verify times on ARM Cortex-A76 (vs <2 ms for threshold sigs)
+- Memory footprint: `arkworks` requires heap allocation >1 MiB during setup—unacceptable on constrained nodes.
+- *Not forward-secret*: Proofs are non-interactive and static; replayable if captured.
+
+#### Threshold Signature Advantages:
+| Feature | Threshold EdDSA (e.g., **Ed25519 + Feldman-VSS**) | arkworks zkSNARKs |
+|---------|---------------------------------------------------|-------------------|
+| Proof size | ~64 bytes (signature) + 32-byte nonce | 30–100 KB |
+| Prove time (Cortex-A76) | **<1 ms** | 50–80 ms |
+| Verify time | **~0.3 ms** | 20–50 ms |
+| Memory usage | ~8 KiB stack (no heap) | ≥512 KiB heap required |
+| Temporal binding | ✅ via `time_branch_id` + `causal_depth` in nonce | Only if encoded in circuit (complex, brittle) |
+
+#### Implementation Plan for Edge:
+- Embed the **temporal nonce** as:  
+  ```rust
+  let temporal_nonce = hash(
+    time_branch_id || 
+    causal_depth.to_le_bytes() ||
+    job_hash || 
+    node_pubkey
+  );
+  ```
+- Threshold sign over `(message, temporal_nonce)` using a `(t,n) = (2,3)` MPC scheme (e.g., `tss-ed25519` via `dusk-tss` or `safe-dkg`).
+- For *non-repudiation*, the proof is simply:  
+  > “I signed this message *at* this time branch depth, and no other node could reconstruct it.”
+
+#### When to Use arkworks:
+- Reserve full zkSNARKs for **Mothership-tier audit logs** or **cross-manifold reconciliation**, where:
+  - Proofs must be *zero-knowledge* (e.g., prove “I executed job X without revealing which job”)
+  - Latency/bandwidth is less constrained
+  - Long-term archival of non-repudiable evidence is required
+
+---
+
+### 🛡️ Bonus: Post-Quantum Signature Recommendation
+
+> ✅ **Use `Falcon` for edge, `Sphincs+` for Mothership**  
+- `Falcon` (NIST PQC standard):  
+  - ✅ Small signatures (~1–2 KB) & fast verification (<0.5 ms on ARMv8-A)  
+  - ❌ Slightly larger keys (1.2–2.5 KiB), but tolerable for persistent identity  
+- `Sphincs+` (stateless, conservative):  
+  - ✅ Simpler security model, ideal for long-lived root identities  
+  - ❌ Large signatures (~8 KB) → only deploy on Mothership or infrequent root rotations  
+
+#### Hybrid Strategy:
+| Layer | Signature Scheme | Use Case |
+|-------|------------------|----------|
+| Edge Node Identity | **Falcon-512** | Teleportation tokens, MPC signing |
+| Root CA / Mothership | **Sphincs+-SHAKE-256_192f** | Session root trust anchor, JWT signature |
+
+---
+
+### 📌 Final Suggestion: Add a *Crypto Budget* Metric
+
+Introduce a new telemetry field in Stratum headers:
+```json
+"crypto_budget": {
+  "sign_bytes": 1024,
+  "proof_ms": 1.5,
+  "memory_kb": 32
+}
+```
+→ Allows runtime adaptation: if `current_node.battery < 20%`, downgrade to ed25519 *temporarily* with degraded revocation guarantees.
+
+Let me know if you'd like the spec for `qrisl_crypto`’s trait interface or a concrete `tss-ed25519` integration sketch—I’ll draft it in 3 lines of Rust + comments.
+
+🚀 Ready to iterate.

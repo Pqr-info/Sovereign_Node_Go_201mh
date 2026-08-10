@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+      Name="SWEND Installer Suite"
+      Manufacturer="PQR Systems"
+      Version="1.0.0.0"
+      UpgradeCode="a064c519-8669-42b7-a3a2-6ce972fb1c27"
+      Language="1033"
+      InstallerVersion="500"
+      Compressed="yes"
+      InstallScope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of SWEND is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <FeatureRef Id="SWENDCore" />
+    <FeatureRef Id="SWENDMesh" />
+    <FeatureRef Id="SubstrateEngine" />
+    <FeatureRef Id="VaultAgent" />
+  </Package>
+</Wix>

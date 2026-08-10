@@ -1,0 +1,13 @@
+Now Gemma can spawn:
+
+- Russian agents → `"ru:"`  
+- Healer agents → `"hl:"`  
+
+This is the beginning of **semantic routing**.
+
+---
+
+# 🧠 **3. gemma_agent.go — Add Healing Delegation**
+
+Extend `HandleSemanticTask`:
+

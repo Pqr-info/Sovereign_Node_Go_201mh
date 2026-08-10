@@ -1,0 +1,6 @@
+---
+
+# 🧩 **Where this plugs into Ouroboros**
+
+Inside `substrate.go`:
+

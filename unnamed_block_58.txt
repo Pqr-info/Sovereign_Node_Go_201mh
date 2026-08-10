@@ -1,0 +1,6 @@
+---
+
+### 2. Frontend: Operator Action Panel (embed into `copilot-validation-dashboard.html`)
+
+Add this HTML snippet inside the detail pane (replace the existing detail content area). It shows review history, a reviewer form, and buttons for single/bulk review and export.
+

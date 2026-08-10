@@ -1,0 +1,40 @@
+Let's modify this to refer to Substrate:
+
+
+
+Created At: 2026-07-11T20:24:05Z
+Completed At: 2026-07-11T20:24:05Z
+The following changes were made by the replace_file_content tool to: C:\Users\theal\SWEND-MESH\SUBSTRATE\grpc_node\index.html. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -1140,11 +1140,11 @@
+                     </div>
+                 </div>
+ 
+-                <!-- PQR Marshall Islands DAO Tickets (CockroachDB) -->
+-                <div class="glass-panel">
+-                    <div class="panel-header">
+-                        <div class="panel-title" style="color: var(--cyan);">
+-                            <span>⚖️</span> PQR Sovereign DAO Registrar Tickets (CockroachDB)
++                <!-- PQR Marshall Islands DAO Tickets (Substrate Ledger) -->
++                <div class="glass-panel">
++                    <div class="panel-header">
++                        <div class="panel-title" style="color: var(--cyan);">
++                            <span>⚖️</span> PQR Sovereign DAO Registrar Tickets (Substrate Ledger)
+                         </div>
+                         <button class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem; background: linear-gradient(135deg, var(--cyan), #3b82f6);" onclick="loadPQRTickets()">Refresh PQR Tickets</button>
+                     </div>
+@@ -1151,7 +1151,7 @@
+-                        DAO Registry: Distributed atomic tickets stored globally in CockroachDB (v23.1.13)
++                        DAO Registry: Distributed atomic tickets stored globally in Substrate Ledger
+                     </div>
+                     <div class="ticket-list" id="pqr-tickets-container" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+-                        <div style="text-align:center; padding:1rem; color:var(--text-secondary); font-size:0.9rem;">Connecting to PQR DAO registry...</div>
++                        <div style="text-align:center; padding:1rem; color:var(--text-secondary); font-size:0.9rem;">Connecting to Substrate DAO registry...</div>
+                     </div>
+                 </div>
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+Now let's modify lines 1773 to 1792 of `index.html`:

@@ -1,0 +1,3 @@
+Connecting to Alpaca Live Firehose for symbols: [GOOG GOOGL]
+Started ArbitrageEngine and Alpaca Paper Trading Stream
+Mesh node running on :50051

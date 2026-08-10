@@ -1,0 +1,1 @@
+package main; import ("bufio"; "fmt"; "os"); func main() { fmt.Println("Waiting..."); bufio.NewReader(os.Stdin).ReadBytes('\n') }

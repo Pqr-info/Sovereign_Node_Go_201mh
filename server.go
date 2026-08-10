@@ -14,9 +14,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/thealanphipps-del/pqr/internal/domain"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/db"
-	"github.com/thealanphipps-del/pqr/internal/service"
+	"pqr.info/internal/api/chat"
+	"pqr.info/internal/domain"
+	"pqr.info/internal/infrastructure/db"
+	"pqr.info/internal/service"
 )
 
 const Version = "v1.08"
@@ -94,6 +95,10 @@ func NewServer(svc *service.SwarmService, healing *service.HealingService, auth 
 		api.POST("/chat/gemma", s.handleGemmaChat)
 		api.POST("/chat/lmstudio", s.handleLMStudioChat)
 		api.POST("/chat/swarm", s.handleSwarmChat)
+		
+		chatAPI := chat.NewAPIServer(s.Service)
+		api.POST("/chat/antigravity", gin.WrapF(chatAPI.ChatHandler))
+		
 		api.GET("/health/lmstudio", s.handleLMStudioHealth)
 		api.POST("/agent/:agentID/message", s.handleAgentMessage)
 		api.GET("/agent/:agentID/conversation", s.handleAgentConversation)

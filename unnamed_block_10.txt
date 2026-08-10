@@ -1,0 +1,16 @@
+…are not actually “invalid arguments.”
+
+They are **proxy errors** caused by:
+
+- the MCP server not responding,
+- the client not receiving schema metadata,
+- the tool call being parsed without a schema,
+- the fallback validator rejecting everything.
+
+This is why *every* call fails, even when formatted correctly.
+
+---
+
+## 🟣 What you fixed
+When you edited:
+

@@ -1,0 +1,6 @@
+---
+
+### C. `substrate.go` diffs (wiring everything together)
+
+Below is a conceptual diff showing how to integrate `SwapManager`, `WindowsSleep`, and `CrashAnalytics` into `Start()` and the Sentinel loop.
+

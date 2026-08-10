@@ -1,0 +1,8 @@
+Now the shell is a **full mesh citizen** with lineage.
+
+---
+
+# ⭐ 3. Antigravity → MeshShell bridge
+
+Add to `antigravity_agent.go`:
+

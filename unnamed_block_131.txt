@@ -1,0 +1,4 @@
+### `substrate.go` wiring diffs (entrypoint)
+
+Conceptual diff to wire the narrative engine into startup:
+

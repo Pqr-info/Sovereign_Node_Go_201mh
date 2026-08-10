@@ -1,0 +1,61 @@
+﻿{
+    "timestamp":  "2026-07-12T01:03:35.7461070-05:00",
+    "incident_id":  "incident_2026-07-12T01_03_35_7461070-05_00_4377",
+    "systeminfo":  "\nHost Name:                     TED\nOS Name:                       Microsoft Windows 11 Home\nOS Version:                    10.0.26200 N/A Build 26200\nOS Manufacturer:               Microsoft Corporation\nOS Configuration:              Standalone Workstation\nOS Build Type:                 Multiprocessor Free\nRegistered Owner:              thealanphipps@outlook.com\nRegistered Organization:       N/A\nProduct ID:                    00325-81585-69511-AAOEM\nOriginal Install Date:         2/16/2026, 8:49:48 PM\nSystem Boot Time:              7/9/2026, 9:52:26 AM\nSystem Manufacturer:           Alienware\nSystem Model:                  Alienware Aurora R9\nSystem Type:                   x64-based PC\nProcessor(s):                  1 Processor(s) Installed.\n                               [01]: Intel64 Family 6 Model 158 Stepping 13 GenuineIntel ~3000 Mhz\nBIOS Version:                  Alienware 1.0.14, 9/6/2021\nWindows Directory:             C:\\WINDOWS\nSystem Directory:              C:\\WINDOWS\\system32\nBoot Device:                   \\Device\\HarddiskVolume3\nSystem Locale:                 en-us;English (United States)\nInput Locale:                  en-us;English (United States)\nTime Zone:                     (UTC-06:00) Central Time (US \u0026 Canada)\nTotal Physical Memory:         16,209 MB\nAvailable Physical Memory:     5,677 MB\nVirtual Memory: Max Size:      33,952 MB\nVirtual Memory: Available:     2,898 MB\nVirtual Memory: In Use:        31,054 MB\nPage File Location(s):         C:\\pagefile.sys\nDomain:                        WORKGROUP\nLogon Server:                  \\\\TED\nHotfix(s):                     5 Hotfix(s) Installed.\n                               [01]: KB5087051\n                               [02]: KB5054156\n                               [03]: KB5078674\n                               [04]: KB5094126\n                               [05]: KB5094135\nNetwork Card(s):               3 NIC(s) Installed.\n                               [01]: Qualcomm QCA61x4A 802.11ac Wireless Adapter\n                                     Connection Name: Wi-Fi\n                                     DHCP Enabled:    Yes\n                                     DHCP Server:     192.168.12.1\n                                     IP address(es)\n                                     [01]: 192.168.12.110\n                                     [02]: fe80::7d68:7b54:7a0e:5d3c\n                                     [03]: fdfe:5e6c:2e69:98de:a0e8:49ba:f30c:475e\n                                     [04]: fdfe:5e6c:2e69:98de:8459:91e6:e277:281a\n                                     [05]: fdfe:5e6c:2e69:98de:4d59:90db:80df:a81b\n                                     [06]: 2607:fb91:460d:2667:a0e8:49ba:f30c:475e\n                                     [07]: 2607:fb91:460d:2667:8459:91e6:e277:281a\n                                     [08]: 2607:fb91:460d:2667:4d59:90db:80df:a81b\n                                     [09]: fdfe:5e6c:2e69:98de:abc4:147e:fc1a:7801\n                                     [10]: 2607:fb91:460d:2667:e38a:ea3b:4f6c:a59d\n                               [02]: Killer E2500 Gigabit Ethernet Controller\n                                     Connection Name: Ethernet\n                                     Status:          Media disconnected\n                               [03]: Bluetooth Device (Personal Area Network)\n                                     Connection Name: Bluetooth Network Connection\n                                     Status:          Media disconnected\nVirtualization-based security: Status: Running\n                               Required Security Properties:\n                                     Base Virtualization Support\n                               Available Security Properties:\n                                     Base Virtualization Support\n                                     Secure Boot\n                                     DMA Protection\n                                     SMM Security Mitigations 1.0\n                                     Mode Based Execution Control\n                               Services Configured:\n                               Services Running:\n                               App Control for Business policy: Enforced\n                               App Control for Business user mode policy: Enforced\n                               Security Features Enabled:\nHyper-V Requirements:          A hypervisor has been detected. Features required for Hyper-V will not be displayed.",
+    "wsl_version":  "W\u0000S\u0000L\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00002\u0000.\u00007\u0000.\u00001\u00000\u0000.\u00000\u0000\n\u0000\n\u0000K\u0000e\u0000r\u0000n\u0000e\u0000l\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00006\u0000.\u00001\u00008\u0000.\u00003\u00003\u0000.\u00002\u0000-\u00002\u0000\n\u0000\n\u0000W\u0000S\u0000L\u0000g\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00000\u0000.\u00007\u00003\u0000.\u00002\u0000\n\u0000\n\u0000M\u0000S\u0000R\u0000D\u0000C\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00002\u0000.\u00006\u00006\u00007\u00006\u0000\n\u0000\n\u0000D\u0000i\u0000r\u0000e\u0000c\u0000t\u00003\u0000D\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00006\u00001\u00001\u0000.\u00001\u0000-\u00008\u00001\u00005\u00002\u00008\u00005\u00001\u00001\u0000\n\u0000\n\u0000D\u0000X\u0000C\u0000o\u0000r\u0000e\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00001\u00000\u00000\u0000.\u00001\u0000-\u00002\u00004\u00000\u00003\u00003\u00001\u0000-\u00001\u00004\u00003\u00005\u0000.\u0000g\u0000e\u0000-\u0000r\u0000e\u0000l\u0000e\u0000a\u0000s\u0000e\u0000\n\u0000\n\u0000W\u0000i\u0000n\u0000d\u0000o\u0000w\u0000s\u0000 \u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00002\u00000\u00000\u0000.\u00008\u00006\u00005\u00005\u0000\n\u0000\n\u0000",
+    "wsl_status":  "TIMEOUT",
+    "wsl_dmesg_boot":  "TIMEOUT",
+    "wsl_related_processes":  [
+                                  {
+                                      "ProcessId":  11188,
+                                      "CommandLine":  "\"C:\\WINDOWS\\system32\\wsl.exe\" dmesg --boot"
+                                  },
+                                  {
+                                      "ProcessId":  41252,
+                                      "CommandLine":  "\"C:\\WINDOWS\\system32\\wsl.exe\" dmesg --boot"
+                                  },
+                                  {
+                                      "ProcessId":  36340,
+                                      "CommandLine":  "\"C:\\WINDOWS\\system32\\wsl.exe\" --status"
+                                  },
+                                  {
+                                      "ProcessId":  22140,
+                                      "CommandLine":  "\"C:\\WINDOWS\\system32\\wsl.exe\" --status"
+                                  }
+                              ],
+    "gh_installed":  false,
+    "bundle_files":  [
+                         {
+                             "Name":  "capture_timestamp.txt",
+                             "Length":  44
+                         },
+                         {
+                             "Name":  "emit_incident.ps1",
+                             "Length":  3202
+                         },
+                         {
+                             "Name":  "issue_report.md",
+                             "Length":  2602
+                         },
+                         {
+                             "Name":  "systeminfo.txt",
+                             "Length":  4518
+                         },
+                         {
+                             "Name":  "wsl_dmesg_boot.txt",
+                             "Length":  0
+                         },
+                         {
+                             "Name":  "wsl_status.txt",
+                             "Length":  0
+                         },
+                         {
+                             "Name":  "wsl_status_from_debug_terminal.txt",
+                             "Length":  39338
+                         },
+                         {
+                             "Name":  "wsl_version.txt",
+                             "Length":  467
+                         }
+                     ]
+}

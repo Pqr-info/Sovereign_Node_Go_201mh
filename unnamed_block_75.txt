@@ -1,0 +1,8 @@
+**Note**: For production use, obtain a certificate from a trusted CA and store keys securely.
+
+---
+
+### TLS enabled WebSocket broadcaster server
+
+Save as **`validationWatcherWsAuthTLS.js`**. It reuses the token verification logic from your authenticated broadcaster and binds to HTTPS with `wss://` support.
+

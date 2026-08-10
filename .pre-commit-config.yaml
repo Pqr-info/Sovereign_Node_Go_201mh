@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/GitGuardian/ggshield
+    rev: v1.14.2
+    hooks:
+      - id: ggshield
+        name: ggshield secret scanner
+        description: Scans for hardcoded secrets
+        entry: ggshield secret scan pre-commit
+        language: python

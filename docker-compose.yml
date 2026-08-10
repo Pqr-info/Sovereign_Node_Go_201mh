@@ -13,16 +13,16 @@ services:
       timeout: 5s
       retries: 5
 
-  vault:
-    image: hashicorp/vault:1.13.3
+  vault-adapter:
+    build: ./vault-adapter
     restart: always
-    network_mode: "host"
-    volumes:
-      - ./vault/config:/vault/config:ro
-      - ./vault/data:/vault/data
-    command: server
-    cap_add:
-      - IPC_LOCK
+    ports:
+      - "8200:8200"
+    environment:
+      - SUBSTRATE_RPC_URL=http://172.17.0.1:9933
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+
+
 
   gateway:
     image: nginx:alpine
@@ -46,9 +46,10 @@ services:
     build: ./imagefx
     restart: always
     environment:
-      - GEMINI_API_KEY=AIzaSyCjwR9Y9pN7d033p5Fbwq1yN1tyTacfqjM
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     volumes:
       - ./imagefx/media:/app/media
+      - ./imagefx/anchor_proxy.py:/app/anchor_proxy.py
 
 volumes:
   cockroach_data:

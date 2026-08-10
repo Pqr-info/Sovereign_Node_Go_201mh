@@ -1,0 +1,55 @@
+This is a **multi-modal failure**, and the router will orchestrate:
+
+1. **HealerAgentV2** (safe mutation)  
+2. **Gemma** (semantic triage)  
+3. **Antigravity** (execution + restart)  
+
+---
+
+## 🛠️ **What HealerAgentV2 will do (Mode A safe mutation)**
+
+HealerAgentV2 will:
+
+### **1. Diagnose the failure**
+Extract from the context:
+
+- `mgsh_mcp.py`
+- `grpc_server.py`
+- port `11112`
+- error type: `connection_refused`
+- service: `grpc_node`
+
+### **2. Assess impact**
+HealerAgentV2 will classify this as:
+
+- Python script error  
+- gRPC client misbinding  
+- possible config mismatch  
+- possible resurrection failure  
+
+### **3. Execute safe repairs**
+Mode A allows:
+
+#### **Python script normalization**
+- ensure newline termination  
+- ensure file exists  
+- ensure import lines are intact  
+- ensure no empty file conditions  
+- ensure JSON/YAML configs referenced by MCP exist  
+
+#### **Config patching**
+- check `mesh_ports.json`  
+- check `grpc_node/config.json`  
+- check any port-binding configs  
+- regenerate empty configs  
+
+#### **Log-based inference**
+If the port is wrong or missing, HealerAgentV2 will:
+
+- log the mismatch  
+- request a controlled restart  
+- allow substrate’s resurrection loop to rebind ports  
+
+### **4. Controlled restart**
+HealerAgentV2 will call:
+

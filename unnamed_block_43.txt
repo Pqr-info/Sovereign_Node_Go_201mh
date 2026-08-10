@@ -1,0 +1,3 @@
+curl -X POST http://localhost:8080/ticket \
+  -H "Content-Type: application/json" \
+  -d '{"origin_instance":"orgA","target_instance":"orgB","corridor":"Payments","payload_summary":"Process invoice #1234"}'

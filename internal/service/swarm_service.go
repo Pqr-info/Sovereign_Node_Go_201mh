@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/thealanphipps-del/pqr/internal/domain"
+	"pqr.info/internal/domain"
 )
 
 type SwarmService struct {

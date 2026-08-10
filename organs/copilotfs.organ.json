@@ -1,0 +1,33 @@
+{
+  "name": "CopilotFS",
+  "id": "organ.copilotfs.phase24",
+  "version": "24.0.0",
+  "type": "filesystem",
+  "mount_path": "C:\\pqr.info\\copilotfs",
+  "source": {
+    "kind": "rclone_local",
+    "remote_name": "copilotfs",
+    "bridge_output_path": "C:\\Users\\theal\\copilot-bridge\\output"
+  },
+  "subsystems": [
+    "Governance",
+    "TSRE",
+    "MEV",
+    "Auditor"
+  ],
+  "policies": {
+    "default_priority_tags": [
+      "constitution",
+      "never_drop"
+    ],
+    "decay_profile": "governance_ultra",
+    "allow_compaction": false,
+    "allow_drop": false
+  },
+  "capabilities": {
+    "list_files": true,
+    "read_files": true,
+    "inject_into_context": true,
+    "time_machine_snapshot": true
+  }
+}

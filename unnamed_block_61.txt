@@ -1,0 +1,15 @@
+**Notes**
+
+- Uses `chokidar` for reliable file watching across platforms.  
+- Broadcast payload is intentionally minimal and deterministic.  
+- The server sends only structured JSON messages with `type` and `payload`.  
+- Keep the process local or behind your IDE auth gateway for security.
+
+---
+
+### Client Integration
+
+Add a small WebSocket client to the dashboard to receive live updates and prepend new items to the list.
+
+**Client snippet to embed in copilot-validation-dashboard.html**
+

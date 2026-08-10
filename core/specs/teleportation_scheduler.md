@@ -51,12 +51,12 @@ A teleportation of a Role+Job+Talent triple is:
 The atomic handoff contract follows a strict 6-step sequence:
 1. **Freeze:**
    - Lock Job `J` on `N_src` (no new tickets/inputs).
-   - Run Drift Arbitration Loop → enforce Φ = 0.
+   - Run Drift Arbitration Loop → enforce Φ = 0 (see **DAL Blueprint** in [lpv5d_dal_sysex_pipeline.md](lpv5d_dal_sysex_pipeline.md)).
 2. **Checkpoint:**
    - Commit latest PoUW state (`submit_proof`, `checkpoint`).
    - Extract LPV-5D tensor from Valkey.
 3. **Serialize:**
-   - Run SysEx Matrix Serialization → 39KB snapshot.
+   - Run SysEx Matrix Serialization → 39KB snapshot (see **SysEx Matrix Serialization Pipeline** in [lpv5d_dal_sysex_pipeline.md](lpv5d_dal_sysex_pipeline.md)).
    - Validate 7-bit, checksum, ternary density.
 4. **Transfer:**
    - Stream SysEx over Cloudflare mesh to `N_dst`.

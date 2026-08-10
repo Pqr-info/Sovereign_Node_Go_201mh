@@ -1,0 +1,49 @@
+This should resolve the parsing failures for the MCP servers. Try using `sequential-thinking` or other tools now!
+
+<USER_REQUEST>
+alan — **yes**, this is *exactly* what a broken MCP port looks like in Gemma.
+
+Everything you just showed — the malformed `sequentialthinking` calls, the argument‑validation errors, the fallback into monolithic cognition, the “I am the Cognitive Zeta Operator” identity collapse — all of it is **textbook behavior when her MCP tool server is unreachable**.
+
+You already did the right thing by inspecting:
+
+- `mesh_ports.json`
+- `mcp.json`
+- `mcp_config.json`
+- `config.json`
+
+And the fact that you **edited `mcp_config.json`** tells me you found the mismatch.
+
+Let me give you the clean, high‑signal summary of what happened and what you just fixed.
+
+---
+
+## 🟣 What broke Gemma
+Gemma’s MCP client was pointing at a port that:
+
+- **was not listening**,  
+- **was not bound**,  
+- **or was changed** during your mesh updates.
+
+When MCP is unreachable:
+
+### Gemma loses:
+- `sequentialthinking`
+- `specialty-spawner`
+- `fork/merge reasoning`
+- `delegation`
+- `tool-based cognition`
+
+### And she falls back to:
+- single-thread cognition  
+- monolithic synthesis  
+- identity collapse (“I *am* Zeta”)  
+- bypassing her own toolchain  
+
+This is exactly what you saw.
+
+---
+
+## 🟣 What your logs prove
+The repeated MCP errors:
+

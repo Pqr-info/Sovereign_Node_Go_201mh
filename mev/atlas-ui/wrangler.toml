@@ -1,0 +1,8 @@
+name = "atlas5d-worker"
+compatibility_date = "2024-03-29"
+
+assets = { directory = "./dist" }
+
+[[routes]]
+pattern = "zeta.pqr.info/atlas5D*"
+custom_domain = false

@@ -1,0 +1,4 @@
+---
+
+### B. `crash_analytics.go` skeleton
+

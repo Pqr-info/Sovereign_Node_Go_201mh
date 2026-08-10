@@ -1,0 +1,6 @@
+endpoint: "https://vertex-ai.googleapis.com/v1/projects/my-project/locations/us-central1/publishers/google/models/gemma-4-e4b"
+api_key: "${GEMMA4_API_KEY}"
+vault_path: "secret/data/swend/gemma4"
+vault_key: "api_key"
+timeout_seconds: 30
+max_retries: 3

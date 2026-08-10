@@ -1,0 +1,12 @@
+{
+  "name": "run_recovery",
+  "description": "Execute ATR recovery via the Recovery Worker (seed27, taxonomy, substrate commit).",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "wallet_id": { "type": "string" },
+      "challenge": { "type": "string" }
+    },
+    "required": ["wallet_id", "challenge"]
+  }
+}

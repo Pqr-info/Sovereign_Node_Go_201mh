@@ -1,0 +1,140 @@
+.negotiation-tab-container {
+  padding: 20px;
+  color: #c9d1d9;
+  font-family: 'Inter', sans-serif;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.neg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.neg-header h3 {
+  color: #f97316;
+  margin-top: 0;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.neg-desc {
+  color: #8b949e;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.inline-icon {
+  vertical-align: middle;
+}
+
+.btn-start {
+  background: #f97316;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.btn-start:hover {
+  background: #ea580c;
+}
+
+.neg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.neg-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-left: 4px solid #f97316;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.neg-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.neg-id {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #8b949e;
+}
+
+.neg-status {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-green {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-yellow {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.neg-card-body p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.neg-meta {
+  margin-top: 10px !important;
+  font-size: 0.8rem !important;
+  color: #8b949e;
+}
+
+.neg-card-actions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #30363d;
+}
+
+.btn-resolve {
+  width: 100%;
+  background: #238636;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.btn-resolve:hover {
+  background: #2ea043;
+}

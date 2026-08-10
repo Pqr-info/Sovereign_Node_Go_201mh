@@ -1,0 +1,3 @@
+---
+
+## **VII. MIDI State Machine (SMF Kernel)**

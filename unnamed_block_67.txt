@@ -1,0 +1,6 @@
+---
+
+### Client Integration
+
+**1. Obtain token** (must call issuer endpoint while authenticated)
+

@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/thealanphipps-del/pqr/internal/domain"
-	"github.com/thealanphipps-del/pqr/internal/service"
-	"github.com/thealanphipps-del/pqr/proto"
+	"pqr.info/internal/domain"
+	"pqr.info/internal/service"
+	"pqr.info/proto"
 	"google.golang.org/grpc"
 )
 

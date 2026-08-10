@@ -1,0 +1,9 @@
+{
+  "name": "get_mesh_health",
+  "description": "Return the current mesh health diagnostics from the MeshHealthSidecar.",
+  "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}

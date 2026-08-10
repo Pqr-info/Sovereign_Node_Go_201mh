@@ -2,7 +2,7 @@ use crate::*;
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 use frame_support::traits::{Currency, ExistenceRequirement};
-use sp_runtime::traits::{Saturating, Zero, CheckedMul};
+use sp_runtime::traits::{Saturating, Zero, CheckedMul, Hash};
 use crate::metadata::{NftMetadata, ImageMetadata, ProteinMetadata, NftClass, NftRecord};
 
 pub fn do_mint_image<T: Config>(

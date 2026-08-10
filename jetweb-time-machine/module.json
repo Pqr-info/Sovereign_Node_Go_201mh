@@ -1,0 +1,12 @@
+{
+  "name": "jetweb-time-machine",
+  "version": "1.0.0",
+  "description": "Deterministic temporal protection with a strict Post-Pay recovery funnel.",
+  "author": "Antigravity",
+  "entrypoint": "bin/jetweb-time-machine.exe",
+  "permissions": [
+    "hyper-v",
+    "fs-read",
+    "fs-write"
+  ]
+}

@@ -1,0 +1,6 @@
+---
+
+### Client connection example using TLS
+
+Fetch a short‑lived token from your issuer and connect over `wss://`. The token is passed in the query string or as a subprotocol.
+

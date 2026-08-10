@@ -14,8 +14,31 @@ import hashlib
 
 PORT = 80
 DIRECTORY = '/app/media'
-API_KEY = os.environ.get('GEMINI_API_KEY', '')
+def fetch_substrate_key():
+    try:
+        vault_addr = os.environ.get('VAULT_ADDR', 'http://vault-adapter:8200')
+        vault_token = os.environ.get('VAULT_TOKEN', '')
+        secret_path = os.environ.get('VAULT_SECRET_PATH', 'v1/secret/data/imagefx')
+        
+        req = urllib.request.Request(f'{vault_addr.rstrip("/")}/{secret_path.lstrip("/")}',
+                                     headers={'X-Vault-Token': vault_token})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read())
+            # Vault KV v2 structure: data -> data -> GEMINI_API_KEY
+            return data.get('data', {}).get('data', {}).get('GEMINI_API_KEY', '')
+    except Exception as e:
+        print(f"[VAULT] Emulator fetch failed: {e}")
+        return ''
 
+API_KEY = fetch_substrate_key()
+
+def get_api_key():
+    global API_KEY
+    if not API_KEY:
+        API_KEY = fetch_substrate_key()
+    if not API_KEY:
+        API_KEY = os.environ.get('GEMINI_API_KEY', '')
+    return API_KEY
 HTML_UI = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +60,15 @@ HTML_UI = """<!DOCTYPE html>
 </head>
 <body>
     <h2>ImageFX [HD Flash CodeGen Pipeline]</h2>
-    <input type="text" id="prompt" placeholder="Enter generation prompt..." value="cybernetic dog navigating a decentralized physical mesh network">
+    <input type="text" id="prompt" placeholder="Enter generation prompt..." spellcheck="true" list="promptSuggestions">
+    <datalist id="promptSuggestions">
+        <option value="cybernetic dog navigating a decentralized physical mesh network">
+        <option value="futuristic cityscape at night with neon lights and flying cars">
+        <option value="solarpunk utopia with lush greenery integrating seamlessly into architecture">
+        <option value="ancient ruins discovered on a distant alien planet, atmospheric lighting">
+        <option value="highly detailed portrait of a rogue artificial intelligence in a crystalline matrix">
+        <option value="masterpiece, highly detailed, ultra-sharp, vivid lighting, digital art, intricate textures">
+    </datalist>
     <div class="controls">
         <label for="aspectRatio">Aspect Ratio: </label>
         <select id="aspectRatio">
@@ -257,10 +288,11 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                 "generationConfig": {"responseMimeType": "text/plain"}
             }).encode('utf-8')
             
+            api_key = get_api_key()
             headers = {
-                'Content-Type': 'application/json',
-                'X-goog-api-key': API_KEY
+                'Content-Type': 'application/json'
             }
+            url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={api_key}'
             req = urllib.request.Request(url, data=payload, headers=headers)
             fallback_path = os.path.join(DIRECTORY, 'realphoto-dreamt.jpg')
             success = False
@@ -326,7 +358,8 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            resp_data = {"status": "success", "image": "realphoto-dreamt.jpg"}
+            import time
+            resp_data = {"status": "success", "image": f"realphoto-dreamt.jpg?t={int(time.time())}"}
             if isDebug:
                 resp_data["debugInfo"] = "\n".join(debug_logs)
             self.wfile.write(json.dumps(resp_data).encode('utf-8'))

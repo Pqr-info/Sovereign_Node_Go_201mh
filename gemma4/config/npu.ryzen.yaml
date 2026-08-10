@@ -1,0 +1,7 @@
+backend: directml  # or custom NPU runtime (e.g., ONNX Runtime with QNN/XDNA execution provider)
+batch_size: 1
+optimized_ops:
+  use_fp16: true
+  enable_kernel_fusion: true
+device_selection:
+  npu_friendly_name: "AMD XDNA NPU"

@@ -3,7 +3,7 @@ package ui
 import (
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/pqr-info/pqr-info-swarm/cockpit/internal/config"
+	"pqr.info/cockpit/internal/config"
 )
 
 type Styles struct {

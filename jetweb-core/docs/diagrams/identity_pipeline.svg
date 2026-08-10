@@ -1,0 +1,45 @@
+<svg width="760" height="420" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: bold 20px sans-serif; fill: #333; }
+    .label { font: 14px sans-serif; fill: #333; }
+    .box { fill: #f7f7f7; stroke: #444; stroke-width: 1.5; rx: 6; }
+    .arrow { stroke: #444; stroke-width: 2; marker-end: url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7"
+            refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#444"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="40" class="title">Identity5 → RecoveryMatrix Pipeline</text>
+
+  <!-- Identity5 block -->
+  <rect x="40" y="80" width="200" height="200" class="box"/>
+  <text x="60" y="110" class="label">Identity5</text>
+  <text x="60" y="140" class="label">PSI</text>
+  <text x="60" y="160" class="label">SFI</text>
+  <text x="60" y="180" class="label">TSI</text>
+  <text x="60" y="200" class="label">QII</text>
+  <text x="60" y="220" class="label">QRI</text>
+
+  <!-- Arrow -->
+  <line x1="260" y1="180" x2="360" y2="180" class="arrow"/>
+
+  <!-- RecoveryMatrix block -->
+  <rect x="360" y="80" width="200" height="200" class="box"/>
+  <text x="380" y="110" class="label">RecoveryMatrix</text>
+  <text x="380" y="140" class="label">K1</text>
+  <text x="380" y="160" class="label">K2</text>
+  <text x="380" y="180" class="label">K3</text>
+  <text x="380" y="200" class="label">K4</text>
+  <text x="380" y="220" class="label">K5</text>
+
+  <!-- Arrow to SovereignKey -->
+  <line x1="560" y1="180" x2="660" y2="180" class="arrow"/>
+
+  <!-- SovereignKey block -->
+  <rect x="660" y="140" width="80" height="80" class="box"/>
+  <text x="670" y="180" class="label">SK</text>
+</svg>

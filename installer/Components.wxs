@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="INSTALLFOLDER" Name="SWEND">
+        <Directory Id="SwendCoreDir" Name="swend">
+          <Directory Id="SwendConfigDir" Name="config" />
+        </Directory>
+        <Directory Id="MeshDir" Name="mesh" />
+        <Directory Id="SubstrateDir" Name="substrate" />
+        <Directory Id="VaultDir" Name="vault" />
+        <Directory Id="Gemma4Dir" Name="gemma4">
+          <Directory Id="Gemma4ConfigDir" Name="config" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <ComponentGroup Id="SWENDCoreFilesGroup">
+      <Component Id="SWENDCoreFiles" Guid="f08573d8-12c8-47fb-a1e3-26a9b1fc6822" Directory="SwendCoreDir">
+        <File Id="swend_exe" Source="..\swend.exe" KeyPath="yes" />
+        <File Id="swend_service_ps1" Source="..\service\SWENDService.ps1" />
+        <File Id="swend_yaml" Source="..\gemma2.json" /> <!-- Placeholder config -->
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="MeshFilesGroup">
+      <Component Id="MeshFiles" Guid="d859cd3e-2b72-47a3-ab8c-12b6cd236892" Directory="MeshDir">
+        <!-- Assuming swend-mesh.exe exists in SWEND-MESH directory -->
+        <File Id="swend_mesh_exe" Source="..\..\SWEND-MESH\swend-mesh.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="SubstrateFilesGroup">
+      <Component Id="SubstrateFiles" Guid="b8593de2-1f3a-48da-ab7e-128a8dcf8c09" Directory="SubstrateDir">
+        <File Id="substrate27_exe" Source="..\..\SWEND-MESH\SUBSTRATE\substrate27" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="VaultAgentFilesGroup">
+      <Component Id="VaultAgentFiles" Guid="c0a4e3df-812a-43d9-a78b-ce19f2a74c22" Directory="VaultDir">
+        <File Id="vault_agent_hcl" Source="..\vault-agent.hcl" KeyPath="yes" />
+        <File Id="swend_ctmpl" Source="..\vault\swend.ctmpl" />
+        <File Id="vault_agent_service_ps1" Source="..\service\VaultAgentService.ps1" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Gemma4CoreFilesGroup">
+      <Component Id="Gemma4CoreFiles" Guid="e859fd2e-1c7b-4a3d-b8c2-12e34fa96b82" Directory="Gemma4Dir">
+        <File Id="gemma4_exe" Source="..\gemma4\gemma4-e4b.exe" KeyPath="yes" />
+        <File Id="gemma4_service_ps1" Source="..\service\gemma4-service.ps1" />
+        <File Id="gemma4_e4b_yaml" Source="..\gemma4\config\gemma4-e4b.yaml" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Gemma4LocalGPUConfigGroup">
+      <Component Id="Gemma4LocalGPUConfig" Guid="a859cd3e-2b72-47a3-ab8c-12b6cd236893" Directory="Gemma4ConfigDir">
+        <File Id="gpu_local_yaml" Source="..\gemma4\config\gpu.local.yaml" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Gemma4RyzenNPUConfigGroup">
+      <Component Id="Gemma4RyzenNPUConfig" Guid="b8593de2-1f3a-48da-ab7e-128a8dcf8c10" Directory="Gemma4ConfigDir">
+        <File Id="npu_ryzen_yaml" Source="..\gemma4\config\npu.ryzen.yaml" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Gemma4CloudConfigGroup">
+      <Component Id="Gemma4CloudConfig" Guid="c0a4e3df-812a-43d9-a78b-ce19f2a74c23" Directory="Gemma4ConfigDir">
+        <File Id="cloud_yaml" Source="..\gemma4\config\cloud.yaml" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Gemma4SnapdragonConfigGroup">
+      <Component Id="Gemma4SnapdragonConfig" Guid="d0a4e3df-812a-43d9-a78b-ce19f2a74c24" Directory="Gemma4ConfigDir">
+        <File Id="snapdragon_yaml" Source="..\gemma4\config\snapdragon.yaml" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

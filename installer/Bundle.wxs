@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Bundle Name="SWEND Installer Suite"
+          Version="1.0.0.0"
+          Manufacturer="PQR Systems"
+          UpgradeCode="e084c519-8669-42b7-a3a2-7ce972fb1c27">
+
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense" />
+
+    <Chain>
+      <MsiPackage SourceFile="SWENDInstaller.msi" />
+    </Chain>
+  </Bundle>
+</Wix>

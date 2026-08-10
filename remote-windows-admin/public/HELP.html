@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gateway Operator Manual & Help</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --panel-bg: rgba(13, 17, 28, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --neon-cyan: #0df;
+      --neon-gold: #ffb700;
+      --neon-green: #39ff14;
+      --neon-red: #ff3131;
+      --text-main: #f0f4f9;
+      --text-muted: #8b9bb4;
+      --glow-cyan: 0 0 15px rgba(0, 221, 255, 0.35);
+      --font-display: 'Outfit', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 221, 255, 0.04) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(255, 183, 0, 0.04) 0px, transparent 50%);
+      color: var(--text-main);
+      font-family: var(--font-display);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 8fr 4fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    header {
+      backdrop-filter: blur(10px);
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+      grid-column: span 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #fff, var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .card {
+      backdrop-filter: blur(12px);
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--neon-cyan);
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 15px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background: rgba(0,0,0,0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--neon-gold);
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    pre {
+      font-family: var(--font-mono);
+      background: #020408;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+      color: var(--neon-green);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .state-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+      margin-bottom: 10px;
+    }
+
+    .state-item span:first-child {
+      color: var(--text-muted);
+    }
+
+    .state-item span:last-child {
+      font-family: var(--font-mono);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    .badge-safe {
+      background: rgba(57, 255, 20, 0.1);
+      color: var(--neon-green);
+      border: 1px solid rgba(57, 255, 20, 0.2);
+    }
+
+    .badge-raw {
+      background: rgba(255, 49, 49, 0.1);
+      color: var(--neon-red);
+      border: 1px solid rgba(255, 49, 49, 0.2);
+    }
+
+    .method-badge {
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 8px;
+      font-family: var(--font-mono);
+    }
+
+    .method-get { background: rgba(0, 221, 255, 0.15); color: var(--neon-cyan); }
+    .method-post { background: rgba(57, 255, 20, 0.15); color: var(--neon-green); }
+
+    .warning-box {
+      border-left: 4px solid var(--neon-red);
+      background: rgba(255, 49, 49, 0.05);
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+    }
+
+    .warning-box p {
+      margin-bottom: 0;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div>
+        <div class="brand-title">Operator Manual</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 5px;">
+          Sovereign Remote Windows Admin Gateway Suite
+        </div>
+      </div>
+      <a href="/" class="btn" style="text-decoration: none; display: inline-block; border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">Portal Dashboard</a>
+    </header>
+
+    <!-- Main Manual Content -->
+    <main>
+      <!-- Lifecycle and Setup -->
+      <section class="card">
+        <h2>🛠️ Installation & Lifecycle</h2>
+        <p>
+          The gateway is managed by a native PowerShell wrapper script supporting clean install, registration, execution, and removal.
+        </p>
+        
+        <h3>1. Install as elevated Startup Task</h3>
+        <p>Deploys files to <code>C:\Program Files\RemoteWindowsAdmin</code>, opens port 3000 in the firewall, and registers a startup action executing as <code>SYSTEM</code> on system boot:</p>
+        <pre># Run as Administrator
+.\setup.ps1 -Action Install -Passphrase "MySecretPassphrase!" -Port 3000 -SecurityMode safe</pre>
+
+        <h3>2. Diagnostics and Status checks</h3>
+        <p>Checks the Task Scheduler state, current active node.exe PIDs, and displays trailing server log outputs:</p>
+        <pre>.\setup.ps1 -Action Status</pre>
+
+        <h3>3. Other Actions</h3>
+        <ul>
+          <li><code>.\setup.ps1 -Action Start</code>: Boots up the background task.</li>
+          <li><code>.\setup.ps1 -Action Stop</code>: Safely halts the gateway tasks and terminates associated processes.</li>
+          <li><code>.\setup.ps1 -Action Uninstall</code>: Clears scheduled task, shuts down active processes, removes firewall rules, and deletes installation files.</li>
+        </ul>
+      </section>
+
+      <!-- Security Guardrails -->
+      <section class="card">
+        <h2>🛡️ Privileged Access Guardrails</h2>
+        <p>
+          The gateway enforces strict sandboxing to isolate administrative actions and prevent remote execution hijack:
+        </p>
+        
+        <h3>Token Authentication (HMAC-SHA256)</h3>
+        <p>
+          Instead of hardcoded session tokens, users authenticate by posting their passphrase to <code>/api/auth/token</code> to retrieve a JWT session token signed using a random key generated on boot. Tokens automatically expire after 30 minutes.
+        </p>
+
+        <h3>Safe Mode Whitelisting</h3>
+        <p>
+          Under <code>safe</code> mode, command execution block accepts ONLY Verb-Noun matches present in the allowed list:
+        </p>
+        <ul>
+          <li><strong>System Discovery</strong>: <code>Get-Service</code>, <code>Get-Process</code>, <code>Get-Volume</code>, <code>Get-Date</code>, <code>Get-CimInstance</code>, <code>Get-EventLog</code></li>
+          <li><strong>Controls</strong>: <code>Start-Service</code>, <code>Stop-Service</code>, <code>Restart-Service</code>, <code>Write-Output</code></li>
+          <li><strong>Formatting</strong>: <code>Select-Object</code>, <code>Where-Object</code>, <code>Measure-Object</code>, <code>Sort-Object</code>, <code>ConvertTo-Json</code>, <code>Out-String</code></li>
+        </ul>
+
+        <div class="warning-box">
+          <p>
+            <strong>Access Restrictions</strong>: Commands utilizing execution redirections, pipelines like <code>Invoke-Expression (iex)</code>, <code>Start-Process</code>, or calling shell environments (<code>cmd.exe</code>, <code>bash</code>, <code>wsl</code>) will be immediately blocked and return <code>ERR_BLOCKED_BY_GUARDRAIL</code>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Screenshot diagnostics -->
+      <section class="card">
+        <h2>📸 Screenshot Visual Diagnostics</h2>
+        <p>
+          The gateway uses <code>System.Windows.Forms</code> to capture the primary desktop display as a PNG stream.
+        </p>
+        <h3>Known Screenshot Failure Modes:</h3>
+        <ul>
+          <li><strong>Timeout Exceeded (ERR_SCREENSHOT_TIMEOUT)</strong>: Triggered if Windows desktop rendering hangs or takes longer than the 3-second timeout limit.</li>
+          <li><strong>Display Not Ready</strong>: Occurs when no physical monitor is attached or during early OS boot phase before a GUI session starts.</li>
+          <li><strong>Permission Denied</strong>: Occurs if the Windows service does not run with desktop interaction rights (scheduled startup tasks running as SYSTEM natively have desktop query permissions).</li>
+        </ul>
+      </section>
+
+      <!-- API Reference -->
+      <section class="card">
+        <h2>🌐 API Schema Reference & Examples</h2>
+
+        <h3>1. Authentication Handshake</h3>
+        <p><span class="method-badge method-post">POST</span><code>/api/auth/token</code></p>
+        <p>Exchange passphrase for a token.</p>
+        <pre># Request payload:
+{ "passphrase": "SovereignAdminSecret2026!" }
+
+# Response payload:
+{
+  "token": "eyJhbGciOiJIUzI1...signature",
+  "expires_in": 1800
+}</pre>
+
+        <h3>2. Blocked Guardrail Response</h3>
+        <p><span class="method-badge method-post">POST</span><code>/api/execute</code></p>
+        <p>Attempting to run a blocked cmdlet (e.g. <code>Remove-Item</code>) returns a standardized error envelope:</p>
+        <pre># Response payload (403 Forbidden):
+{
+  "error_code": "ERR_BLOCKED_BY_GUARDRAIL",
+  "message": "PowerShell block blocked by sandbox guardrails. Input contains unauthorized cmdlets or redirect operators.",
+  "details": {
+    "command": "Remove-Item C:\\test.txt",
+    "mode": "safe"
+  },
+  "trace_id": "8de209297953bac3",
+  "timestamp": "2026-07-15T17:25:41.360Z"
+}</pre>
+      </section>
+    </main>
+
+    <!-- Living Document Sidebar -->
+    <div class="sidebar">
+      <div class="card">
+        <h2>Live System State</h2>
+        <div id="liveStateContainer">
+          <div class="state-item">
+            <span>Server Connection</span>
+            <span id="stateConn" style="color: var(--neon-red);">OFFLINE</span>
+          </div>
+          <div class="state-item">
+            <span>Security Mode</span>
+            <span id="stateMode">-</span>
+          </div>
+          <div class="state-item">
+            <span>Port Binding</span>
+            <span id="statePort">-</span>
+          </div>
+          <div class="state-item">
+            <span>Uptime</span>
+            <span id="stateUptime">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Suite Diagnostics</h2>
+        <p style="font-size: 0.85rem; margin-bottom: 10px;">
+          For diagnostics logs, inspect:
+        </p>
+        <pre style="padding: 10px; font-size: 0.75rem; margin-bottom: 0;">C:\Program Files\RemoteWindowsAdmin\server.log</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function checkLiveState() {
+      try {
+        const res = await fetch('/api/capabilities');
+        const cap = await res.json();
+        
+        document.getElementById('stateConn').textContent = 'ONLINE';
+        document.getElementById('stateConn').style.color = 'var(--neon-green)';
+        
+        const modeBadge = cap.security_mode === 'safe' 
+          ? '<span class="badge badge-safe">Safe</span>' 
+          : '<span class="badge badge-raw">Raw</span>';
+        document.getElementById('stateMode').innerHTML = modeBadge;
+        document.getElementById('statePort').textContent = window.location.port || '80/443';
+
+        // Check uptime
+        const diagRes = await fetch('/api/diagnostics', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken')}` }
+        });
+        if (diagRes.ok) {
+          const diag = await diagRes.json();
+          const sec = diag.uptime_seconds;
+          const days = Math.floor(sec / 86400);
+          const hours = Math.floor((sec % 86400) / 3600);
+          const minutes = Math.floor((sec % 3600) / 60);
+          document.getElementById('stateUptime').textContent = `${days}d ${hours}h ${minutes}m`;
+        } else {
+          document.getElementById('stateUptime').textContent = 'Requires Auth';
+        }
+      } catch (err) {
+        document.getElementById('stateConn').textContent = 'OFFLINE';
+        document.getElementById('stateConn').style.color = 'var(--neon-red)';
+        document.getElementById('stateMode').textContent = '-';
+        document.getElementById('statePort').textContent = '-';
+        document.getElementById('stateUptime').textContent = '-';
+      }
+    }
+
+    window.onload = () => {
+      checkLiveState();
+      setInterval(checkLiveState, 10000);
+    };
+  </script>
+</body>
+</html>

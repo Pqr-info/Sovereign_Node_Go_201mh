@@ -1,0 +1,15 @@
+{
+  "plan": "High-level description of what will be done.",
+  "steps": [
+    {
+      "id": "string",
+      "type": "navigate | click | type | extract | wait | custom",
+      "selector": "CSS selector or null",
+      "value": "string or null",
+      "metadata": {
+        "description": "string",
+        "confidence": "0.0 - 1.0"
+      }
+    }
+  ]
+}

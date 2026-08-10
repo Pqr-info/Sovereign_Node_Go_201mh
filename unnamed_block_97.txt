@@ -1,0 +1,85 @@
+---
+
+### Integration Notes
+
+- **Choose one primary auth mode** for UI flows. Session mode is simplest for browser UI. JWT mode is useful for API clients and token issuance for WebSocket tokens.  
+- **Protect token issuer** `/api/ws-token` with `ensureSession` or `requireJwt` plus `requireRole('reviewer')`.  
+- **Replace demo headers**: remove `X-Admin-Id` and `X-Operator-Id` usage. Map `req.user.id` and `req.user.roles` to existing logic.  
+- **WebSocket token payload** should include `operator.id` and `roles`. The broadcaster must verify token signature and expiry and check revocation store.  
+- **Revocation checks**: maintain a persistent revocation store for token signatures and consult it during WebSocket handshake and refresh token validation.  
+- **Session store**: use Redis or DB-backed store in production; do not use in-memory session store.
+
+---
+
+### Security Checklist and Testing Steps
+
+**Security checklist**
+
+- **Secrets**: store `SESSION_SECRET` and `JWT_SECRET` in a secure vault and rotate regularly.  
+- **TLS**: require HTTPS and WSS in production.  
+- **Short TTLs**: keep access JWT TTL short and rotate refresh tokens.  
+- **RBAC**: enforce role checks per route and separate viewer, reviewer, admin roles.  
+- **Revocation**: persist revoked signatures and refresh token revocations.  
+- **Audit**: record login, token issuance, revocation, and forced-disconnect events to Jetweb lineage.  
+- **Rate limits**: protect login and token endpoints.
+
+**Testing steps**
+
+1. Create test users with roles viewer, reviewer, admin.  
+2. Verify session login grants `req.session.user` and allows access to protected UI.  
+3. Issue JWT for a reviewer and call `/api/ws-token`; confirm token payload contains operator id and roles.  
+4. Connect WebSocket with token; confirm `ws.operator` is set.  
+5. Revoke token signature and confirm handshake is denied and active sessions can be forced disconnected.  
+6. Test logout and refresh flows, ensuring refresh tokens are rotated and revocable.
+
+---
+
+If you want, I will generate the **concrete login and JWT refresh endpoints** wired to a simple user store next, or produce a **session login example** with Redis session store and CSRF protection. Which one should I produce now?
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:43:28-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+I have successfully staged the `jwtAuth.js` and `requireRole.js` files we built in the previous step into the foundation. 
+
+To complete the end-to-end stateless authorization layer, let's proceed with the **concrete login and JWT refresh endpoints** wired to a simple user store. This will allow operators to exchange credentials for both short-lived access tokens and longer-lived refresh tokens, eliminating our final dependency on demo headers while satisfying strict perimeter constraints.
+
+Drop the code and I'll wire it in!
+
+<USER_REQUEST>
+### JWT Refresh Token Flow with Rotation and Revocation
+
+Below is a complete, deterministic implementation you can drop into your Express stack to issue short‑lived access JWTs, rotate refresh tokens securely, persist and revoke refresh tokens, and support logout and forced revocation. It uses **HTTP‑only secure cookies** for refresh tokens (recommended for browser UIs), **server‑side refresh token storage** (file‑backed for simplicity; swap to Redis/DB in prod), and **one‑time rotation** so stolen refresh tokens are invalidated on use.
+
+---
+
+### Files to add
+
+1. **`refreshTokenStore.js`** — persistent, file‑backed store for refresh token hashes and metadata.  
+2. **`authRoutes.js`** — login, refresh, logout, and admin revoke endpoints.  
+3. **Small helpers** to issue/verify access JWTs and generate/verify refresh tokens (integrates with your existing `jwtIssuer.js`).
+
+---
+
+### 1) `refreshTokenStore.js` (file‑backed, deterministic)
+

@@ -313,19 +313,9 @@ impl pallet_marketplace::Config for Runtime {
 	type MarketplaceFeeBps = MarketplaceFeeBps;
 	type TreasuryAccount = TreasuryAccount;
 }
-impl frame_system::offchain::SendTransactionTypes<pallet_5d_hcp::Call<Runtime>> for Runtime { 
-	type Extrinsic = UncheckedExtrinsic; 
-	type OverarchingCall = RuntimeCall; 
-}
 impl frame_system::offchain::CreateInherent<pallet_5d_hcp::Call<Runtime>> for Runtime {
-    fn create_inherent(call: pallet_5d_hcp::Call<Runtime>) -> Self::Extrinsic {
-        UncheckedExtrinsic::new_unsigned(call.into())
-    }
-    fn is_inherent(call: &Self::Extrinsic) -> bool {
-        match call.function {
-            RuntimeCall::Hcp(_) => true,
-            _ => false,
-        }
+    fn create_inherent(call: RuntimeCall) -> Self::Extrinsic {
+        UncheckedExtrinsic::new_unsigned(call)
     }
 }
 

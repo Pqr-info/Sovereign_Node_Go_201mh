@@ -1,0 +1,15 @@
+{
+  "agent": "ZETA",
+  "window_id": "ctx_2026-08-05T20-38-53-285Z_ZETA",
+  "sources": {
+    "geminifs": [],
+    "copilotfs": [],
+    "fusion": []
+  },
+  "decay_profile": "governance_ultra",
+  "priority_tags": [
+    "constitution",
+    "mesh_context"
+  ],
+  "expires_at": "2026-08-05T20:58:53.285Z"
+}

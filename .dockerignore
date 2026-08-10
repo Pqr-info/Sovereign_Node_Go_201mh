@@ -1,0 +1,14 @@
+.git
+.venv
+__pycache__
+*.exe
+logs
+pqr-extension/node_modules
+pqr-extension/out
+node_modules
+dist
+wsl_repro_bundle
+s25_backup
+*.log
+*.rtf
+mev

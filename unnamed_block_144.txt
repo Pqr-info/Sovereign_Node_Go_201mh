@@ -1,0 +1,12 @@
+---
+
+# ✅ **2. gemma_backchannel.go — Private Message Bus**
+
+Gemma needs a private channel that:
+
+- Antigravity cannot access  
+- Copilot cannot access  
+- Only Gemma and her specialists can use  
+
+Drop this into `SUBSTRATE/gemma_backchannel.go`:
+

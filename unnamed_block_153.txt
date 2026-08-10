@@ -1,0 +1,9 @@
+CrashAnalytics → Antigravity → Gemma → HealerAgent  
+This is the **autonomous healing reflex arc**.
+
+---
+
+# 🧠 **5. substrate.go — Controlled Restart Hook**
+
+Add a simple hook:
+

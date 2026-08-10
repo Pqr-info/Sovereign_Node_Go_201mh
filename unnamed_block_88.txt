@@ -1,0 +1,6 @@
+---
+
+### Role Enforcement
+
+**File** `requireRole.js`
+

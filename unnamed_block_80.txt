@@ -1,0 +1,18 @@
+**Integration note**
+- Ensure `validationWatcherWsAuth.js` and `adminRevocationRoutes.js` run in the same Node process or expose an IPC/HTTP admin endpoint from the broadcaster process that the admin route can call. If the broadcaster runs in a separate process, implement a small internal admin HTTP endpoint in the broadcaster that accepts authenticated requests to call `forceDisconnectBySignature`.
+
+---
+
+### Forced disconnect behavior and codes
+
+- **Close code**: `4001` used to indicate token revocation or forced disconnect.  
+- **Close reason**: `token_revoked` or admin-provided reason string.  
+- **Return payload**: admin endpoint returns a deterministic `result` object listing closed connections and any errors.  
+- **Audit**: admin action is recorded via `recordEvent` with `meta.action = force_disconnect` and `meta.signature` for lineage.
+
+---
+
+### Forced disconnect when broadcaster runs in separate process
+
+If the broadcaster runs in a separate process, add a small internal admin HTTP endpoint to the broadcaster process and secure it with a local-only token or mutual TLS. Example snippet to add inside `validationWatcherWsAuth.js`:
+

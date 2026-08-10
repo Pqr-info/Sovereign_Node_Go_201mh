@@ -1,0 +1,8 @@
+Now the organism wakes up **as a collective**, not as a single agent.
+
+---
+
+# **D. EntryPoint Integration for Gemma & Copilot Receiver**
+
+Wherever Gemma boots (e.g., `gemma_backend.go`):
+

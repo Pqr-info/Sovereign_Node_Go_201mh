@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/pqr-info/swend/proto";
+
+service ManifestSync {
+    rpc PushManifest (ManifestBlob) returns (Status);
+    rpc PullManifest (Empty) returns (ManifestBlob);
+    rpc NotifyUpdate (ManifestUpdate) returns (Status);
+}
+
+message Empty {}
+
+message Status {
+    bool success = 1;
+    string message = 2;
+}
+
+message ManifestBlob {
+    string version = 1;
+    string hash = 2;
+    bytes data = 3;
+}
+
+message ManifestUpdate {
+    string version = 1;
+    string hash = 2;
+    string sender_node_id = 3;
+}

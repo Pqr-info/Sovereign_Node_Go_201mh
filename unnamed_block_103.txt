@@ -1,0 +1,6 @@
+---
+
+### Mounting and integration
+
+Add to your main server file (example `validationDashboardServer.js`):
+

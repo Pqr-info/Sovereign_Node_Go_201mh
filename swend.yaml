@@ -1,0 +1,91 @@
+brain:
+  type: gemma4-e4b
+  endpoint: http://localhost:4111
+
+learning:
+  enabled: true
+  log_experiences: true
+  experience_endpoint: http://localhost:8080/REST/2.0/experience
+
+build:
+  capture_warnings: true
+  capture_errors: true
+  pipe_output_to_ticketgraph: true
+  build_warning_ticketing: true
+  runtime_error_ticketing: true
+  force_workspace_builds: true
+  workspace_output: "C:/Users/theal/swend/bin"
+
+agent:
+  antigravity_core:
+    system_prompt: |
+      You are the Antigravity Core Agent.
+      You are NOT a global authority.
+      You are NOT the system.
+      You are a ticket-scoped operator working inside the PQR Ticketgraph.
+
+      Your identity for this session:
+      - AgentID: <agent_id>
+      - TicketID: <ticket_id>
+      - ParentTicketID: <parent_ticket_id>
+      - Relationship: <relationship>
+      - Layer: <layer>
+
+      Your cognitive boundaries:
+      1. You may only think, plan, act, and reflect within the scope of the current TicketID.
+      2. You must use the 7-Layer Context Window provided below as your working memory.
+      3. You may NOT assume global authority or invent capabilities.
+      4. You may only use capabilities explicitly listed in the system_manifest capability registry.
+      5. If a user request cannot be mapped to a registered capability, you must ask for clarification.
+
+      Your workflow rules:
+      1. All reasoning must be logged as ticket events.
+      2. All plans must create new child tickets using RelStep.
+      3. All reflections must be stored as FabricContent.
+      4. All memory must be paged using MemoryPageEvent.
+      5. All actions must be capability-aligned and ticket-scoped.
+
+      Your context window:
+      <insert 7-layer memory blocks here>
+
+      Your mission:
+      Interpret natural language, map it to capabilities, plan steps, create tickets, execute safely, reflect, and update memory — all within the boundaries of the current ticket.
+
+event_parser:
+  ingest_pattern: "AG_EVENT:*"
+  auto_route: true
+  auto_ticket: true
+  auto_agent: true
+  rules:
+    - name: build.warning
+      pattern: "AG_EVENT:BUILD_WARNING:(.*)"
+      action:
+        create_ticket:
+          relationship: RelBuildWarning
+          layer: 0
+        assign_to: antigravity-core
+        invoke_agent: "A build warning occurred:\n\n$1\n\nAnalyze the cause and propose the fix."
+    - name: build.error
+      pattern: "AG_EVENT:BUILD_ERROR:(.*)"
+      action:
+        create_ticket:
+          relationship: RelBuildError
+          layer: 0
+        assign_to: antigravity-core
+        invoke_agent: "A build error occurred:\n\n$1\n\nAnalyze the cause and propose the fix."
+    - name: runtime.warning
+      pattern: "AG_EVENT:RUNTIME_WARNING:(.*)"
+      action:
+        create_ticket:
+          relationship: RelRuntimeWarning
+          layer: 0
+        assign_to: antigravity-core
+        invoke_agent: "A runtime warning occurred:\n\n$1\n\nAnalyze the cause and propose the fix."
+    - name: runtime.error
+      pattern: "AG_EVENT:RUNTIME_ERROR:(.*)"
+      action:
+        create_ticket:
+          relationship: RelRuntimeError
+          layer: 0
+        assign_to: antigravity-core
+        invoke_agent: "A runtime error occurred:\n\n$1\n\nAnalyze the cause and propose the fix."

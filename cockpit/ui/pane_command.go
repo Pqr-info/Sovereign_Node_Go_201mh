@@ -4,7 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/pqr-info/pqr-info-swarm/cockpit/internal/adapter"
+	"pqr.info/cockpit/internal/adapter"
 )
 
 type CommandPaneModel struct {

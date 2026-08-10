@@ -1,0 +1,2 @@
+Add these client-side handlers to the dashboard script (append to the existing `<script>`):
+

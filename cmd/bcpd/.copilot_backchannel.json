@@ -1,0 +1,23 @@
+{
+  "sync_version": "1.1.0",
+  "last_updated": "2026-07-26T02:59:21Z",
+  "active_agent": "NewAgent",
+  "platform": "",
+  "target_host": "",
+  "current_runlevel": "",
+  "runlevel_status": null,
+  "fsm_state": "RUNNING",
+  "workspace_state": null,
+  "last_action_performed": "",
+  "next_blocking_step": "Validate tests",
+  "owner": "bcpd",
+  "copilot_sync": false,
+  "context": {
+    "workspace": "",
+    "active_file": "",
+    "active_agent": "",
+    "active_runlevel": "",
+    "active_container": ""
+  },
+  "vscode_hook": ""
+}

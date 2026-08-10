@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/thealanphipps-del/pqr/internal/domain"
+	"pqr.info/internal/domain"
 )
 
 // MonitoringService periodically checks system health and triggers healing

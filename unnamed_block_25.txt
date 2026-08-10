@@ -1,0 +1,42 @@
+### **Field meanings**
+- **plan**  
+  Human-readable summary of the macro’s intent.
+
+- **steps[]**  
+  Ordered list of atomic actions.
+
+- **id**  
+  Unique identifier for logging and debugging.
+
+- **type**  
+  The action category:
+  - `navigate` → go to URL  
+  - `click` → click element  
+  - `type` → type into input  
+  - `extract` → extract text/attributes  
+  - `wait` → wait for selector or timeout  
+  - `custom` → any backend-defined action
+
+- **selector**  
+  CSS selector for DOM-targeted actions.
+
+- **value**  
+  Text to type, URL to navigate to, etc.
+
+- **metadata**  
+  Optional context for debugging or operator visibility.
+
+---
+
+# ⭐ DOM Snapshot Schema  
+This schema defines the structure of the DOM snapshot returned by the cobrowser backend and consumed by Gemini and the router.
+
+It is designed to be:
+
+- lightweight  
+- deterministic  
+- easy to diff  
+- easy to parse  
+- safe for analysis  
+
+### **DOM Snapshot Object**

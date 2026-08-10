@@ -1,0 +1,9 @@
+{
+  "name": "get_smf_output",
+  "description": "Return the current SMF symbolic output from the OsSparkKernel.",
+  "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}

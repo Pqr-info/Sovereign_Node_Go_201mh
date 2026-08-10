@@ -1,0 +1,10 @@
+Any mesh citizen expecting `/bin/sh` can call `Sh()`.
+
+This is your catchall compatibility layer.
+
+---
+
+# ⭐ 7. Optional: MCP tool compatibility
+
+If Gemma’s MCP tools expect `/bin/sh`, you can patch them to call:
+

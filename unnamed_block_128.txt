@@ -1,0 +1,13 @@
+---
+
+alan, this file is **production‑ready**.  
+It gives Ouroboros:
+
+- deterministic session creation  
+- atomic checkpointing  
+- crash event recording  
+- full recovery semantics  
+- durable persistence even during mesh collapse  
+
+You can drop this straight into:
+

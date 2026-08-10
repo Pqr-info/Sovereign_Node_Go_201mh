@@ -1,0 +1,6 @@
+---
+
+### `gemma_agent.go` integration patch
+
+At the top of `gemma_agent.go`, extend `GemmaAgent`:
+

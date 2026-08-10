@@ -1,0 +1,208 @@
+score = Σ stability_score(marker)
+
+score = Σ stability_score(marker)
+
+NodeConsensusState {
+    node_id,
+    score,
+    classification: Healthy | Warning | Critical
+}
+
+NodeConsensusState {
+    node_id,
+    score,
+    classification: Healthy | Warning | Critical
+}
+
+score >= +200     → Healthy
+score between 0–199 → Warning
+score < 0         → Critical
+
+score >= +200     → Healthy
+score between 0–199 → Warning
+score < 0         → Critical
+
+GlobalDriftEnvelope {
+    avg_score,
+    min_score,
+    max_score,
+    chaotic_nodes,
+    healthy_nodes,
+}
+
+GlobalDriftEnvelope {
+    avg_score,
+    min_score,
+    max_score,
+    chaotic_nodes,
+    healthy_nodes,
+}
+
+chaotic_nodes <= 1
+min_score >= -50
+
+chaotic_nodes <= 1
+min_score >= -50
+
+chaotic_nodes >= 2
+min_score < -50
+
+chaotic_nodes >= 2
+min_score < -50
+
+Rust seats weight = 1.2 × node_stability_factor
+Go seats weight   = 1.0 × node_stability_factor
+
+Rust seats weight = 1.2 × node_stability_factor
+Go seats weight   = 1.0 × node_stability_factor
+
+node_stability_factor = clamp(score / 100, 0.5, 1.5)
+
+node_stability_factor = clamp(score / 100, 0.5, 1.5)
+
+Σ weighted_seats >= 4.0
+
+Σ weighted_seats >= 4.0
+
+Σ weighted_seats < 4.0
+
+Σ weighted_seats < 4.0
+
+STC::Allow
+STC::Deny
+STC::DenyAndFreeze
+
+STC::Allow
+STC::Deny
+STC::DenyAndFreeze
+
+epoch_valid == true
+quorum_pass == true
+global_drift_envelope.avg_score >= 50
+
+epoch_valid == true
+quorum_pass == true
+global_drift_envelope.avg_score >= 50
+
+epoch_valid == true
+quorum_pass == false
+
+epoch_valid == true
+quorum_pass == false
+
+epoch_valid == false
+OR chaotic_nodes >= 2
+OR global_drift_envelope.min_score < -50
+
+epoch_valid == false
+OR chaotic_nodes >= 2
+OR global_drift_envelope.min_score < -50
+
+pub enum StcVerdict {
+    Allow,
+    Deny,
+    DenyAndFreeze,
+}
+
+pub enum StcVerdict {
+    Allow,
+    Deny,
+    DenyAndFreeze,
+}
+
+pub fn stc_verdict() -> StcVerdict {
+    let envelope = Self::global_drift_envelope();
+    let quorum = Self::weighted_quorum_score();
+
+    if envelope.invalid() {
+        return StcVerdict::DenyAndFreeze;
+    }
+    if quorum < 4.0 {
+        return StcVerdict::Deny;
+    }
+    StcVerdict::Allow
+}
+
+pub fn stc_verdict() -> StcVerdict {
+    let envelope = Self::global_drift_envelope();
+    let quorum = Self::weighted_quorum_score();
+
+    if envelope.invalid() {
+        return StcVerdict::DenyAndFreeze;
+    }
+    if quorum < 4.0 {
+        return StcVerdict::Deny;
+    }
+    StcVerdict::Allow
+}
+
+request_rollback
+
+commit_block
+
+teleport_to_global_brain
+
+func STC() STCVerdict {
+    envelope := ComputeGlobalDriftEnvelope()
+    quorum := ComputeWeightedQuorum()
+
+    if envelope.Invalid() {
+        return DenyAndFreeze
+    }
+    if quorum < 4.0 {
+        return Deny
+    }
+    return Allow
+}
+
+func STC() STCVerdict {
+    envelope := ComputeGlobalDriftEnvelope()
+    quorum := ComputeWeightedQuorum()
+
+    if envelope.Invalid() {
+        return DenyAndFreeze
+    }
+    if quorum < 4.0 {
+        return Deny
+    }
+    return Allow
+}
+
+GET /stc/verdict
+
+GET /stc/verdict
+
+{ "verdict": "Allow" }
+
+{ "verdict": "Allow" }
+
+useEffect(() => {
+  const sse = new EventSource("/api/stc");
+  sse.onmessage = (e) => setVerdict(JSON.parse(e.data).verdict);
+  return () => sse.close();
+}, []);
+
+useEffect(() => {
+  const sse = new EventSource("/api/stc");
+  sse.onmessage = (e) => setVerdict(JSON.parse(e.data).verdict);
+  return () => sse.close();
+}, []);
+
+<div hx-get="/stc" hx-trigger="every 7s" hx-swap="outerHTML">
+  {{ .Verdict }}
+</div>
+
+<div hx-get="/stc" hx-trigger="every 7s" hx-swap="outerHTML">
+  {{ .Verdict }}
+</div>
+
+Deny
+
+DenyAndFreeze
+
+DenyAndFreeze
+
+current_tier()
+
+healing_actions()
+

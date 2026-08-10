@@ -1,0 +1,19 @@
+**Note**: For pr
+<truncated 8416 bytes>
+2. ### Summary
+
+A deterministic **forced-disconnect** admin endpoint and supporting changes so operators can immediately sever active WebSocket sessions by token signature. This includes:
+
+- **store tokenSignature** on each `ws` connection at upgrade time  
+- **exported helper** in the WebSocket broadcaster to close matching clients deterministically  
+- **admin HTTP endpoint** that calls the helper and records the action to Jetweb lineage  
+- **auditable behavior**: every forced disconnect is logged with canonical JSON and timestamp
+
+Below are the concrete code changes, integration notes, and security checklist to wire this into your existing stack.
+
+---
+
+### WebSocket broadcaster changes Store tokenSignature and export disconnect helper
+
+**File** `validationWatcherWsAuth.js` — add `ws.tokenSignature` at connection time and export `forceDisconnectBySignature`.
+

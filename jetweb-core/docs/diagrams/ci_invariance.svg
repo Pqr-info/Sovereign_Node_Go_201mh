@@ -1,0 +1,49 @@
+<svg width="820" height="420" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: bold 20px sans-serif; fill: #333; }
+    .label { font: 14px sans-serif; fill: #333; }
+    .box { fill: #fdfdfd; stroke: #444; stroke-width: 1.5; rx: 6; }
+    .arrow { stroke: #444; stroke-width: 2; marker-end: url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7"
+            refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#444"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="40" class="title">JetWeb Multi‑Runtime Identity Invariance</text>
+
+  <!-- Go -->
+  <rect x="40" y="100" width="180" height="80" class="box"/>
+  <text x="60" y="145" class="label">Go Runtime</text>
+
+  <!-- JS -->
+  <rect x="40" y="200" width="180" height="80" class="box"/>
+  <text x="60" y="245" class="label">JS/TS Runtime</text>
+
+  <!-- Rust -->
+  <rect x="40" y="300" width="180" height="80" class="box"/>
+  <text x="60" y="345" class="label">Rust Runtime</text>
+
+  <!-- Arrows -->
+  <line x1="220" y1="140" x2="360" y2="140" class="arrow"/>
+  <line x1="220" y1="240" x2="360" y2="240" class="arrow"/>
+  <line x1="220" y1="340" x2="360" y2="340" class="arrow"/>
+
+  <!-- Identity pipeline -->
+  <rect x="360" y="120" width="240" height="240" class="box"/>
+  <text x="380" y="150" class="label">Identity5 → RecoveryMatrix → SK</text>
+  <text x="380" y="180" class="label">Deterministic</text>
+  <text x="380" y="210" class="label">Cross‑Language</text>
+  <text x="380" y="240" class="label">Canonical Vectors</text>
+  <text x="380" y="270" class="label">CI‑Enforced</text>
+
+  <!-- Arrow to invariance -->
+  <line x1="600" y1="240" x2="740" y2="240" class="arrow"/>
+
+  <!-- Invariance -->
+  <rect x="740" y="200" width="60" height="80" class="box"/>
+  <text x="750" y="245" class="label">Invariant</text>
+</svg>

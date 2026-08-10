@@ -1,0 +1,14 @@
+Gemma now decides:
+
+- “This is Russian → spawn Russian agent.”  
+- “This is healing → spawn HealerAgent.”  
+- “Otherwise → handle myself.”
+
+This is the semantic cortex making decisions.
+
+---
+
+# 🧠 **4. crash_analytics.go — Trigger Healing**
+
+Add this inside your distress detection loop:
+

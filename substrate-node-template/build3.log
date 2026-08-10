@@ -1,0 +1,508 @@
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-5d-hcp/src/lib.rs:136:26
+    |
+136 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_1::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-5d-hcp/src/lib.rs:157:26
+    |
+157 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_2::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-5d-hcp/src/lib.rs:192:26
+    |
+192 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_3::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-5d-hcp/src/lib.rs:206:26
+    |
+206 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_4::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-5d-hcp/src/lib.rs:219:26
+    |
+219 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_5::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-5d-hcp/src/lib.rs:232:26
+    |
+232 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+  --> /mnt/c/pqr.info/SUBSTRATE/pallet-vault-storage/src/lib.rs:71:26
+   |
+71 |         #[pallet::weight(10_000)]
+   |                          ^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_1::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+  --> /mnt/c/pqr.info/SUBSTRATE/pallet-vault-storage/src/lib.rs:84:26
+   |
+84 |         #[pallet::weight(10_000)]
+   |                          ^^^^^^
+
+warning: unused import: `Saturating`
+ --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/mint.rs:5:26
+  |
+5 | use sp_runtime::traits::{Saturating, Zero, CheckedMul, Hash};
+  |                          ^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `NftMetadata`
+  --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:18:27
+   |
+18 |     use crate::metadata::{NftMetadata, ImageMetadata, ProteinMetadata, NftClass, NftRecord};
+   |                           ^^^^^^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:143:26
+    |
+143 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_1::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:153:26
+    |
+153 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_2::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:161:26
+    |
+161 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_3::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:167:26
+    |
+167 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_4::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:173:26
+    |
+173 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_5::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:181:26
+    |
+181 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_6::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:202:26
+    |
+202 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_7::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:208:26
+    |
+208 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_8::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:214:26
+    |
+214 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_9::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-imagefx-nft/src/lib.rs:220:26
+    |
+220 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> pallets/timeslips/src/lib.rs:156:26
+    |
+156 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_1::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> pallets/timeslips/src/lib.rs:186:26
+    |
+186 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_2::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> pallets/timeslips/src/lib.rs:209:26
+    |
+209 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_3::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> pallets/timeslips/src/lib.rs:244:26
+    |
+244 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-marketplace/src/lib.rs:132:26
+    |
+132 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_1::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-marketplace/src/lib.rs:160:26
+    |
+160 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_2::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-marketplace/src/lib.rs:190:26
+    |
+190 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_3::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-marketplace/src/lib.rs:225:26
+    |
+225 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_4::_w`: 
+                 It is deprecated to use hard-coded constant as call weight.
+                 Please instead benchmark all calls or put the pallet into `dev` mode.
+         
+                 For more info see:
+                     <https://github.com/paritytech/substrate/pull/13798>
+   --> /mnt/c/pqr.info/SUBSTRATE/pallet-marketplace/src/lib.rs:251:26
+    |
+251 |         #[pallet::weight(10_000)]
+    |                          ^^^^^^
+
+warning: `pallet-5d-hcp` (lib) generated 6 warnings
+warning: `pallet-vault-storage` (lib) generated 2 warnings
+warning: `pallet-imagefx-nft` (lib) generated 12 warnings (run `cargo fix --lib -p pallet-imagefx-nft` to apply 2 suggestions)
+warning: `pallet-timeslips` (lib) generated 4 warnings
+warning: `pallet-marketplace` (lib) generated 5 warnings
+   Compiling solochain-template-node v0.1.0 (/mnt/c/pqr.info/substrate-node-template/node)
+warning: unused import: `FixedPointNumber`
+ --> os-spark-core/src/lib.rs:5:32
+  |
+5 | use sp_arithmetic::{FixedU128, FixedPointNumber};
+  |                                ^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `os-spark-core` (lib) generated 1 warning (run `cargo fix --lib -p os-spark-core` to apply 1 suggestion)
+   Compiling solochain-template-runtime v0.1.0 (/mnt/c/pqr.info/substrate-node-template/runtime)
+warning: solochain-template-node@0.1.0: Git command failed with status 'exit status: 128' with message: 'fatal: not a git repository (or any parent up to mount point /mnt)
+warning: solochain-template-node@0.1.0: Could not find `.git/HEAD` searching from `/mnt/c/pqr.info/substrate-node-template/node` upwards!
+⚡ Found 3 strongly connected components which includes at least one cycle each
+cycle(001) ∈ α: DisputeCoordinator ~~{"DisputeDistributionMessage"}~~> DisputeDistribution ~~{"DisputeCoordinatorMessage"}~~>  *
+cycle(002) ∈ β: CandidateBacking ~~{"CollatorProtocolMessage"}~~> CollatorProtocol ~~{"CandidateBackingMessage"}~~>  *
+cycle(003) ∈ γ: NetworkBridgeRx ~~{"GossipSupportMessage"}~~> GossipSupport ~~{"NetworkBridgeRxMessage"}~~>  *
+warning: solochain-template-runtime@0.1.0: You are building WASM runtime using `wasm32-unknown-unknown` target, although Rust >= 1.84 supports `wasm32v1-none` target!
+warning: solochain-template-runtime@0.1.0: You can install it with `rustup target add wasm32v1-none --toolchain stable-x86_64-unknown-linux-gnu` if you're using `rustup`.
+warning: solochain-template-runtime@0.1.0: After installing `wasm32v1-none` target, you must rebuild WASM runtime from scratch, use `cargo clean` before building.
+warning: unnecessary parentheses around closure body
+  --> runtime/src/genesis_config_presets.rs:42:52
+   |
+42 |             authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>(),
+   |                                                             ^           ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+42 -             authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>(),
+42 +             authorities: initial_authorities.iter().map(|x| x.0.clone()).collect::<Vec<_>>(),
+   |
+
+warning: use of deprecated associated function `sp_runtime::generic::UncheckedExtrinsic::<Address, Call, Signature, Extension>::new_unsigned`: Use new_bare instead
+   --> runtime/src/lib.rs:318:29
+    |
+318 |         UncheckedExtrinsic::new_unsigned(call)
+    |                             ^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: `solochain-template-runtime` (lib) generated 2 warnings (run `cargo fix --lib -p solochain-template-runtime` to apply 1 suggestion)
+error[E0433]: cannot find `Error` in `core`
+   --> node/src/rpc.rs:102:30
+    |
+102 |             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+    |                              ^^^^^ could not find `Error` in `core`
+    |
+help: consider importing one of these items
+    |
+  8 + use std::error::Error;
+    |
+  8 + use std::fmt::Error;
+    |
+  8 + use std::io::Error;
+    |
+  8 + use core::error::Error;
+    |
+    = and 1 other candidate
+help: if you import `Error`, refer to it directly
+    |
+102 -             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+102 +             Error::Custom(format!("Runtime error: {:?}", e))
+    |
+
+error[E0433]: cannot find `Error` in `core`
+   --> node/src/rpc.rs:124:30
+    |
+124 |             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+    |                              ^^^^^ could not find `Error` in `core`
+    |
+help: consider importing one of these items
+    |
+  8 + use std::error::Error;
+    |
+  8 + use std::fmt::Error;
+    |
+  8 + use std::io::Error;
+    |
+  8 + use core::error::Error;
+    |
+    = and 1 other candidate
+help: if you import `Error`, refer to it directly
+    |
+124 -             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+124 +             Error::Custom(format!("Runtime error: {:?}", e))
+    |
+
+error[E0433]: cannot find `Error` in `core`
+   --> node/src/rpc.rs:139:30
+    |
+139 |             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+    |                              ^^^^^ could not find `Error` in `core`
+    |
+help: consider importing one of these items
+    |
+  8 + use std::error::Error;
+    |
+  8 + use std::fmt::Error;
+    |
+  8 + use std::io::Error;
+    |
+  8 + use core::error::Error;
+    |
+    = and 1 other candidate
+help: if you import `Error`, refer to it directly
+    |
+139 -             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+139 +             Error::Custom(format!("Runtime error: {:?}", e))
+    |
+
+error[E0433]: cannot find `Error` in `core`
+   --> node/src/rpc.rs:182:30
+    |
+182 |             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+    |                              ^^^^^ could not find `Error` in `core`
+    |
+help: consider importing one of these items
+    |
+  8 + use std::error::Error;
+    |
+  8 + use std::fmt::Error;
+    |
+  8 + use std::io::Error;
+    |
+  8 + use core::error::Error;
+    |
+    = and 1 other candidate
+help: if you import `Error`, refer to it directly
+    |
+182 -             jsonrpsee::core::Error::Custom(format!("Runtime error: {:?}", e))
+182 +             Error::Custom(format!("Runtime error: {:?}", e))
+    |
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+   --> node/src/rpc.rs:107:18
+    |
+107 |             for (k, v) in map {
+    |                  ^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `[u8]`
+    = note: all local variables must have a statically known size
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+   --> node/src/rpc.rs:107:27
+    |
+107 |             for (k, v) in map {
+    |                           ^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `[u8]`
+    = note: only the last element of a tuple may have a dynamically sized type
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+   --> node/src/rpc.rs:107:21
+    |
+107 |             for (k, v) in map {
+    |                     ^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `[u8]`
+    = note: all local variables must have a statically known size
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+   --> node/src/rpc.rs:127:16
+    |
+127 |         if let Some(bytes) = result {
+    |                ^^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `[u8]`
+note: required by a bound in `std::prelude::v1::Some`
+   --> /root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs:597:17
+    |
+597 | pub enum Option<T> {
+    |                 ^ required by this bound in `std::prelude::v1::Some`
+...
+605 |     Some(#[stable(feature = "rust1", since = "1.0.0")] T),
+    |     ---- required by a bound in this tuple variant
+
+Some errors have detailed explanations: E0277, E0433.
+For more information about an error, try `rustc --explain E0277`.
+warning: solochain-template-node@0.1.0: Git command failed with status 'exit status: 128' with message: 'fatal: not a git repository (or any parent up to mount point /mnt)
+warning: solochain-template-node@0.1.0: Could not find `.git/HEAD` searching from `/mnt/c/pqr.info/substrate-node-template/node` upwards!
+error: could not compile `solochain-template-node` (bin "solochain-template-node") due to 8 previous errors

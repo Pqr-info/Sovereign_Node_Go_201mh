@@ -1,0 +1,111 @@
+---
+
+### Integration Examples and Migration Notes
+
+- **Replace demo headers**: remove `X-Admin-Id` and `X-Operator-Id` checks. Map existing session or JWT claims to `req.user` and `req.user.roles`.  
+- **Dashboard UI**:
+  - For session approach: UI fetches `/api/ws-token` without custom headers; browser sends session cookie automatically.  
+  - For JWT approach: UI obtains JWT from a protected endpoint after login and stores it in memory (never in localStorage). Use `Authorization: Bearer <token>` for API and WebSocket token issuance.  
+- **WebSocket token issuer**: protect `/api/ws-token` with `ensure` + `requireRole('reviewer')`. The issuer should embed `operator.id` and `roles` in the token payload.  
+- **Admin UI**: serve `/admin/revocations` behind `ensure` + `requireRole('admin')`. The UI should not send admin headers; server-side session or JWT auth will provide identity.
+
+---
+
+### Security Checklist
+
+- **Secrets**: store `SESSION_SECRET` and `JWT_SECRET` in a secure vault; rotate regularly.  
+- **Session store**: use Redis or a DB-backed store; avoid in-memory store in production.  
+- **Cookie flags**: `httpOnly`, `secure`, `sameSite=lax` or `strict` depending on cross-site needs.  
+- **Short TTLs**: keep JWT TTL short (e.g., 5 minutes) and issue refresh tokens via a protected refresh endpoint if needed.  
+- **Token revocation**: maintain revocation store for JWT signatures and check at handshake time for WebSocket connections.  
+- **RBAC**: enforce role checks per route; separate viewer, reviewer, admin roles.  
+- **Audit**: record every auth event (login, token issuance, revocation, forced-disconnect) to Jetweb lineage with canonical JSON.  
+- **Transport**: require HTTPS and WSS in production.  
+- **Rate limiting and brute force protection**: protect login and token endpoints.  
+- **CSRF**: for session-based flows, implement CSRF protection on state-changing endpoints. For APIs using JWT in `Authorization` header, CSRF risk is lower.
+
+---
+
+### Testing and Rollout Steps
+
+1. **Local smoke test**: enable session mode, create a test admin account, verify `/admin/revocations` loads and API calls succeed.  
+2. **JWT flow test**: issue a short-lived JWT, call protected endpoints, verify role enforcement.  
+3. **WebSocket handshake test**: request a token from `/api/ws-token` while authenticated, connect to `wss://` or `ws://` with token, confirm `ws.operator` is set.  
+4. **Revocation test**: revoke a signature, attempt reconnect with revoked token, verify handshake denied.  
+5. **Forced-disconnect test**: revoke and call forced-disconnect, confirm active sockets closed with code `4001`.  
+6. **Staging rollout**: enable in staging behind your auth provider, run penetration tests and role separation checks.  
+7. **Production rollout**: enable with TLS, rotate secrets, monitor logs and Jetweb lineage for auth events.
+
+---
+
+If you want, I can now generate:
+- **Concrete session login and logout handlers** wired to a user store, or  
+- **A JWT refresh token flow** with secure refresh endpoint and revocation handling.
+
+Tell me which one to produce next and I’ll generate the code.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:42:44-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:42:56Z
+Completed At: 2026-07-09T07:42:56Z
+Created file file:///c:/Users/theal/gemma-cobrowser/jwtAuth.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:42:56Z
+Completed At: 2026-07-09T07:42:56Z
+Created file file:///c:/Users/theal/gemma-cobrowser/requireRole.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+I've written the JWT and Role middleware components to disk (`jwtAuth.js` and `requireRole.js`)! The foundation for stateless, cryptographic role verification is now in the codebase.
+
+Before we fully rip out the demo headers from the UI and wiring, let's complete the JWT capability set. 
+
+Please generate the **JWT refresh token flow with secure refresh endpoint and revocation handling**. That will give us the full lifecycle required to securely issue, rotate, and kill the tokens!
+
+<USER_REQUEST>
+### Session Authentication
+
+**Session middleware file**
+

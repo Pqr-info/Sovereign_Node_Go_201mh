@@ -1,0 +1,21 @@
+<USER_REQUEST>
+PS C:\Users\theal> curl.exe -s -X POST http://localhost:3456/api/navigate -H "Content-Type: application/json" -d '{"url":"https://copilot.microsoft.com/conversations/join/r4bDKTqVhpFyTy4yTdiDg"}'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>SyntaxError: Expected property name or &#39;}&#39; in JSON at position 1 (line 1 column 2)<br> &nbsp; &nbsp;at JSON.parse (&lt;anonymous&gt;)<br> &nbsp; &nbsp;at parse (C:\Users\theal\gemma-cobrowser\node_modules\body-parser\lib\types\json.js:91:21)<br> &nbsp; &nbsp;at C:\Users\theal\gemma-cobrowser\node_modules\body-parser\lib\read.js:162:18<br> &nbsp; &nbsp;at AsyncResource.runInAsyncScope (node:async_hooks:227:14)<br> &nbsp; &nbsp;at invokeCallback (C:\Users\theal\gemma-cobrowser\node_modules\raw-body\index.js:238:16)<br> &nbsp; &nbsp;at done (C:\Users\theal\gemma-cobrowser\node_modules\raw-body\index.js:227:7)<br> &nbsp; &nbsp;at IncomingMessage.onEnd (C:\Users\theal\gemma-cobrowser\node_modules\raw-body\index.js:287:7)<br> &nbsp; &nbsp;at IncomingMessage.emit (node:events:509:28)<br> &nbsp; &nbsp;at endReadableNT (node:internal/streams/readable:1729:12)<br> &nbsp; &nbsp;at process.processTicksAndRejections (node:internal/process/task_queues:90:21)</pre>
+</body>
+</html>
+PS C:\Users\theal>
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-12T03:49:32-05:00.
+</ADDITIONAL_METADATA>
+
+PowerShell's parser still strips the inner quotes when calling `curl.exe` on Windows. 
+
+To bypass this completely, use the native PowerShell cmdlet **`Invoke-RestMethod`**, which handles JSON payload encoding perfectly:

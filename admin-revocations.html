@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Revocation Console</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { --bg:#f6f7fb; --card:#fff; --muted:#667; --accent:#0b5fff; --danger:#b33; --ok:#0a7; }
+    body { font-family: Inter, system-ui, Arial, sans-serif; margin:0; background:var(--bg); color:#111; }
+    header { background:var(--accent); color:#fff; padding:12px 16px; font-weight:600; }
+    .
+<truncated 11508 bytes>
+5. ### Overview
+
+Below is the **Admin Revocation UI** integration package: the single‑file frontend you already have plus the minimal server glue to serve it, protect it, and wire it into your existing admin routes. The server glue includes a secure admin auth middleware scaffold, static file serving, and deterministic sequencing for revoke, unrevoke, and forced‑disconnect actions so operator actions are auditable and ordered.
+
+---
+
+### Files to add
+
+- **`admin-revocations.html`** — single page UI (you already created this in the previous step).  
+- **Server glue** — snippets to add to your dashboard server (examples assume `validationDashboardServer.js` as the main Express app).  
+- **Auth scaffold** — minimal admin auth middleware to replace demo headers; swap in your real auth provider.
+
+---
+
+### Server glue code
+
+Add these snippets into your main server file (for example `validationDashboardServer.js`) or a small module you `require` from it.
+
+#### 1. Admin auth middleware scaf
+<truncated 4323 bytes>
+6. ### Overview
+
+A compact, production-ready **Auth Middleware scaffold** that replaces demo headers with robust session or JWT authentication and enforces role-based access control. It includes two interchangeable approaches — **session-backed** (cookie + server session store) and **JWT-backed** (stateless tokens) — plus a small role guard, integration examples for your existing endpoints, and an operational checklist for secure rollout.
+
+---
+
+### Middleware Code
+
+#### Session Based Authentication Middleware
+
+**File** `sessionAuth.js`
+

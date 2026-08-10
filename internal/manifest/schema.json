@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "system_manifest",
+  "type": "object",
+  "required": ["version", "environment", "llm", "lmstudio_server", "agent", "network_topology", "capabilities"],
+  "properties": {
+    "version": { "type": "string" },
+    "environment": {
+      "type": "object",
+      "required": ["os", "hostname", "workspace_root", "wsl_enabled"],
+      "properties": {
+        "os": { "type": "string" },
+        "hostname": { "type": "string" },
+        "workspace_root": { "type": "string" },
+        "wsl_enabled": { "type": "boolean" }
+      }
+    },
+    "llm": {
+      "type": "object",
+      "required": ["provider", "model", "endpoint", "backend", "sampling", "context"],
+      "properties": {
+        "provider": { "type": "string" },
+        "model": { "type": "string" },
+        "quantization": { "type": "string" },
+        "endpoint": { "type": "string" },
+        "backend": {
+          "type": "object",
+          "required": ["type", "cpu_threads", "gpu_layers"],
+          "properties": {
+            "type": { "type": "string" },
+            "fallback": { "type": "string" },
+            "cpu_threads": { "type": "integer" },
+            "gpu_layers": { "type": ["string", "integer"] }
+          }
+        },
+        "sampling": {
+          "type": "object",
+          "required": ["temperature", "top_k", "top_p", "min_p", "repeat_penalty"],
+          "properties": {
+            "temperature": { "type": "number" },
+            "top_k": { "type": "integer" },
+            "top_p": { "type": "number" },
+            "min_p": { "type": "number" },
+            "repeat_penalty": { "type": "number" }
+          }
+        },
+        "context": {
+          "type": "object",
+          "required": ["max_tokens", "overflow_strategy"],
+          "properties": {
+            "max_tokens": { "type": "integer" },
+            "overflow_strategy": { "type": "string" }
+          }
+        }
+      }
+    },
+    "lmstudio_server": {
+      "type": "object",
+      "required": ["enabled", "host", "port", "api_path"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "auto_start": { "type": "boolean" },
+        "host": { "type": "string" },
+        "port": { "type": "integer" },
+        "api_path": { "type": "string" },
+        "default_model": { "type": "string" }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "required": ["mode", "system_prompt", "planning_enabled", "reflection_enabled"],
+      "properties": {
+        "mode": { "type": "string" },
+        "system_prompt": { "type": "string" },
+        "planning_enabled": { "type": "boolean" },
+        "reflection_enabled": { "type": "boolean" },
+        "capability_registry_source": { "type": "string" },
+        "manifest_files": { "type": "array", "items": { "type": "string" } },
+        "allow_unverified_capabilities": { "type": "boolean" }
+      }
+    },
+    "network_topology": {
+      "type": "object",
+      "required": ["ports", "protocols"],
+      "properties": {
+        "ports": {
+          "type": "object",
+          "additionalProperties": { "type": "integer" }
+        },
+        "peers": { "type": "array", "items": { "type": "string" } },
+        "protocols": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["grpc_services", "natural_language_map"],
+      "properties": {
+        "grpc_services": { "type": "array", "items": { "type": "string" } },
+        "natural_language_map": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    }
+  }
+}

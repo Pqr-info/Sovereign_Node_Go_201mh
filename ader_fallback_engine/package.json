@@ -1,0 +1,22 @@
+{
+  "name": "ader_fallback_engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "@apollo/subgraph": "^2.14.3",
+    "graphql": "^16.14.2",
+    "graphql-tag": "^2.12.7",
+    "neo4j-driver": "^6.2.0",
+    "node-fetch": "^3.3.2",
+    "uuid": "^14.0.1"
+  }
+}

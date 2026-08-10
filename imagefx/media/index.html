@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImageFX Sovereign Node</title>
+    <style>
+        body { font-family: monospace; background-color: #121212; color: #00ff00; text-align: center; padding: 20px; }
+        input[type="text"] { width: 90%; max-width: 600px; padding: 15px; margin: 20px 0; background: #222; border: 1px solid #00ff00; color: #00ff00; font-family: monospace; }
+        button { padding: 15px 30px; background: #00ff00; color: #121212; border: none; cursor: pointer; font-weight: bold; font-family: monospace; }
+        button:hover { background: #00cc00; }
+        img { max-width: 100%; margin-top: 30px; border: 1px solid #333; }
+        .loader { display: none; margin-top: 20px; color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <h2>ImageFX [Flash CodeGen Pipeline]</h2>
+    <input type="text" id="prompt" placeholder="Enter generation prompt..." value="cybernetic dog navigating a decentralized physical mesh network">
+    <br>
+    <button onclick="generateImage()">EXECUTE RENDER</button>
+    <div id="loader" class="loader">Generating code & rendering image... Please wait.</div>
+    <br>
+    <img id="result" src="realphoto-dreamt.jpg" alt="Generated Output" style="display:none;" onload="this.style.display='inline'">
+
+    <script>
+        async function generateImage() {
+            const prompt = document.getElementById('prompt').value;
+            const loader = document.getElementById('loader');
+            const img = document.getElementById('result');
+            
+            loader.style.display = 'block';
+            img.style.opacity = '0.3';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    img.src = data.image + '?t=' + new Date().getTime();
+                    img.style.display = 'inline';
+                } else {
+                    alert('Generation routing failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network connection error');
+            } finally {
+                loader.style.display = 'none';
+                img.style.opacity = '1';
+            }
+        }
+    </script>
+</body>
+</html>

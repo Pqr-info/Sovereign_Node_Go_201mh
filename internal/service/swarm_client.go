@@ -10,9 +10,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/thealanphipps-del/pqr/internal/execution"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/db"
-	pb "github.com/thealanphipps-del/pqr/proto"
+	"pqr.info/internal/execution"
+	"pqr.info/internal/infrastructure/db"
+	pb "pqr.info/proto"
 )
 
 type SwarmClient struct {

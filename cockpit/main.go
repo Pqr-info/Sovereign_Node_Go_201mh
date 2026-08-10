@@ -6,8 +6,8 @@ import (
 
 	"github.com/charmbracelet/bubbletea"
 
-	"github.com/pqr-info/pqr-info-swarm/cockpit/internal/config"
-	"github.com/pqr-info/pqr-info-swarm/cockpit/ui"
+	"pqr.info/cockpit/internal/config"
+	"pqr.info/cockpit/ui"
 )
 
 func main() {

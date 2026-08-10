@@ -1,0 +1,11 @@
+This agent is intentionally simple:  
+**detect → emit timeslip → restart → report to Gemma.**
+
+It is the organism’s reflex arc.
+
+---
+
+# 🧠 **2. gemma_specialty_spawner.go — Add Healer Spawning**
+
+Extend your existing spawner:
+

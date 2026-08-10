@@ -1,0 +1,25 @@
+GENESIS → SUBSTRATE → CORRIDORS → PANTHEON → RUNTIME → SYMBOLIC → SIDECARS
+        → ORCHESTRATOR → MCP/PQR → PERSISTENCE → UI/CLI
+
+
+Genesis
+  ↓
+Substrate
+  ↓
+Corridor Physics
+  ↓
+Pantheon Lineage
+  ↓
+Sovereign Runtime
+  ↓
+Symbolic Kernel
+  ↓
+Telemetry + Health
+  ↓
+Mesh Orchestrator
+  ↓
+MCP / PQR Integration
+  ↓
+Persistence Layer
+  ↓
+UI + CLI

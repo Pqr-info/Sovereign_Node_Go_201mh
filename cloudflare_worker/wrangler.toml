@@ -1,0 +1,20 @@
+name = "pqr-info-main-worker"
+main = "index.js"
+compatibility_date = "2026-07-13"
+
+[routes]
+route1 = "pqr.info/mh/*"
+route2 = "pqr.info/saml/*"
+route3 = "pqr.info/surfgo/*"
+
+[[kv_namespaces]]
+binding = "SURFGO_MEMORY_KV"
+id = "scaffold_id_will_be_replaced_on_deploy"
+
+[[durable_objects.bindings]]
+name = "SURFGO_MEMORY_DO"
+class_name = "SurfgoMemory"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["SurfgoMemory"]

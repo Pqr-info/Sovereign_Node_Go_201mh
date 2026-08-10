@@ -1,0 +1,8 @@
+---
+
+### Token Issuer Endpoint
+
+Add a small issuer to your dashboard server so authenticated operators can request a short‑lived token. This endpoint must itself be protected by your operator auth (session, JWT, or API key). The example below assumes you already have operator authentication middleware; replace `operatorAuthMiddleware` with your real auth.
+
+**wsTokenIssuer.js**
+

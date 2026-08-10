@@ -1,0 +1,8 @@
+**Browser TLS note**: for self‑signed certs you must trust the certificate in the browser or OS to avoid connection errors.
+
+---
+
+### Optional Nginx TLS termination example
+
+Terminate TLS at Nginx and proxy to an internal non‑TLS WebSocket server. Use this for production with a valid certificate.
+

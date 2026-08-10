@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/thealanphipps-del/pqr/internal/domain"
+	"pqr.info/internal/domain"
 )
 
 // Define interface matching db.CockroachRepository capabilities

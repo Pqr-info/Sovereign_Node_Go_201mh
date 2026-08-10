@@ -1,0 +1,18 @@
+**Alternative** send token in Sec-WebSocket-Protocol header as `token.<token>` if your client supports subprotocols.
+
+---
+
+### Deployment and Security Checklist
+
+- **Protect the issuer** with your operator authentication and authorization. Do not expose `/api/ws-token` without auth.  
+- **Short TTL**: default 5 minutes. Rotate `VALIDATION_WS_SECRET` regularly.  
+- **Transport security**: run WebSocket over TLS using `wss://` in production. HMAC token is an additional layer, not a replacement for TLS.  
+- **Revocation**: use the exported `revokeSignature` helper to revoke a token signature immediately if needed. Implement an admin endpoint that calls `revokeSignature`.  
+- **Audit**: record token issuance and connection events in Jetweb lineage using `recordEvent`. Attach operator id to connection events.  
+- **Rate limiting**: enforce limits on token issuance and connections.  
+- **Canonical logging**: persist issuance and connection events with canonical JSON for audit.
+
+---
+
+### Quick Admin Revocation Example
+

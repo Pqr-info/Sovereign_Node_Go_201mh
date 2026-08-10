@@ -1,0 +1,6 @@
+---
+
+# ⭐ **Step Execution Layer**
+
+This is the deterministic mapping from macro step → CDP/Puppeteer action.
+

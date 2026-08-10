@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <Feature Id="SWENDCore" Title="SWEND Daemon" Description="Installs the core SWEND daemon, Windows service, and configurations." Level="1">
+      <ComponentRef Id="SWENDCoreFiles" />
+      <ComponentRef Id="SWENDService" />
+    </Feature>
+
+    <Feature Id="SWENDMesh" Title="SWEND Mesh Runtime" Description="Installs the SWEND-MESH daemon and control plane." Level="1">
+      <ComponentRef Id="MeshFiles" />
+      <ComponentRef Id="MeshService" />
+    </Feature>
+
+    <Feature Id="SubstrateEngine" Title="Substrate Runtime Engine" Description="Installs the Substrate neural core and models." Level="1">
+      <ComponentRef Id="SubstrateFiles" />
+      <ComponentRef Id="SubstrateService" />
+    </Feature>
+
+    <Feature Id="VaultAgent" Title="Vault Agent Integration" Description="Installs HashiCorp Vault Agent and rendering configurations." Level="1">
+      <ComponentRef Id="VaultAgentFiles" />
+      <ComponentRef Id="VaultAgentService" />
+    </Feature>
+
+    <Feature Id="Gemma4Core" Title="Gemma-4-e4b Brain Agent" Description="Installs the core Gemma-4-e4b brain agent daemon, Windows service, and configurations." Level="1">
+      <ComponentRef Id="Gemma4CoreFiles" />
+      <ComponentRef Id="Gemma4Service" />
+    </Feature>
+
+    <Feature Id="Gemma4LocalGPU" Title="Local GPU Inference (Gemma-4-e4b)" Description="Installs the local GPU (CUDA/ROCm) configuration profile." Level="1">
+      <ComponentRef Id="Gemma4LocalGPUConfig" />
+    </Feature>
+
+    <Feature Id="Gemma4RyzenNPU" Title="Ryzen NPU Inference (Gemma-4-e4b)" Description="Installs the Ryzen NPU (DirectML) configuration profile." Level="1">
+      <ComponentRef Id="Gemma4RyzenNPUConfig" />
+    </Feature>
+
+    <Feature Id="Gemma4Cloud" Title="Cloud Inference (Gemma-4-e4b)" Description="Installs the Cloud (Vertex AI/custom) configuration profile." Level="1">
+      <ComponentRef Id="Gemma4CloudConfig" />
+    </Feature>
+
+    <Feature Id="Gemma4Snapdragon" Title="Snapdragon Inference (Gemma-4-e4b)" Description="Installs the mobile Snapdragon (QNN) configuration profile." Level="1">
+      <ComponentRef Id="Gemma4SnapdragonConfig" />
+    </Feature>
+  </Fragment>
+</Wix>

@@ -1,0 +1,6 @@
+---
+
+### Client Integration
+
+**Obtain token and connect**
+

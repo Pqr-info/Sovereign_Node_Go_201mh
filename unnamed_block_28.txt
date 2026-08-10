@@ -1,0 +1,6 @@
+---
+
+# ⭐ **Cobrowser Backend Contract**
+
+Your cobrowser backend should expose the following deterministic functions:
+

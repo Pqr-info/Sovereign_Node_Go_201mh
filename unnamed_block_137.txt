@@ -1,0 +1,11 @@
+---
+
+## **3. Sentinel (Ouroboros supervisor)**
+
+Sentinel’s lifecycle:
+
+- Boot  
+- Load watchlist  
+- Begin monitoring  
+- Begin resurrection loop  
+

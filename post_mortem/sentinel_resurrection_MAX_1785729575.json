@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-08-03T03:59:35Z",
+  "node_id": "MAX",
+  "recipe": "spawn_dev",
+  "reason": "Bootloader health check timeout / process crash",
+  "action": "AUTO_RESURRECT_BOOTSTRAP_GENESIS"
+}

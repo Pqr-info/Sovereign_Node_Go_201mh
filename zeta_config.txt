@@ -1,0 +1,6 @@
+Host zeta
+    HostName 176.9.116.146
+    User root
+    IdentityFile C:\Users\aellok\.ssh\id_sovereign_mesh
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null

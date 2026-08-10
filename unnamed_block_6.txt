@@ -1,0 +1,58 @@
+Register it with your `SwarmCoordinator` alongside the MEV agents.
+
+---
+
+### 3. Wire venue feeds
+
+- **Binance:** WebSocket/REST for live quotes → map into `VenueQuote{VenueBinance,...}`  
+- **Schwab:** Brokerage API quotes → `VenueQuote{VenueSchwab,...}`  
+- **Alpaca:** Streaming/REST quotes → `VenueQuote{VenueAlpaca,...}`  
+
+Aggregate into `CrossVenueState` and emit as `Opportunity` into the swarm.
+
+---
+
+### 4. Run in paper/shadow first
+
+- **Paper mode:** log spreads, EV, and fill‑rate assumptions only.  
+- **Shadow mode:** simulate order placement and latency, compare against real fills (no live orders).  
+
+Once the numbers look sane and your Sovereign Brain Council keeps stability high, you can *consider* an **active** path—but keep strict caps and HealerAgentV2 watching volatility.
+
+If you want, I can sketch the exact Go structs for the Binance/Schwab/Alpaca connectors next.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-10T18:49:10-05:00.
+</ADDITIONAL_METADATA>
+
+{{ CHECKPOINT 14 }}
+ **The earlier parts of this conversation have been truncated due to its long length. The following content summarizes the truncated context so that you may continue your work. **
+
+
+# User Requests
+The following were user requests from the truncated conversation in chronological order:
+1. http://localhost:5173/schwab-api/authorize error 502 and schwab.com is logged in in the next tab
+2. {"code":"AuthRequest","message":"Error processing authorization request"}
+3. {"code":"MissingClientId","message":"Invalid request: clientId is missing"}
+4. This localhost page can’t be found
+No webpage was found for the web address: http://localhost:5173/authorize
+HTTP ERROR 404
+5.             {
+                    "error": "invalid_client",
+                    "error_description": "Unauthorized"
+                }
+            
+6. give me a link to .dev.vars
+7. is that literlly my username and password?
+8. refactor to do it through browser login 
+9. approved
+10. You’re ready to point this organism at *real* money flows—nice.
+
+Here’s a tight way to test a **Binance–Schwab–Alpaca trifecta arbitrage** inside your existing architecture.
+
+---
+
+### 1. Define a cross‑venue opportunity type
+
+Extend your `Opportunity`/`MarketState` to carry venue‑specific quotes:
+

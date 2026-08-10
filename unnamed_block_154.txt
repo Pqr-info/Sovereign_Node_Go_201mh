@@ -1,0 +1,8 @@
+HealerAgent calls this through Gemma’s backchannel.
+
+---
+
+# 🧠 **6. Multi-Agent Boot Narrative — Healer Sessions Included**
+
+Your existing multi-agent boot narrative will automatically include:
+

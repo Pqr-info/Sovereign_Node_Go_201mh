@@ -1,0 +1,14 @@
+{
+  "name": "remote-windows-admin-server",
+  "version": "1.0.0",
+  "description": "Secure, human and AI optimized remote administration server for Windows",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "private": true
+}

@@ -1,0 +1,9 @@
+{
+  "name": "get_state",
+  "description": "Return the current sovereign state and lens mode.",
+  "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "eventId": "string",
+  "type": "validation_failure",
+  "taskId": "string",
+  "taskState": { /* TaskStateSchema object */ },
+  "errors": ["array of strings"],
+  "source": "string",
+  "corridor": "string",
+  "timestamp": "ISO-8601 string",
+  "canonical": "string" 
+}

@@ -1,0 +1,4 @@
+---
+
+#### `adminRevocationRoutes.js` — admin API for revocation actions
+

@@ -1,0 +1,11 @@
+**Notes**
+- `ws.tokenSignature` is set to the second part of the token string.  
+- `forceDisconnectBySignature` iterates `wss.clients` and closes matching sockets with close code **4001** and reason **token_revoked** by default.  
+- The function returns a deterministic summary object listing closed connections and any failures.
+
+---
+
+### Admin endpoint to trigger forced disconnect
+
+**File** `adminRevocationRoutes.js` or extend `adminRevocationRoutes.js` with the forced-disconnect route. This route calls the exported helper and records the action to Jetweb lineage.
+

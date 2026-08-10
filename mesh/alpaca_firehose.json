@@ -1,0 +1,5 @@
+  "trade_ticket_selectors": {
+    "symbol_input": "#search-input",
+    "quantity_input": "#order-control-stepper-quantity-0-stepper-input",
+    "review_order_button": "button[name=\"example-primary\"]"
+  }

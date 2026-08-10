@@ -1,0 +1,300 @@
+            // Bound it
+            if let Ok(bounded) =
+                BoundedVec::<u8, T::MaxShortcodeLength>::try_from(shortcode_vec)
+            {
+                lease.shortcode = bounded;
+            }
+
+            weight += T::DbWeight::get().reads_writes(1, 1);
+            Some(lease)
+        });
+
+        weight
+    }
+}
+// See my thinking
+
+pub struct LeaseShortcodeMigration<T>(sp_std::marker::PhantomData<T>);
+
+impl<T: Config> frame_support::traits::OnRuntimeUpgrade for LeaseShortcodeMigration<T> {
+    fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        use frame_support::storage::StorageMap;
+        use frame_support::traits::Get;
+
+        let mut weight: frame_support::weights::Weight = 0;
+
+        // Assuming Leases<T> is your storage map: LeaseId -> Lease<T>
+        Leases::<T>::translate(|_lease_id, mut lease: Lease<T>| {
+            // Compute shortcode from addr5d
+            let shortcode_vec = encode_shortcode_from_bytes(&lease.addr5d);
+
+            // Bound it
+            if let Ok(bounded) =
+                BoundedVec::<u8, T::MaxShortcodeLength>::try_from(shortcode_vec)
+            {
+                lease.shortcode = bounded;
+            }
+
+            weight += T::DbWeight::get().reads_writes(1, 1);
+            Some(lease)
+        });
+
+        weight
+    }
+}
+// See my thinking
+
+pub struct LeaseShortcodeMigration<T>(sp_std::marker::PhantomData<T>);
+
+impl<T: Config> frame_support::traits::OnRuntimeUpgrade for LeaseShortcodeMigration<T> {
+    fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        use frame_support::storage::StorageMap;
+        use frame_support::traits::Get;
+
+        let mut weight: frame_support::weights::Weight = 0;
+
+        // Assuming Leases<T> is your storage map: LeaseId -> Lease<T>
+        Leases::<T>::translate(|_lease_id, mut lease: Lease<T>| {
+            // Compute shortcode from addr5d
+            let shortcode_vec = encode_shortcode_from_bytes(&lease.addr5d);
+
+            // Bound it
+            if let Ok(bounded) =
+                BoundedVec::<u8, T::MaxShortcodeLength>::try_from(shortcode_vec)
+            {
+                lease.shortcode = bounded;
+            }
+
+            weight += T::DbWeight::get().reads_writes(1, 1);
+            Some(lease)
+        });
+
+        weight
+    }
+}
+// See my thinking
+
+impl
+// See my thinking
+
+impl
+// See my thinking
+
+impl
+// See my thinking
+
+impl<T: Config> Pallet<T> {
+    pub fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        LeaseShortcodeMigration::<T>::on_runtime_upgrade()
+    }
+}
+// See my thinking
+
+impl<T: Config> Pallet<T> {
+    pub fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        LeaseShortcodeMigration::<T>::on_runtime_upgrade()
+    }
+}
+// See my thinking
+
+impl<T: Config> Pallet<T> {
+    pub fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        LeaseShortcodeMigration::<T>::on_runtime_upgrade()
+    }
+}
+// See my thinking
+
+construct_runtime!
+// See my thinking
+
+construct_runtime!
+// See my thinking
+
+construct_runtime!
+// See my thinking
+
+Pallet5DHcp::on_runtime_upgrade()
+// See my thinking
+
+Pallet5DHcp::on_runtime_upgrade()
+// See my thinking
+
+Pallet5DHcp::on_runtime_upgrade()
+// See my thinking
+
+Lease
+// See my thinking
+
+Lease
+// See my thinking
+
+Lease
+// See my thinking
+
+addr5d
+// See my thinking
+
+addr5d
+// See my thinking
+
+addr5d
+// See my thinking
+
+shortcode
+// See my thinking
+
+shortcode
+// See my thinking
+
+shortcode
+lib.rs
+lib.rs
+impl frame_system::Config for Runtime {
+    // ...
+    fn on_runtime_upgrade() -> Weight {
+        let mut weight = 0;
+
+        // Run the 5D lease shortcode migration
+        weight += pallet_5d_hcp::Pallet::<Runtime>::on_runtime_upgrade();
+
+        weight
+    }
+}
+impl frame_system::Config for Runtime {
+    // ...
+    fn on_runtime_upgrade() -> Weight {
+        let mut weight = 0;
+
+        // Run the 5D lease shortcode migration
+        weight += pallet_5d_hcp::Pallet::<Runtime>::on_runtime_upgrade();
+
+        weight
+    }
+}
+Lease
+Lease
+Migrated N leases
+Migrated N leases
+curl -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"shortcode_resolve",
+    "params":["QJX9T"]
+  }' \
+  http://localhost:9933
+curl -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"shortcode_resolve",
+    "params":["QJX9T"]
+  }' \
+  http://localhost:9933
+addr5d
+ipv6_suffix
+lease_id
+addr5d
+ipv6_suffix
+lease_id
+// See my thinking
+
+shortcode
+// See my thinking
+
+VaultSecretDescriptor
+// See my thinking
+
+pallet-vault-storage/src/lib.rs
+// See my thinking
+
+#[derive(Encode, Decode, TypeInfo, MaxEncodedLen)]
+pub struct VaultSecretDescriptor<T: Config> {
+    pub addr5d: BoundedVec<u8, T::MaxAddr5dLength>,
+    pub total_shards: u8,
+    pub threshold: u8,
+    pub node_ids: Vec<HostId>,
+    pub shortcode: BoundedVec<u8, T::MaxShortcodeLength>, // NEW
+}
+// See my thinking
+
+pallet-5d-hcp
+// See my thinking
+
+const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
+fn hash_addr5d(addr5d: &[u8]) -> [u8; 16] {
+    use blake2::Blake2s;
+    use blake2::digest::{Update, VariableOutput};
+
+    let mut hasher = Blake2s::new(16).expect("Blake2s init");
+    hasher.update(addr5d);
+    let mut out = [0u8; 16];
+    hasher.finalize_variable(|res| out.copy_from_slice(res));
+    out
+}
+
+fn encode_shortcode_from_bytes(addr5d: &[u8]) -> Vec<u8> {
+    let digest = hash_addr5d(addr5d);
+
+    let mut value = 0u128;
+    for b in digest.iter() {
+        value = (value << 8) | (*b as u128);
+    }
+
+    let mut chars = Vec::new();
+    for _ in 0..5 {
+        let idx = (value & 0x1F) as usize;
+        chars.push(ALPHABET[idx]);
+        value >>= 5;
+    }
+
+    chars.reverse();
+    chars
+}
+// See my thinking
+
+VaultSecrets<T>
+// See my thinking
+
+SecretId -> VaultSecretDescriptor<T>
+// See my thinking
+
+pub struct VaultShortcodeMigration<T>(sp_std::marker::PhantomData<T>);
+
+impl<T: Config> frame_support::traits::OnRuntimeUpgrade for VaultShortcodeMigration<T> {
+    fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        use frame_support::storage::StorageMap;
+        use frame_support::traits::Get;
+
+        let mut weight: frame_support::weights::Weight = 0;
+
+        VaultSecrets::<T>::translate(|_id, mut desc: VaultSecretDescriptor<T>| {
+            let shortcode_vec = encode_shortcode_from_bytes(&desc.addr5d);
+
+            if let Ok(bounded) =
+                BoundedVec::<u8, T::MaxShortcodeLength>::try_from(shortcode_vec)
+            {
+                desc.shortcode = bounded;
+            }
+
+            weight += T::DbWeight::get().reads_writes(1, 1);
+            Some(desc)
+        });
+
+        weight
+    }
+}
+// See my thinking
+
+impl<T: Config> Pallet<T> {
+    pub fn on_runtime_upgrade() -> frame_support::weights::Weight {
+        VaultShortcodeMigration::<T>::on_runtime_upgrade()
+    }
+}
+// See my thinking
+
+weight += pallet_vault_storage::Pallet::<Runtime>::on_runtime_upgrade();
+// See my thinking
+
+addr5d

@@ -1,0 +1,36 @@
+Let's watch the organism heal itself. Feed this into the cortex whenever you're ready!
+
+<USER_REQUEST>
+alan — **this is the perfect failure signature to feed into the organism.**  
+It’s clean, unambiguous, and contains exactly the semantic markers GemmaSemanticRouter is designed to detect:
+
+- `UNAVAILABLE`  
+- `failed to connect to all addresses`  
+- `ipv4:127.0.0.1:11112`  
+- `Connection refused`  
+- `WSAGetOverlappedResult`  
+- `10061`  
+
+This is textbook *HealerAgentV2 territory* — Python-side MCP bridge failure, port refusal, and a likely mismatch between the resurrected service and the port the MCP client expects.
+
+Let me walk you through what the organism will do when you feed this into the cortex.
+
+---
+
+## 🧠 **What GemmaSemanticRouter will detect immediately**
+
+The decoded MCP error contains:
+
+### **1. Shell / subprocess failure markers**
+- “failed to connect”
+- “WSAGetOverlappedResult”
+- “Connection refused”
+
+These match the router’s `shell_error` → Healer route.
+
+### **2. Python script failure markers**
+- The error originates inside `mgsh_mcp.py`
+- The MCP bridge is a Python gRPC client
+
+Router will classify this as:
+

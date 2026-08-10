@@ -1,37 +1,336 @@
-{
-  "auth": {
-    "grafana": {
-      "password": "",
-      "username": ""
-    }
-  },
-  "endpoints": {
-    "agentsGemini": "http://localhost:8080/agents/gemini",
-    "consensusProposal": "http://localhost:8080/consensus/proposal",
-    "consensusProposals": "http://localhost:8080/consensus/proposals",
-    "consensusRollback": "http://localhost:8080/consensus/rollback",
-    "consensusVote": "http://localhost:8080/consensus/vote",
-    "governanceForecast": "http://localhost:8080/governance/forecast",
-    "governanceLineage": "http://localhost:8080/governance/lineage",
-    "governanceMetrics": "http://localhost:8080/governance/metrics",
-    "governanceSimulate": "http://localhost:8080/governance/simulate",
-    "grafana": "http://localhost:3000",
-    "health": "http://localhost:8080/health",
-    "help": "http://localhost:8080/help",
-    "metrics": "http://localhost:9091/metrics",
-    "prometheus": "http://localhost:9090",
-    "recovery": "http://localhost:8080/healer/trigger-recovery",
-    "ticketApi": "http://localhost:8080/rt/REST/2.0/tickets",
-    "timeslipGen": "http://localhost:8080/timeslip-generator"
-  },
-  "hints": [
-    "Use /rt/REST/2.0/tickets for RT-style SOS operations",
-    "Ouroboros should own restarts and health reconciliation"
-  ],
-  "hosts": {
-    "alias": "sos-flagship",
-    "primary": ""
-  },
-  "lastUpdated": "2026-07-15T23:08:24Z",
-  "service": "sos"
+﻿{
+    "sovereign":  {
+                      "canon_version":  "R1",
+                      "genesis":  "evolved_genesis_R1",
+                      "services":  {
+                                       "zeta_l7":  {
+                                                       "current":  "zeta_R3",
+                                                       "last_known_good":  "zeta_R1",
+                                                       "genesis":  "evolved_genesis_R1",
+                                                       "run_counter":  4
+                                                   },
+                                       "ader":  {
+                                                    "current":  "ader_R1",
+                                                    "last_known_good":  "ader_R1",
+                                                    "genesis":  "evolved_genesis_R1",
+                                                    "run_counter":  1
+                                                },
+                                       "spacebook_5d":  {
+                                                            "current":  "spacebook_R1",
+                                                            "last_known_good":  "spacebook_R1",
+                                                            "genesis":  "evolved_genesis_R1",
+                                                            "run_counter":  1
+                                                        }
+                                   },
+                      "vault":  {
+                                    "path":  "secret/data/sovereign/canon",
+                                    "fields":  [
+                                                   "connect_string",
+                                                   "smb_connect",
+                                                   "rail_state"
+                                               ]
+                                },
+                      "rail":  {
+                                   "lock":  "pqr.info/releases/.lock",
+                                   "pending":  "pqr.info/releases/.pending"
+                               },
+                      "rail_state":  {
+                                         "current":  "zeta_R3",
+                                         "status":  "healthy",
+                                         "timestamp":  1786002385123,
+                                         "service":  "zeta_l7",
+                                         "last_known_good":  "zeta_R1"
+                                     },
+                      "roles":  {
+                                    "zeta_l7_worker":  {
+                                                           "description":  "Executes Zeta L7 cognitive workloads",
+                                                           "required_services":  [
+                                                                                     "zeta_l7"
+                                                                                 ]
+                                                       },
+                                    "spacebook_5d_agent":  {
+                                                               "description":  "Runs Spacebook 5D spatial agents",
+                                                               "required_services":  [
+                                                                                         "spacebook_5d"
+                                                                                     ]
+                                                           },
+                                    "ader_fallback_engine":  {
+                                                                 "description":  "Handles post-mortem lineage and fallback",
+                                                                 "required_services":  [
+                                                                                           "ader"
+                                                                                       ]
+                                                             },
+                                    "sentinel_watchdog":  {
+                                                              "description":  "Monitors node health and governs runlevels/roles",
+                                                              "required_services":  [
+                                                                                        "sentinel"
+                                                                                    ]
+                                                          },
+                                    "rail_sync_master":  {
+                                                             "description":  "Synchronizes release rail with Hetzner StorageBox",
+                                                             "required_services":  [
+                                                                                       "rail_sync"
+                                                                                   ]
+                                                         },
+                                    "vault_proxy":  {
+                                                        "description":  "Fetches secrets from Substrate Vault",
+                                                        "required_services":  [
+                                                                                  "vault_proxy"
+                                                                              ]
+                                                    },
+                                    "stadium_broadcaster":  {
+                                                                "description":  "Emits governance signals via MIDI multicast",
+                                                                "required_services":  [
+                                                                                          "stadium"
+                                                                                      ]
+                                                            },
+                                    "genesis_seed_carrier":  {
+                                                                 "description":  "Maintains evolved_genesis lineage root",
+                                                                 "required_services":  [
+
+                                                                                       ]
+                                                             },
+                                    "copilotfs_organ":  {
+                                                            "description":  "Live virtual filesystem mesh organ for Master Architect artifacts",
+                                                            "required_services":  [
+                                                                                      "copilotfs"
+                                                                                  ]
+                                                        }
+                                },
+                      "bootstrap":  {
+                                        "enabled":  true,
+                                        "entrypoint":  "pqr.info/mev/scripts/bootstrap_genesis.py"
+                                    },
+                      "sentinel":  {
+                                       "enabled":  true,
+                                       "poll_interval_sec":  5,
+                                       "max_failures_before_resurrection":  2,
+                                       "entrypoint":  "pqr.info/mev/scripts/sentinel_watchdog.py"
+                                   },
+                      "genesis_seed":  {
+                                           "evolved_genesis_release":  "evolved_genesis_R1",
+                                           "initial_services":  [
+                                                                    "zeta_l7",
+                                                                    "ader",
+                                                                    "sentinel"
+                                                                ],
+                                           "initial_nodes":  [
+                                                                 "windows_worker"
+                                                             ]
+                                       },
+                      "spawn_recipes":  {
+                                            "spawn_all":  [
+                                                              "windows_worker",
+                                                              "linux_core",
+                                                              "hetzner_master"
+                                                          ],
+                                            "spawn_minimal":  [
+                                                                  "linux_core"
+                                                              ],
+                                            "spawn_dev":  [
+                                                              "windows_worker"
+                                                          ]
+                                        },
+                      "node_templates":  {
+                                             "windows_worker":  {
+                                                                    "os":  "windows",
+                                                                    "services":  [
+                                                                                     "zeta_l7",
+                                                                                     "spacebook_5d"
+                                                                                 ],
+                                                                    "mounts":  [
+                                                                                   "smb://u589955-sub6.your-storagebox.de/u589955-sub6"
+                                                                               ],
+                                                                    "bootloader":  "mesh_bootloader.js"
+                                                                },
+                                             "linux_core":  {
+                                                                "os":  "linux",
+                                                                "services":  [
+                                                                                 "ader",
+                                                                                 "sentinel"
+                                                                             ],
+                                                                "mounts":  [
+                                                                               "sshfs://46.224.219.174/pqr.info"
+                                                                           ],
+                                                                "bootloader":  "mesh_bootloader.js"
+                                                            },
+                                             "hetzner_master":  {
+                                                                    "os":  "linux",
+                                                                    "services":  [
+                                                                                     "rail_sync",
+                                                                                     "vault_proxy"
+                                                                                 ],
+                                                                    "mounts":  [
+                                                                                   "smb://u589955-sub6.your-storagebox.de/u589955-sub6"
+                                                                               ]
+                                                                }
+                                         },
+                      "provision":  {
+                                        "mount_smb":  "python C:/pqr.info/mev/scripts/hetzner_master_sync.py list",
+                                        "mount_sshfs":  "sshfs opc@46.224.219.174:/pqr.info /mnt/pqr.info",
+                                        "start_bootloader":  "node C:/pqr.info/mev/atlas-ui/mesh_bootloader.js"
+                                    },
+                      "runlevels":  {
+                                        "spawn_none":  {
+                                                           "description":  "Node halted or quarantined",
+                                                           "services":  [
+
+                                                                        ]
+                                                       },
+                                        "spawn_minimal":  {
+                                                              "description":  "Minimal mesh presence (Sentinel + ADER only)",
+                                                              "services":  [
+                                                                               "ader",
+                                                                               "sentinel"
+                                                                           ]
+                                                          },
+                                        "spawn_core":  {
+                                                           "description":  "Core mesh services",
+                                                           "services":  [
+                                                                            "ader",
+                                                                            "sentinel",
+                                                                            "zeta_l7"
+                                                                        ]
+                                                       },
+                                        "spawn_dev":  {
+                                                          "description":  "Worker node with Zeta + Spacebook",
+                                                          "services":  [
+                                                                           "zeta_l7",
+                                                                           "spacebook_5d"
+                                                                       ]
+                                                      },
+                                        "spawn_full":  {
+                                                           "description":  "Full mesh node including UI and governance",
+                                                           "services":  [
+                                                                            "zeta_l7",
+                                                                            "spacebook_5d",
+                                                                            "stadium",
+                                                                            "sentinel",
+                                                                            "ader"
+                                                                        ]
+                                                       },
+                                        "spawn_all":  {
+                                                          "description":  "Complete Sovereign-27 bootstrap",
+                                                          "services":  [
+                                                                           "zeta_l7",
+                                                                           "spacebook_5d",
+                                                                           "stadium",
+                                                                           "sentinel",
+                                                                           "ader",
+                                                                           "vault_proxy",
+                                                                           "rail_sync"
+                                                                       ]
+                                                      }
+                                    },
+                      "nodes":  {
+                                    "MAX":  {
+                                                "recipe":  "spawn_core",
+                                                "name":  "Local Cognitive Portal Master (Majority Inference Node)",
+                                                "ip":  "127.0.0.1",
+                                                "ubiquitous_gateway":  "39.mh (204.168.138.60)",
+                                                "ubiquitous_endpoints":  {
+                                                                             "inference_v1":  "http://204.168.138.60:12340/v1",
+                                                                             "backend_rest":  "http://204.168.138.60:4052",
+                                                                             "remote_admin_ssh":  "ssh -p 22222 aellok@204.168.138.60"
+                                                                         },
+                                                "roles":  [
+                                                              "ader_fallback_engine",
+                                                              "majority_inference_node"
+                                                          ]
+                                            },
+                                    "39.mh":  {
+                                                  "recipe":  "spawn_all",
+                                                  "name":  "Sovereign Gateway (Helsinki)",
+                                                  "ip":  "204.168.138.60",
+                                                  "ssh_port":  22,
+                                                  "ssh_user":  "root",
+                                                  "fallback_user":  "aellok",
+                                                  "roles":  [
+                                                                "sentinel_watchdog",
+                                                                "stadium_broadcaster",
+                                                                "vault_proxy"
+                                                            ]
+                                              },
+                                    "38.mh":  {
+                                                  "recipe":  "spawn_dev",
+                                                  "name":  "Forge Node (Nuremberg)",
+                                                  "ip":  "62.238.2.240",
+                                                  "proxy_jump":  "39.mh",
+                                                  "ssh_port":  22,
+                                                  "ssh_user":  "root",
+                                                  "roles":  [
+                                                                "zeta_l7_worker"
+                                                            ]
+                                              },
+                                    "zeta.mh":  {
+                                                    "recipe":  "spawn_all",
+                                                    "name":  "Hetzner Master Baremetal Threadripper Server",
+                                                    "ip":  "176.9.116.146",
+                                                    "ipv4":  "176.9.116.146",
+                                                    "ipv6":  "2a01:4f8:151:7062::2",
+                                                    "ipv6_subnet":  "2a01:4f8:151:7062::/64",
+                                                    "ipv6_5d":  "fd5d:2700:4900:0001::1",
+                                                    "dns":  {
+                                                                "direct_unproxied":  "zeta.mh.pqr.info",
+                                                                "cloudflare_proxied":  "zeta.pqr.info"
+                                                            },
+                                                    "roles":  [
+                                                                  "zeta_l7_worker",
+                                                                  "sentinel_watchdog",
+                                                                  "rail_sync_master",
+                                                                  "genesis_seed_carrier"
+                                                              ]
+                                                },
+                                    "TermuxNode":  {
+                                                       "recipe":  "spawn_minimal",
+                                                       "name":  "Termux Mobile Quorum Node",
+                                                       "ip":  "192.168.12.201",
+                                                       "ssh_port":  2222,
+                                                       "ssh_user":  "u0_a463",
+                                                       "roles":  [
+                                                                     "sentinel_watchdog"
+                                                                 ]
+                                                   },
+                                    "ted.mh":  {
+                                                   "recipe":  "spawn_dev",
+                                                   "name":  "Alienware R9",
+                                                   "ip":  "192.168.12.110",
+                                                   "roles":  [
+                                                                 "zeta_l7_worker"
+                                                             ]
+                                               }
+                                },
+                      "mesh_topology":  {
+                                            "39.mh":  {
+                                                          "label":  "Sovereign Gateway (Helsinki)",
+                                                          "public_ip":  "204.168.138.60",
+                                                          "ssh_port":  22,
+                                                          "ssh_user":  "root"
+                                                      },
+                                            "38.mh":  {
+                                                          "label":  "Forge Node (Nuremberg)",
+                                                          "public_ip":  "62.238.2.240",
+                                                          "proxy_jump":  "39.mh",
+                                                          "ssh_port":  22,
+                                                          "ssh_user":  "root"
+                                                      },
+                                            "zeta.mh":  {
+                                                            "label":  "Hetzner Threadripper Node",
+                                                            "public_ip":  "46.224.219.174",
+                                                            "five_d_ipv6":  "fd5d:2700:4900:0001::1",
+                                                            "ssh_port":  22,
+                                                            "ssh_user":  "root"
+                                                        },
+                                            "termux":  {
+                                                           "label":  "Termux Mobile Node",
+                                                           "local_ip":  "192.168.12.201",
+                                                           "ssh_port":  2222,
+                                                           "ssh_user":  "u0_a463"
+                                                       },
+                                            "ted.mh":  {
+                                                           "label":  "Alienware R9",
+                                                           "local_ip":  "192.168.12.110"
+                                                       }
+                                        }
+                  }
 }

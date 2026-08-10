@@ -1,0 +1,2 @@
+**Gate 2: Limit-Down / Halt Handler**
+Limit-down halts are a death trap for mean reversion. Leviathan handles them explicitly.

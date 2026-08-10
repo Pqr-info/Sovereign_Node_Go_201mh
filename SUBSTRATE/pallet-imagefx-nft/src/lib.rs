@@ -179,7 +179,7 @@ pub mod pallet {
 
         #[pallet::call_index(9)]
         #[pallet::weight(10_000)]
-        pub fn update_metadata(origin: OriginFor<T>, hash: T::Hash, _new_data: Vec<u8>) -> DispatchResult {
+        pub fn update_metadata(origin: OriginFor<T>, hash: T::Hash, _new_data: sp_std::vec::Vec<u8>) -> DispatchResult {
             let sender = ensure_signed(origin)?;
             
             let owner = NFTOwner::<T>::get(hash).ok_or(Error::<T>::NFTNotFound)?;

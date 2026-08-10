@@ -1,0 +1,8 @@
+---
+
+# **B. Multi‑Agent Boot Narrative Engine**
+
+This extends your existing `RecoveryNarrativeEngine` so it emits **all recovered sessions**, not just Antigravity.
+
+Drop this into `recovery_narrative.go`:
+

@@ -1,0 +1,115 @@
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                           SOVEREIGN MESH ORGANISM                            │
+│                     Distributed Cognitive Sovereign System                   │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 0 — GENESIS
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ GenesisOrganism • Pantheon Seed • Corridor Seed • Substrate27 Seed           │
+ │ Deterministic birth event → MeshGenesisSeeder                                │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 1 — SUBSTRATE
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ Substrate 27 Pallet                                                          │
+ │   • 27‑symbol lattice                                                        │
+ │   • 3‑state microstate per symbol                                            │
+ │   • deterministic address vector                                             │
+ │   • substrate object storage                                                 │
+ │   • extrinsics: store_object / get_object                                    │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 2 — CORRIDOR PHYSICS
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ CorridorEvolutionEngine                                                      │
+ │   • intensity • coherence • curvature • torsion                              │
+ │   • physics propagation                                                       │
+ │   • mesh stability                                                            │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 3 — PANTHEON LINEAGE
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ PantheonEntity                                                               │
+ │   • lineage vector                                                            │
+ │   • domain identity                                                           │
+ │   • cognitive state                                                           │
+ │   • federation role                                                           │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 4 — RUNTIME
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ Sovereign State Machine                                                       │
+ │   Structural → Substrate → Continuum → Sovereign → Cognition → Consensus     │
+ │   Omni → Absolute → Omega → Infinite → Apex → Singularity → Origin → Zero   │
+ │   Null → Beyond                                                               │
+ │                                                                              │
+ │ SOR Runtime Loop                                                              │
+ │   • state evolution                                                           │
+ │   • corridor update                                                           │
+ │   • pantheon propagation                                                      │
+ │   • symbolic emission                                                         │
+ │   • lens adjustment                                                           │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 5 — SYMBOLIC EXPRESSION
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ OsSpark SMF Kernel                                                            │
+ │   • symbolic track emission                                                   │
+ │   • cognitive resonance                                                       │
+ │   • SMF event streaming                                                       │
+ │                                                                              │
+ │ Sovereign Lens                                                                │
+ │   • mode: Structural / Cognitive / Sovereign / Omni / Apex                    │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 6 — SIDECARES
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ Telemetry Sidecar                                                             │
+ │   • load • consensus • identity • mutation • symbolic density                 │
+ │                                                                              │
+ │ Mesh Health Sidecar                                                           │
+ │   • stress • coherence • lineage stability • symbolic density • warnings      │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 7 — ORCHESTRATION
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ Mesh Orchestrator                                                             │
+ │   • sovereign context                                                          │
+ │   • corridor mesh                                                              │
+ │   • pantheon federation                                                        │
+ │   • state machine driver                                                       │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 8 — INTEGRATION
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ PQR Integration Layer                                                          │
+ │   • automatic ticket creation                                                  │
+ │   • health → PQR                                                               │
+ │                                                                              │
+ │ MCP Server Bindings                                                            │
+ │   • get_mesh_health • get_state • run_recovery • get_smf_output • create_ticket│
+ │                                                                              │
+ │ Gemma Agent Integration                                                        │
+ │   • Gemma → MCP → Sovereign Mesh                                               │
+ │                                                                              │
+ │ Mesh Persistence Layer                                                         │
+ │   • CockroachDB snapshots                                                      │
+ │   • lineage history                                                            │
+ │   • state transitions                                                          │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ LAYER 9 — INTERFACE
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ Sovereign UI Frontend                                                         │
+ │   • state • health • telemetry • symbolic • pantheon • corridors              │
+ │                                                                              │
+ │ Mesh CLI                                                                      │
+ │   • tick • run • state • health • telemetry • recover • snapshot • smf        │
+ └──────────────────────────────────────────────────────────────────────────────┘
+
+ FULL SYSTEM FLOW
+ ┌──────────────────────────────────────────────────────────────────────────────┐
+ │ Genesis → Substrate → Corridors → Pantheon → Runtime → SMF → Sidecars        │
+ │ → Orchestrator → MCP/PQR → Persistence → UI/CLI                              │
+ └──────────────────────────────────────────────────────────────────────────────┘
+

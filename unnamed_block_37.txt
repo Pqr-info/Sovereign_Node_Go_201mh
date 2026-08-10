@@ -1,0 +1,39 @@
+---
+
+### Integration Notes and Message Flow
+
+**1. Deterministic Handshake Flow**
+- Instance A builds a handshake offer using `build_handshake_offer`.
+- Instance B validates the offer with `validate_handshake_offer`.
+- Instance B responds with `build_handshake_accept`.
+- Instance A validates the accept message with `validate_handshake_accept`.
+- Both sides call `negotiate_capabilities` and `negotiate_schemas` to compute the agreed contract.
+- All messages are canonicalized with `canonical_json` for auditability.
+
+**2. Secure Channel**
+- Use `bootstrap_ephemeral_channel` to produce an HMAC proof for short‑lived channel bootstrap.
+- Always layer this over TLS or mTLS in production.
+
+**3. Agentic Memory Exchange**
+- Use `AgenticMemoryStore.persist_fact` only when **explicit consent** is recorded in the handshake or ticket.
+- Memory exchange must be explicit and auditable. Persisted facts include `consent` and `source_instance`.
+
+**4. Ticketgraph**
+- Use `TicketGraph.create_ticket` to register cross‑organism tasks.
+- Append lineage events with `append_lineage`.
+- Close tickets with `close_ticket`.
+- Tickets are deterministic records of delegation and must be stored in Jetweb lineage.
+
+**5. contact_mothership Proxy**
+- Use `contact_mothership_proxy` to enforce the compliance wrapper before sending requests to remote deterministic subagents.
+- Provide a secure `transport_send_fn` that implements authenticated, encrypted transport.
+
+**6. Audit and Persistence**
+- Persist all handshake offers, accepts, tickets, and memory records in Jetweb corridor storage.
+- Use `make_id` and `now_iso` for deterministic identifiers and timestamps.
+
+---
+
+### Message Schemas for Interoperability
+
+**Handshake Offer Example**

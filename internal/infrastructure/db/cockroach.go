@@ -12,7 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"github.com/thealanphipps-del/pqr/internal/domain"
+	"pqr.info/internal/domain"
 )
 
 type CockroachRepository struct {

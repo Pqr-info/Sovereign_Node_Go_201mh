@@ -8,10 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/thealanphipps-del/pqr"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/auth"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/db"
-	"github.com/thealanphipps-del/pqr/internal/service"
+	"pqr.info"
+	"pqr.info/internal/infrastructure/auth"
+	"pqr.info/internal/infrastructure/db"
+	"pqr.info/internal/service"
 )
 
 const (

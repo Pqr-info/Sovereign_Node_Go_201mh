@@ -1,0 +1,9 @@
+backend: qnn  # Qualcomm Neural Network SDK / Runtime
+batch_size: 1
+device_selection:
+  target_dsp: true
+  allow_npu: true
+power_profile: low_power  # options: low_power, balanced, high_performance
+optimized_ops:
+  quantization: int4
+  memory_limit_mb: 2048

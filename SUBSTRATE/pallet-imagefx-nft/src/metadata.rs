@@ -1,13 +1,16 @@
 use frame_support::pallet_prelude::*;
 use scale_info::TypeInfo;
+use codec::{Decode, Encode, MaxEncodedLen, DecodeWithMemTracking};
+use frame_support::{CloneNoBound, PartialEqNoBound, EqNoBound, DebugNoBound};
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen, RuntimeDebug, DecodeWithMemTracking)]
 pub enum NftClass {
     ImageFx,
     Protein,
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
+#[derive(Encode, Decode, CloneNoBound, PartialEqNoBound, EqNoBound, TypeInfo, DebugNoBound, DecodeWithMemTracking)]
+#[scale_info(skip_type_params(T))]
 pub struct ImageMetadata<T: crate::Config> {
     pub image_hash: T::Hash,
     pub prompt: BoundedVec<u8, T::MaxMetadataLength>,
@@ -19,7 +22,8 @@ pub struct ImageMetadata<T: crate::Config> {
     pub render_engine_version: u32,
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
+#[derive(Encode, Decode, CloneNoBound, PartialEqNoBound, EqNoBound, TypeInfo, DebugNoBound, DecodeWithMemTracking)]
+#[scale_info(skip_type_params(T))]
 pub struct ProteinMetadata<T: crate::Config> {
     pub model_hash: T::Hash,
     pub addr5d: BoundedVec<u8, T::MaxMetadataLength>,
@@ -31,13 +35,15 @@ pub struct ProteinMetadata<T: crate::Config> {
     pub creation_timestamp: <<T as crate::Config>::Time as frame_support::traits::Time>::Moment,
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
+#[derive(Encode, Decode, CloneNoBound, PartialEqNoBound, EqNoBound, TypeInfo, DebugNoBound, DecodeWithMemTracking)]
+#[scale_info(skip_type_params(T))]
 pub enum NftMetadata<T: crate::Config> {
     Image(ImageMetadata<T>),
     Protein(ProteinMetadata<T>),
 }
 
-#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
+#[derive(Encode, Decode, CloneNoBound, PartialEqNoBound, EqNoBound, TypeInfo, DebugNoBound, DecodeWithMemTracking)]
+#[scale_info(skip_type_params(T))]
 pub struct NftRecord<T: crate::Config> {
     pub class: NftClass,
     pub metadata: NftMetadata<T>,

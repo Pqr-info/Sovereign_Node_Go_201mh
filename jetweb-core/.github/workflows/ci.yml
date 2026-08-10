@@ -1,0 +1,29 @@
+identity-invariance:
+    name: 5D-PIKR Identity Invariance Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Run Go 5D-PIKR validator
+        working-directory: SUBSTRATE/pikr
+        run: go test -v ./...
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install JS dependencies
+        working-directory: SUBSTRATE/edge_agent
+        run: npm install
+
+      - name: Run JS 5D-PIKR validator
+        working-directory: SUBSTRATE/edge_agent/test
+        run: node pikr_vectors.js

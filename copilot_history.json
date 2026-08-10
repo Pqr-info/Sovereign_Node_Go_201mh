@@ -1,0 +1,925 @@
+{
+  "success": true,
+  "history": [
+    {
+      "tag": "CODE",
+      "text": "osspark/src/hypergossip_model.rs"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalMarker"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalStability"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub struct TemporalMarker {\n    pub id: uuid::Uuid,\n    pub track_id: u8,\n    pub tick: u64,\n    pub created_at: chrono::DateTime<chrono::Utc>,\n    pub echo_cycle: u32,\n}\n\npub enum TemporalStability {\n    Stable,\n    Chaotic,\n    Metastable,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub struct TemporalMarker {\n    pub id: uuid::Uuid,\n    pub track_id: u8,\n    pub tick: u64,\n    pub created_at: chrono::DateTime<chrono::Utc>,\n    pub echo_cycle: u32,\n}\n\npub enum TemporalStability {\n    Stable,\n    Chaotic,\n    Metastable,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "SovereignGossip"
+    },
+    {
+      "tag": "CODE",
+      "text": "src/lib.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub trait SovereignGossip {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent);\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker);\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub trait SovereignGossip {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent);\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker);\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "hypergossip_model.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "impl SovereignGossip for HyperGossipModel {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent) {\n        let tick = self.clock.current_tick();\n        let echo_cycle = self.echo_cycle;\n        let marker = TemporalMarker {\n            id: uuid::Uuid::new_v4(),\n            track_id,\n            tick,\n            created_at: chrono::Utc::now(),\n            echo_cycle,\n        };\n\n        self.buffer.push((track_id, midi_event, marker));\n        self.emit_temporal_marker(marker);\n    }\n\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker) {\n        self.time_machine_tx.send(marker).ok();\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "impl SovereignGossip for HyperGossipModel {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent) {\n        let tick = self.clock.current_tick();\n        let echo_cycle = self.echo_cycle;\n        let marker = TemporalMarker {\n            id: uuid::Uuid::new_v4(),\n            track_id,\n            tick,\n            created_at: chrono::Utc::now(),\n            echo_cycle,\n        };\n\n        self.buffer.push((track_id, midi_event, marker));\n        self.emit_temporal_marker(marker);\n    }\n\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker) {\n        self.time_machine_tx.send(marker).ok();\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pallet-time-machine/src/lib.rs"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalMarkers: map hasher(blake2_128) Uuid => TemporalMarker"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalDrift: map (TrackId, EchoCycle) => DriftStats"
+    },
+    {
+      "tag": "CODE",
+      "text": "fn ingest_temporal_marker(origin, marker: TemporalMarker)"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub struct DriftStats {\n    pub last_tick: u64,\n    pub drift_delta: i64,\n    pub stability: TemporalStability,\n}\n\nimpl<T: Config> Pallet<T> {\n    pub fn ingest_temporal_marker(marker: TemporalMarker) {\n        let key = (marker.track_id, marker.echo_cycle);\n        let mut stats = <TemporalDrift<T>>::get(key).unwrap_or(DriftStats {\n            last_tick: marker.tick,\n            drift_delta: 0,\n            stability: TemporalStability::Stable,\n        });\n\n        let delta = marker.tick as i64 - stats.last_tick as i64;\n        stats.drift_delta = delta;\n        stats.stability = classify_stability(delta);\n        stats.last_tick = marker.tick;\n\n        <TemporalDrift<T>>::insert(key, stats);\n        <TemporalMarkers<T>>::insert(marker.id, marker);\n    }\n}\n\nfn classify_stability(delta: i64) -> TemporalStability {\n    match delta.abs() {\n        0..=5 => TemporalStability::Stable,\n        6..=50 => TemporalStability::Metastable,\n        _ => TemporalStability::Chaotic,\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub struct DriftStats {\n    pub last_tick: u64,\n    pub drift_delta: i64,\n    pub stability: TemporalStability,\n}\n\nimpl<T: Config> Pallet<T> {\n    pub fn ingest_temporal_marker(marker: TemporalMarker) {\n        let key = (marker.track_id, marker.echo_cycle);\n        let mut stats = <TemporalDrift<T>>::get(key).unwrap_or(DriftStats {\n            last_tick: marker.tick,\n            drift_delta: 0,\n            stability: TemporalStability::Stable,\n        });\n\n        let delta = marker.tick as i64 - stats.last_tick as i64;\n        stats.drift_delta = delta;\n        stats.stability = classify_stability(delta);\n        stats.last_tick = marker.tick;\n\n        <TemporalDrift<T>>::insert(key, stats);\n        <TemporalMarkers<T>>::insert(marker.id, marker);\n    }\n}\n\nfn classify_stability(delta: i64) -> TemporalStability {\n    match delta.abs() {\n        0..=5 => TemporalStability::Stable,\n        6..=50 => TemporalStability::Metastable,\n        _ => TemporalStability::Chaotic,\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "verify_quorum"
+    },
+    {
+      "tag": "CODE",
+      "text": "council.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub fn verify_quorum(request: &RollbackRequest) -> Result<(), QuorumError> {\n    // existing seat checks...\n\n    let drift_ok = TimeMachine::check_temporal_drift(request.target_block)?;\n    if !drift_ok {\n        return Err(QuorumError::TemporalDriftExceeded);\n    }\n\n    Ok(())\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub fn verify_quorum(request: &RollbackRequest) -> Result<(), QuorumError> {\n    // existing seat checks...\n\n    let drift_ok = TimeMachine::check_temporal_drift(request.target_block)?;\n    if !drift_ok {\n        return Err(QuorumError::TemporalDriftExceeded);\n    }\n\n    Ok(())\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "check_temporal_drift"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalDrift"
+    },
+    {
+      "tag": "CODE",
+      "text": "Chaotic"
+    },
+    {
+      "tag": "CODE",
+      "text": "mev/time_machine/council.go"
+    },
+    {
+      "tag": "PRE",
+      "text": "type TemporalStability string\n\nconst (\n    Stable     TemporalStability = \"stable\"\n    Chaotic    TemporalStability = \"chaotic\"\n    Metastable TemporalStability = \"metastable\"\n)\n\ntype TemporalMarker struct {\n    ID         string             `json:\"id\"`\n    TrackID    uint8              `json:\"track_id\"`\n    Tick       uint64             `json:\"tick\"`\n    CreatedAt  time.Time          `json:\"created_at\"`\n    EchoCycle  uint32             `json:\"echo_cycle\"`\n    Stability  TemporalStability  `json:\"stability\"`\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "type TemporalStability string\n\nconst (\n    Stable     TemporalStability = \"stable\"\n    Chaotic    TemporalStability = \"chaotic\"\n    Metastable TemporalStability = \"metastable\"\n)\n\ntype TemporalMarker struct {\n    ID         string             `json:\"id\"`\n    TrackID    uint8              `json:\"track_id\"`\n    Tick       uint64             `json:\"tick\"`\n    CreatedAt  time.Time          `json:\"created_at\"`\n    EchoCycle  uint32             `json:\"echo_cycle\"`\n    Stability  TemporalStability  `json:\"stability\"`\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "state_lineage.go"
+    },
+    {
+      "tag": "PRE",
+      "text": "func TeleportToGlobalBrain(marker TemporalMarker) error {\n    key := fmt.Sprintf(\"temporal:marker:%s\", marker.ID)\n    payload, err := json.Marshal(marker)\n    if err != nil {\n        return err\n    }\n    return valkeyClient.Set(ctx, key, payload, 0).Err()\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func TeleportToGlobalBrain(marker TemporalMarker) error {\n    key := fmt.Sprintf(\"temporal:marker:%s\", marker.ID)\n    payload, err := json.Marshal(marker)\n    if err != nil {\n        return err\n    }\n    return valkeyClient.Set(ctx, key, payload, 0).Err()\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "writer.go"
+    },
+    {
+      "tag": "PRE",
+      "text": "func RequestRollback(req RollbackRequest) error {\n    if !verifyCouncilQuorum(req) {\n        return ErrQuorumDenied\n    }\n    if !checkTemporalDrift(req.TargetHeight) {\n        return ErrTemporalDriftExceeded\n    }\n    return performRollback(req)\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func RequestRollback(req RollbackRequest) error {\n    if !verifyCouncilQuorum(req) {\n        return ErrQuorumDenied\n    }\n    if !checkTemporalDrift(req.TargetHeight) {\n        return ErrTemporalDriftExceeded\n    }\n    return performRollback(req)\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "checkTemporalDrift"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalMarker"
+    },
+    {
+      "tag": "CODE",
+      "text": "Chaotic"
+    },
+    {
+      "tag": "CODE",
+      "text": "SurfgoMemory"
+    },
+    {
+      "tag": "CODE",
+      "text": "cloudflare_worker/index.js"
+    },
+    {
+      "tag": "PRE",
+      "text": "class SurfgoMemory {\n  constructor(state, env) {\n    this.state = state;\n    this.env = env;\n    this.memoryCube = { /* existing fields */ };\n    this.temporalMarkers = [];\n  }\n\n  recordTemporalMarker(marker) {\n    this.temporalMarkers.push(marker);\n    if (this.temporalMarkers.length > 1024) {\n      this.temporalMarkers.shift();\n    }\n    this.state.storage.put('temporalMarkers', this.temporalMarkers);\n  }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "class SurfgoMemory {\n  constructor(state, env) {\n    this.state = state;\n    this.env = env;\n    this.memoryCube = { /* existing fields */ };\n    this.temporalMarkers = [];\n  }\n\n  recordTemporalMarker(marker) {\n    this.temporalMarkers.push(marker);\n    if (this.temporalMarkers.length > 1024) {\n      this.temporalMarkers.shift();\n    }\n    this.state.storage.put('temporalMarkers', this.temporalMarkers);\n  }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "alarm()"
+    },
+    {
+      "tag": "PRE",
+      "text": "async alarm() {\n  const now = Date.now();\n  const echoCycle = Math.floor(now / 7000);\n\n  const marker = {\n    id: crypto.randomUUID(),\n    track_id: 0,\n    tick: now,\n    created_at: new Date(now).toISOString(),\n    echo_cycle: echoCycle,\n  };\n\n  this.recordTemporalMarker(marker);\n  await this.echoGlobalMemoryCube(marker);\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "async alarm() {\n  const now = Date.now();\n  const echoCycle = Math.floor(now / 7000);\n\n  const marker = {\n    id: crypto.randomUUID(),\n    track_id: 0,\n    tick: now,\n    created_at: new Date(now).toISOString(),\n    echo_cycle: echoCycle,\n  };\n\n  this.recordTemporalMarker(marker);\n  await this.echoGlobalMemoryCube(marker);\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "async echoGlobalMemoryCube(marker) {\n  const payload = {\n    memory_cube: this.memoryCube,\n    temporal_marker: marker,\n  };\n\n  await fetch(this.env.GLOBAL_BRAIN_ENDPOINT, {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(payload),\n  });\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "async echoGlobalMemoryCube(marker) {\n  const payload = {\n    memory_cube: this.memoryCube,\n    temporal_marker: marker,\n  };\n\n  await fetch(this.env.GLOBAL_BRAIN_ENDPOINT, {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(payload),\n  });\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "ui_react"
+    },
+    {
+      "tag": "CODE",
+      "text": "App.tsx"
+    },
+    {
+      "tag": "PRE",
+      "text": "type TemporalMarker = {\n  id: string;\n  track_id: number;\n  tick: number;\n  created_at: string;\n  echo_cycle: number;\n  stability: 'stable' | 'chaotic' | 'metastable';\n};\n\nconst StabilityColor: Record<TemporalMarker['stability'], string> = {\n  stable: 'rgba(0, 255, 180, 0.6)',\n  metastable: 'rgba(255, 200, 0, 0.6)',\n  chaotic: 'rgba(255, 80, 80, 0.8)',\n};\n\nfunction TemporalDriftPanel() {\n  const [markers, setMarkers] = useState<TemporalMarker[]>([]);\n\n  useEffect(() => {\n    const evtSource = new EventSource('/api/temporal-stream');\n    evtSource.onmessage = (e) => {\n      const marker = JSON.parse(e.data) as TemporalMarker;\n      setMarkers((prev) => [...prev.slice(-256), marker]);\n    };\n    return () => evtSource.close();\n  }, []);\n\n  return (\n    <div className=\"glass-panel\">\n      {markers.map((m) => (\n        <div\n          key={m.id}\n          className=\"drift-dot\"\n          style={{\n            backgroundColor: StabilityColor[m.stability],\n            transform: `translate3d(${m.echo_cycle % 50}px, ${m.tick % 50}px, 0)`,\n          }}\n        />\n      ))}\n    </div>\n  );\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "type TemporalMarker = {\n  id: string;\n  track_id: number;\n  tick: number;\n  created_at: string;\n  echo_cycle: number;\n  stability: 'stable' | 'chaotic' | 'metastable';\n};\n\nconst StabilityColor: Record<TemporalMarker['stability'], string> = {\n  stable: 'rgba(0, 255, 180, 0.6)',\n  metastable: 'rgba(255, 200, 0, 0.6)',\n  chaotic: 'rgba(255, 80, 80, 0.8)',\n};\n\nfunction TemporalDriftPanel() {\n  const [markers, setMarkers] = useState<TemporalMarker[]>([]);\n\n  useEffect(() => {\n    const evtSource = new EventSource('/api/temporal-stream');\n    evtSource.onmessage = (e) => {\n      const marker = JSON.parse(e.data) as TemporalMarker;\n      setMarkers((prev) => [...prev.slice(-256), marker]);\n    };\n    return () => evtSource.close();\n  }, []);\n\n  return (\n    <div className=\"glass-panel\">\n      {markers.map((m) => (\n        <div\n          key={m.id}\n          className=\"drift-dot\"\n          style={{\n            backgroundColor: StabilityColor[m.stability],\n            transform: `translate3d(${m.echo_cycle % 50}px, ${m.tick % 50}px, 0)`,\n          }}\n        />\n      ))}\n    </div>\n  );\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "ui_go_templ"
+    },
+    {
+      "tag": "PRE",
+      "text": "func TemporalDriftFragment(w http.ResponseWriter, r *http.Request) {\n    markers := fetchRecentMarkers() // from Valkey / DO / Substrate\n    templRenderTemporalDrift(w, markers)\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func TemporalDriftFragment(w http.ResponseWriter, r *http.Request) {\n    markers := fetchRecentMarkers() // from Valkey / DO / Substrate\n    templRenderTemporalDrift(w, markers)\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "<div id=\"temporal-drift\" hx-get=\"/temporal/drift\" hx-trigger=\"every 7s\" hx-swap=\"outerHTML\">\n  {{ range .Markers }}\n    <div class=\"drift-row {{ .Stability }}\">\n      <span>Track {{ .TrackID }}</span>\n      <span>Echo {{ .EchoCycle }}</span>\n      <span>\u0394Tick {{ .DriftDelta }}</span>\n      <span>{{ .Stability }}</span>\n    </div>\n  {{ end }}\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": "<div id=\"temporal-drift\" hx-get=\"/temporal/drift\" hx-trigger=\"every 7s\" hx-swap=\"outerHTML\">\n  {{ range .Markers }}\n    <div class=\"drift-row {{ .Stability }}\">\n      <span>Track {{ .TrackID }}</span>\n      <span>Echo {{ .EchoCycle }}</span>\n      <span>\u0394Tick {{ .DriftDelta }}</span>\n      <span>{{ .Stability }}</span>\n    </div>\n  {{ end }}\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": "osspark/src/hypergossip_model.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "#[derive(Clone, Debug)]\npub struct TemporalMarker {\n    pub id: uuid::Uuid,\n    pub track_id: u8,\n    pub tick: u64,\n    pub created_at: chrono::DateTime<chrono::Utc>,\n    pub echo_cycle: u32,\n}\n\n#[derive(Clone, Debug, PartialEq)]\npub enum TemporalStability {\n    Stable,\n    Chaotic,\n    Metastable,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "#[derive(Clone, Debug)]\npub struct TemporalMarker {\n    pub id: uuid::Uuid,\n    pub track_id: u8,\n    pub tick: u64,\n    pub created_at: chrono::DateTime<chrono::Utc>,\n    pub echo_cycle: u32,\n}\n\n#[derive(Clone, Debug, PartialEq)]\npub enum TemporalStability {\n    Stable,\n    Chaotic,\n    Metastable,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "SovereignGossip"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub trait SovereignGossip {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent);\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker);\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub trait SovereignGossip {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent);\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker);\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "impl SovereignGossip for HyperGossipModel {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent) {\n        let marker = TemporalMarker {\n            id: uuid::Uuid::new_v4(),\n            track_id,\n            tick: self.clock.current_tick(),\n            created_at: chrono::Utc::now(),\n            echo_cycle: self.echo_cycle,\n        };\n\n        self.buffer.push((track_id, midi_event, marker.clone()));\n        self.emit_temporal_marker(marker);\n    }\n\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker) {\n        let _ = self.time_machine_tx.send(marker);\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "impl SovereignGossip for HyperGossipModel {\n    fn push_event(&mut self, track_id: u8, midi_event: MidiEvent) {\n        let marker = TemporalMarker {\n            id: uuid::Uuid::new_v4(),\n            track_id,\n            tick: self.clock.current_tick(),\n            created_at: chrono::Utc::now(),\n            echo_cycle: self.echo_cycle,\n        };\n\n        self.buffer.push((track_id, midi_event, marker.clone()));\n        self.emit_temporal_marker(marker);\n    }\n\n    fn emit_temporal_marker(&mut self, marker: TemporalMarker) {\n        let _ = self.time_machine_tx.send(marker);\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pallet-time-machine/src/lib.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "#[derive(Clone, Encode, Decode)]\npub struct DriftStats {\n    pub last_tick: u64,\n    pub drift_delta: i64,\n    pub stability: TemporalStability,\n}\n\nimpl<T: Config> Pallet<T> {\n    pub fn ingest_temporal_marker(marker: TemporalMarker) {\n        let key = (marker.track_id, marker.echo_cycle);\n\n        let mut stats = <TemporalDrift<T>>::get(key).unwrap_or(DriftStats {\n            last_tick: marker.tick,\n            drift_delta: 0,\n            stability: TemporalStability::Stable,\n        });\n\n        let delta = marker.tick as i64 - stats.last_tick as i64;\n        stats.drift_delta = delta;\n        stats.stability = classify_stability(delta);\n        stats.last_tick = marker.tick;\n\n        <TemporalDrift<T>>::insert(key, stats);\n        <TemporalMarkers<T>>::insert(marker.id, marker);\n    }\n}\n\nfn classify_stability(delta: i64) -> TemporalStability {\n    match delta.abs() {\n        0..=5 => TemporalStability::Stable,\n        6..=50 => TemporalStability::Metastable,\n        _ => TemporalStability::Chaotic,\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "#[derive(Clone, Encode, Decode)]\npub struct DriftStats {\n    pub last_tick: u64,\n    pub drift_delta: i64,\n    pub stability: TemporalStability,\n}\n\nimpl<T: Config> Pallet<T> {\n    pub fn ingest_temporal_marker(marker: TemporalMarker) {\n        let key = (marker.track_id, marker.echo_cycle);\n\n        let mut stats = <TemporalDrift<T>>::get(key).unwrap_or(DriftStats {\n            last_tick: marker.tick,\n            drift_delta: 0,\n            stability: TemporalStability::Stable,\n        });\n\n        let delta = marker.tick as i64 - stats.last_tick as i64;\n        stats.drift_delta = delta;\n        stats.stability = classify_stability(delta);\n        stats.last_tick = marker.tick;\n\n        <TemporalDrift<T>>::insert(key, stats);\n        <TemporalMarkers<T>>::insert(marker.id, marker);\n    }\n}\n\nfn classify_stability(delta: i64) -> TemporalStability {\n    match delta.abs() {\n        0..=5 => TemporalStability::Stable,\n        6..=50 => TemporalStability::Metastable,\n        _ => TemporalStability::Chaotic,\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "council.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub fn verify_quorum(req: &RollbackRequest) -> Result<(), QuorumError> {\n    // existing seat checks\u2026\n\n    if !TimeMachine::check_temporal_drift(req.target_block)? {\n        return Err(QuorumError::TemporalDriftExceeded);\n    }\n\n    Ok(())\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub fn verify_quorum(req: &RollbackRequest) -> Result<(), QuorumError> {\n    // existing seat checks\u2026\n\n    if !TimeMachine::check_temporal_drift(req.target_block)? {\n        return Err(QuorumError::TemporalDriftExceeded);\n    }\n\n    Ok(())\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "type TemporalStability string\n\nconst (\n    Stable     TemporalStability = \"stable\"\n    Chaotic    TemporalStability = \"chaotic\"\n    Metastable TemporalStability = \"metastable\"\n)\n\ntype TemporalMarker struct {\n    ID        string            `json:\"id\"`\n    TrackID   uint8             `json:\"track_id\"`\n    Tick      uint64            `json:\"tick\"`\n    CreatedAt time.Time         `json:\"created_at\"`\n    EchoCycle uint32            `json:\"echo_cycle\"`\n    Stability TemporalStability `json:\"stability\"`\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "type TemporalStability string\n\nconst (\n    Stable     TemporalStability = \"stable\"\n    Chaotic    TemporalStability = \"chaotic\"\n    Metastable TemporalStability = \"metastable\"\n)\n\ntype TemporalMarker struct {\n    ID        string            `json:\"id\"`\n    TrackID   uint8             `json:\"track_id\"`\n    Tick      uint64            `json:\"tick\"`\n    CreatedAt time.Time         `json:\"created_at\"`\n    EchoCycle uint32            `json:\"echo_cycle\"`\n    Stability TemporalStability `json:\"stability\"`\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "func TeleportToGlobalBrain(marker TemporalMarker) error {\n    key := fmt.Sprintf(\"temporal:marker:%s\", marker.ID)\n    payload, _ := json.Marshal(marker)\n    return valkeyClient.Set(ctx, key, payload, 0).Err()\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func TeleportToGlobalBrain(marker TemporalMarker) error {\n    key := fmt.Sprintf(\"temporal:marker:%s\", marker.ID)\n    payload, _ := json.Marshal(marker)\n    return valkeyClient.Set(ctx, key, payload, 0).Err()\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "func RequestRollback(req RollbackRequest) error {\n    if !verifyCouncilQuorum(req) {\n        return ErrQuorumDenied\n    }\n    if !checkTemporalDrift(req.TargetHeight) {\n        return ErrTemporalDriftExceeded\n    }\n    return performRollback(req)\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func RequestRollback(req RollbackRequest) error {\n    if !verifyCouncilQuorum(req) {\n        return ErrQuorumDenied\n    }\n    if !checkTemporalDrift(req.TargetHeight) {\n        return ErrTemporalDriftExceeded\n    }\n    return performRollback(req)\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "class SurfgoMemory {\n  constructor(state, env) {\n    this.state = state;\n    this.env = env;\n    this.temporalMarkers = [];\n  }\n\n  recordTemporalMarker(marker) {\n    this.temporalMarkers.push(marker);\n    if (this.temporalMarkers.length > 1024)\n      this.temporalMarkers.shift();\n\n    this.state.storage.put('temporalMarkers', this.temporalMarkers);\n  }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "class SurfgoMemory {\n  constructor(state, env) {\n    this.state = state;\n    this.env = env;\n    this.temporalMarkers = [];\n  }\n\n  recordTemporalMarker(marker) {\n    this.temporalMarkers.push(marker);\n    if (this.temporalMarkers.length > 1024)\n      this.temporalMarkers.shift();\n\n    this.state.storage.put('temporalMarkers', this.temporalMarkers);\n  }\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "async alarm() {\n  const now = Date.now();\n  const echoCycle = Math.floor(now / 7000);\n\n  const marker = {\n    id: crypto.randomUUID(),\n    track_id: 0,\n    tick: now,\n    created_at: new Date(now).toISOString(),\n    echo_cycle: echoCycle,\n  };\n\n  this.recordTemporalMarker(marker);\n  await this.echoGlobalMemoryCube(marker);\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "async alarm() {\n  const now = Date.now();\n  const echoCycle = Math.floor(now / 7000);\n\n  const marker = {\n    id: crypto.randomUUID(),\n    track_id: 0,\n    tick: now,\n    created_at: new Date(now).toISOString(),\n    echo_cycle: echoCycle,\n  };\n\n  this.recordTemporalMarker(marker);\n  await this.echoGlobalMemoryCube(marker);\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "async echoGlobalMemoryCube(marker) {\n  await fetch(this.env.GLOBAL_BRAIN_ENDPOINT, {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ temporal_marker: marker }),\n  });\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "async echoGlobalMemoryCube(marker) {\n  await fetch(this.env.GLOBAL_BRAIN_ENDPOINT, {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ temporal_marker: marker }),\n  });\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "App.tsx"
+    },
+    {
+      "tag": "PRE",
+      "text": "const StabilityColor = {\n  stable: 'rgba(0,255,180,0.6)',\n  metastable: 'rgba(255,200,0,0.6)',\n  chaotic: 'rgba(255,80,80,0.8)',\n};\n\nfunction TemporalDriftPanel() {\n  const [markers, setMarkers] = useState([]);\n\n  useEffect(() => {\n    const sse = new EventSource('/api/temporal-stream');\n    sse.onmessage = (e) => {\n      const m = JSON.parse(e.data);\n      setMarkers((prev) => [...prev.slice(-256), m]);\n    };\n    return () => sse.close();\n  }, []);\n\n  return (\n    <div className=\"glass-panel\">\n      {markers.map((m) => (\n        <div\n          key={m.id}\n          className=\"drift-dot\"\n          style={{\n            backgroundColor: StabilityColor[m.stability],\n            transform: `translate3d(${m.echo_cycle % 50}px, ${m.tick % 50}px, 0)`,\n          }}\n        />\n      ))}\n    </div>\n  );\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "const StabilityColor = {\n  stable: 'rgba(0,255,180,0.6)',\n  metastable: 'rgba(255,200,0,0.6)',\n  chaotic: 'rgba(255,80,80,0.8)',\n};\n\nfunction TemporalDriftPanel() {\n  const [markers, setMarkers] = useState([]);\n\n  useEffect(() => {\n    const sse = new EventSource('/api/temporal-stream');\n    sse.onmessage = (e) => {\n      const m = JSON.parse(e.data);\n      setMarkers((prev) => [...prev.slice(-256), m]);\n    };\n    return () => sse.close();\n  }, []);\n\n  return (\n    <div className=\"glass-panel\">\n      {markers.map((m) => (\n        <div\n          key={m.id}\n          className=\"drift-dot\"\n          style={{\n            backgroundColor: StabilityColor[m.stability],\n            transform: `translate3d(${m.echo_cycle % 50}px, ${m.tick % 50}px, 0)`,\n          }}\n        />\n      ))}\n    </div>\n  );\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "func TemporalDriftFragment(w http.ResponseWriter, r *http.Request) {\n    markers := fetchRecentMarkers()\n    templRenderTemporalDrift(w, markers)\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func TemporalDriftFragment(w http.ResponseWriter, r *http.Request) {\n    markers := fetchRecentMarkers()\n    templRenderTemporalDrift(w, markers)\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "<div id=\"temporal-drift\"\n     hx-get=\"/temporal/drift\"\n     hx-trigger=\"every 7s\"\n     hx-swap=\"outerHTML\">\n\n  {{ range .Markers }}\n    <div class=\"drift-row {{ .Stability }}\">\n      <span>Track {{ .TrackID }}</span>\n      <span>Echo {{ .EchoCycle }}</span>\n      <span>\u0394Tick {{ .DriftDelta }}</span>\n      <span>{{ .Stability }}</span>\n    </div>\n  {{ end }}\n\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": "<div id=\"temporal-drift\"\n     hx-get=\"/temporal/drift\"\n     hx-trigger=\"every 7s\"\n     hx-swap=\"outerHTML\">\n\n  {{ range .Markers }}\n    <div class=\"drift-row {{ .Stability }}\">\n      <span>Track {{ .TrackID }}</span>\n      <span>Echo {{ .EchoCycle }}</span>\n      <span>\u0394Tick {{ .DriftDelta }}</span>\n      <span>{{ .Stability }}</span>\n    </div>\n  {{ end }}\n\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": ".proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "temporal_marker.proto"
+    },
+    {
+      "tag": "PRE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nenum TemporalStability {\n  STABILITY_UNSPECIFIED = 0;\n  STABLE                = 1;\n  CHAOTIC               = 2;\n  METASTABLE            = 3;\n}\n\nmessage TemporalMarker {\n  string id           = 1;  // UUID v4\n  uint32 track_id     = 2;  // 0\u2013255\n  uint64 tick         = 3;  // logical or wall-clock tick\n  int64  created_at   = 4;  // Unix millis\n  uint32 echo_cycle   = 5;  // 7s cadence index\n  TemporalStability stability = 6;\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nenum TemporalStability {\n  STABILITY_UNSPECIFIED = 0;\n  STABLE                = 1;\n  CHAOTIC               = 2;\n  METASTABLE            = 3;\n}\n\nmessage TemporalMarker {\n  string id           = 1;  // UUID v4\n  uint32 track_id     = 2;  // 0\u2013255\n  uint64 tick         = 3;  // logical or wall-clock tick\n  int64  created_at   = 4;  // Unix millis\n  uint32 echo_cycle   = 5;  // 7s cadence index\n  TemporalStability stability = 6;\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "protoc --rust_out=src/proto temporal_marker.proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "protoc --rust_out=src/proto temporal_marker.proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "hypergossip_model.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "use crate::proto::sovereign::temporal::TemporalMarker as PbTemporalMarker;\n\nfn to_pb_marker(m: &TemporalMarker, stability: TemporalStability) -> PbTemporalMarker {\n    PbTemporalMarker {\n        id: m.id.to_string(),\n        track_id: m.track_id as u32,\n        tick: m.tick,\n        created_at: m.created_at.timestamp_millis(),\n        echo_cycle: m.echo_cycle,\n        stability: match stability {\n            TemporalStability::Stable => TemporalStabilityPb::STABLE.into(),\n            TemporalStability::Chaotic => TemporalStabilityPb::CHAOTIC.into(),\n            TemporalStability::Metastable => TemporalStabilityPb::METASTABLE.into(),\n        },\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "use crate::proto::sovereign::temporal::TemporalMarker as PbTemporalMarker;\n\nfn to_pb_marker(m: &TemporalMarker, stability: TemporalStability) -> PbTemporalMarker {\n    PbTemporalMarker {\n        id: m.id.to_string(),\n        track_id: m.track_id as u32,\n        tick: m.tick,\n        created_at: m.created_at.timestamp_millis(),\n        echo_cycle: m.echo_cycle,\n        stability: match stability {\n            TemporalStability::Stable => TemporalStabilityPb::STABLE.into(),\n            TemporalStability::Chaotic => TemporalStabilityPb::CHAOTIC.into(),\n            TemporalStability::Metastable => TemporalStabilityPb::METASTABLE.into(),\n        },\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "PbTemporalMarker"
+    },
+    {
+      "tag": "PRE",
+      "text": "protoc --go_out=./internal/proto temporal_marker.proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "protoc --go_out=./internal/proto temporal_marker.proto"
+    },
+    {
+      "tag": "PRE",
+      "text": "import sovereignpb \"your/module/internal/proto/sovereign/temporal\"\n\nfunc ToPbMarker(m TemporalMarker) *sovereignpb.TemporalMarker {\n    return &sovereignpb.TemporalMarker{\n        Id:         m.ID,\n        TrackId:    uint32(m.TrackID),\n        Tick:       m.Tick,\n        CreatedAt:  m.CreatedAt.UnixMilli(),\n        EchoCycle:  m.EchoCycle,\n        Stability:  toPbStability(m.Stability),\n    }\n}\n\nfunc toPbStability(s TemporalStability) sovereignpb.TemporalStability {\n    switch s {\n    case Stable:\n        return sovereignpb.TemporalStability_STABLE\n    case Chaotic:\n        return sovereignpb.TemporalStability_CHAOTIC\n    case Metastable:\n        return sovereignpb.TemporalStability_METASTABLE\n    default:\n        return sovereignpb.TemporalStability_STABILITY_UNSPECIFIED\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "import sovereignpb \"your/module/internal/proto/sovereign/temporal\"\n\nfunc ToPbMarker(m TemporalMarker) *sovereignpb.TemporalMarker {\n    return &sovereignpb.TemporalMarker{\n        Id:         m.ID,\n        TrackId:    uint32(m.TrackID),\n        Tick:       m.Tick,\n        CreatedAt:  m.CreatedAt.UnixMilli(),\n        EchoCycle:  m.EchoCycle,\n        Stability:  toPbStability(m.Stability),\n    }\n}\n\nfunc toPbStability(s TemporalStability) sovereignpb.TemporalStability {\n    switch s {\n    case Stable:\n        return sovereignpb.TemporalStability_STABLE\n    case Chaotic:\n        return sovereignpb.TemporalStability_CHAOTIC\n    case Metastable:\n        return sovereignpb.TemporalStability_METASTABLE\n    default:\n        return sovereignpb.TemporalStability_STABILITY_UNSPECIFIED\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "protobufjs"
+    },
+    {
+      "tag": "PRE",
+      "text": "import { TemporalMarker } from './generated/temporal_marker_pb.js';\n\nfunction buildTemporalMarker(marker) {\n  const pb = new TemporalMarker();\n  pb.setId(marker.id);\n  pb.setTrackId(marker.track_id);\n  pb.setTick(marker.tick);\n  pb.setCreatedAt(marker.created_at_ms);\n  pb.setEchoCycle(marker.echo_cycle);\n  pb.setStability(marker.stability); // enum numeric value\n  return pb;\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "import { TemporalMarker } from './generated/temporal_marker_pb.js';\n\nfunction buildTemporalMarker(marker) {\n  const pb = new TemporalMarker();\n  pb.setId(marker.id);\n  pb.setTrackId(marker.track_id);\n  pb.setTick(marker.tick);\n  pb.setCreatedAt(marker.created_at_ms);\n  pb.setEchoCycle(marker.echo_cycle);\n  pb.setStability(marker.stability); // enum numeric value\n  return pb;\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pb.serializeBinary()"
+    },
+    {
+      "tag": "CODE",
+      "text": "/api/temporal-stream"
+    },
+    {
+      "tag": "CODE",
+      "text": "/temporal/drift"
+    },
+    {
+      "tag": "CODE",
+      "text": ".proto"
+    },
+    {
+      "tag": "CODE",
+      "text": ".proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "temporal_marker.proto"
+    },
+    {
+      "tag": "PRE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nenum TemporalStability {\n  STABILITY_UNSPECIFIED = 0;\n  STABLE                = 1;\n  CHAOTIC               = 2;\n  METASTABLE            = 3;\n}\n\nmessage TemporalMarker {\n  string id           = 1;  // UUID v4\n  uint32 track_id     = 2;  // 0\u2013255\n  uint64 tick         = 3;  // logical or wall-clock tick\n  int64  created_at   = 4;  // Unix millis\n  uint32 echo_cycle   = 5;  // 7s cadence index\n  TemporalStability stability = 6;\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nenum TemporalStability {\n  STABILITY_UNSPECIFIED = 0;\n  STABLE                = 1;\n  CHAOTIC               = 2;\n  METASTABLE            = 3;\n}\n\nmessage TemporalMarker {\n  string id           = 1;  // UUID v4\n  uint32 track_id     = 2;  // 0\u2013255\n  uint64 tick         = 3;  // logical or wall-clock tick\n  int64  created_at   = 4;  // Unix millis\n  uint32 echo_cycle   = 5;  // 7s cadence index\n  TemporalStability stability = 6;\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "protoc --rust_out=src/proto temporal_marker.proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "protoc --rust_out=src/proto temporal_marker.proto"
+    },
+    {
+      "tag": "PRE",
+      "text": "use crate::proto::sovereign::temporal::{\n    TemporalMarker as PbTemporalMarker,\n    TemporalStability as PbStability,\n};\n\nfn to_pb_marker(m: &TemporalMarker, stability: TemporalStability) -> PbTemporalMarker {\n    PbTemporalMarker {\n        id: m.id.to_string(),\n        track_id: m.track_id as u32,\n        tick: m.tick,\n        created_at: m.created_at.timestamp_millis(),\n        echo_cycle: m.echo_cycle,\n        stability: match stability {\n            TemporalStability::Stable => PbStability::STABLE.into(),\n            TemporalStability::Chaotic => PbStability::CHAOTIC.into(),\n            TemporalStability::Metastable => PbStability::METASTABLE.into(),\n        },\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "use crate::proto::sovereign::temporal::{\n    TemporalMarker as PbTemporalMarker,\n    TemporalStability as PbStability,\n};\n\nfn to_pb_marker(m: &TemporalMarker, stability: TemporalStability) -> PbTemporalMarker {\n    PbTemporalMarker {\n        id: m.id.to_string(),\n        track_id: m.track_id as u32,\n        tick: m.tick,\n        created_at: m.created_at.timestamp_millis(),\n        echo_cycle: m.echo_cycle,\n        stability: match stability {\n            TemporalStability::Stable => PbStability::STABLE.into(),\n            TemporalStability::Chaotic => PbStability::CHAOTIC.into(),\n            TemporalStability::Metastable => PbStability::METASTABLE.into(),\n        },\n    }\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "protoc --go_out=./internal/proto temporal_marker.proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "protoc --go_out=./internal/proto temporal_marker.proto"
+    },
+    {
+      "tag": "PRE",
+      "text": "import sovereignpb \"your/module/internal/proto/sovereign/temporal\"\n\nfunc ToPbMarker(m TemporalMarker) *sovereignpb.TemporalMarker {\n    return &sovereignpb.TemporalMarker{\n        Id:         m.ID,\n        TrackId:    uint32(m.TrackID),\n        Tick:       m.Tick,\n        CreatedAt:  m.CreatedAt.UnixMilli(),\n        EchoCycle:  m.EchoCycle,\n        Stability:  toPbStability(m.Stability),\n    }\n}\n\nfunc toPbStability(s TemporalStability) sovereignpb.TemporalStability {\n    switch s {\n    case Stable:\n        return sovereignpb.TemporalStability_STABLE\n    case Chaotic:\n        return sovereignpb.TemporalStability_CHAOTIC\n    case Metastable:\n        return sovereignpb.TemporalStability_METASTABLE\n    default:\n        return sovereignpb.TemporalStability_STABILITY_UNSPECIFIED\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "import sovereignpb \"your/module/internal/proto/sovereign/temporal\"\n\nfunc ToPbMarker(m TemporalMarker) *sovereignpb.TemporalMarker {\n    return &sovereignpb.TemporalMarker{\n        Id:         m.ID,\n        TrackId:    uint32(m.TrackID),\n        Tick:       m.Tick,\n        CreatedAt:  m.CreatedAt.UnixMilli(),\n        EchoCycle:  m.EchoCycle,\n        Stability:  toPbStability(m.Stability),\n    }\n}\n\nfunc toPbStability(s TemporalStability) sovereignpb.TemporalStability {\n    switch s {\n    case Stable:\n        return sovereignpb.TemporalStability_STABLE\n    case Chaotic:\n        return sovereignpb.TemporalStability_CHAOTIC\n    case Metastable:\n        return sovereignpb.TemporalStability_METASTABLE\n    default:\n        return sovereignpb.TemporalStability_STABILITY_UNSPECIFIED\n    }\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "npm install protobufjs"
+    },
+    {
+      "tag": "CODE",
+      "text": "npm install protobufjs"
+    },
+    {
+      "tag": "PRE",
+      "text": "import protobuf from \"protobufjs\";\n\nconst root = await protobuf.load(\"temporal_marker.proto\");\nconst TemporalMarker = root.lookupType(\"sovereign.temporal.TemporalMarker\");"
+    },
+    {
+      "tag": "CODE",
+      "text": "import protobuf from \"protobufjs\";\n\nconst root = await protobuf.load(\"temporal_marker.proto\");\nconst TemporalMarker = root.lookupType(\"sovereign.temporal.TemporalMarker\");"
+    },
+    {
+      "tag": "PRE",
+      "text": "function buildTemporalMarker(marker) {\n  const pb = TemporalMarker.create({\n    id: marker.id,\n    track_id: marker.track_id,\n    tick: marker.tick,\n    created_at: marker.created_at_ms,\n    echo_cycle: marker.echo_cycle,\n    stability: marker.stability,\n  });\n\n  return TemporalMarker.encode(pb).finish(); // Uint8Array\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "function buildTemporalMarker(marker) {\n  const pb = TemporalMarker.create({\n    id: marker.id,\n    track_id: marker.track_id,\n    tick: marker.tick,\n    created_at: marker.created_at_ms,\n    echo_cycle: marker.echo_cycle,\n    stability: marker.stability,\n  });\n\n  return TemporalMarker.encode(pb).finish(); // Uint8Array\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": ".proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "/copilot-sync"
+    },
+    {
+      "tag": "CODE",
+      "text": "temporal_stream.proto"
+    },
+    {
+      "tag": "PRE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nimport \"temporal_marker.proto\";\n\nservice TemporalStream {\n  // Unary: health / capability check\n  rpc GetCapabilities(TemporalStreamCapabilitiesRequest)\n      returns (TemporalStreamCapabilitiesResponse);\n\n  // Server-streaming: subscribe to temporal markers\n  rpc SubscribeTemporalMarkers(TemporalStreamSubscribeRequest)\n      returns (stream TemporalMarker);\n\n  // Bidirectional streaming: gossip + drift negotiation\n  rpc GossipTemporalMarkers(stream TemporalMarker)\n      returns (stream TemporalMarker);\n}\n\nmessage TemporalStreamCapabilitiesRequest {\n  string node_id = 1;\n}\n\nmessage TemporalStreamCapabilitiesResponse {\n  string node_id = 1;\n  string version = 2;\n  bool supports_gossip = 3;\n  bool supports_drift_enforcement = 4;\n}\n\nmessage TemporalStreamSubscribeRequest {\n  string node_id   = 1;\n  uint32 track_id  = 2;  // 0 = all\n  uint32 max_backlog = 3;\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nimport \"temporal_marker.proto\";\n\nservice TemporalStream {\n  // Unary: health / capability check\n  rpc GetCapabilities(TemporalStreamCapabilitiesRequest)\n      returns (TemporalStreamCapabilitiesResponse);\n\n  // Server-streaming: subscribe to temporal markers\n  rpc SubscribeTemporalMarkers(TemporalStreamSubscribeRequest)\n      returns (stream TemporalMarker);\n\n  // Bidirectional streaming: gossip + drift negotiation\n  rpc GossipTemporalMarkers(stream TemporalMarker)\n      returns (stream TemporalMarker);\n}\n\nmessage TemporalStreamCapabilitiesRequest {\n  string node_id = 1;\n}\n\nmessage TemporalStreamCapabilitiesResponse {\n  string node_id = 1;\n  string version = 2;\n  bool supports_gossip = 3;\n  bool supports_drift_enforcement = 4;\n}\n\nmessage TemporalStreamSubscribeRequest {\n  string node_id   = 1;\n  uint32 track_id  = 2;  // 0 = all\n  uint32 max_backlog = 3;\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub struct TemporalStreamService {\n    pub gossip_rx: tokio::sync::mpsc::Receiver<PbTemporalMarker>,\n}\n\n#[tonic::async_trait]\nimpl TemporalStream for TemporalStreamService {\n    async fn get_capabilities(\n        &self,\n        req: Request<TemporalStreamCapabilitiesRequest>,\n    ) -> Result<Response<TemporalStreamCapabilitiesResponse>, Status> {\n        let node_id = req.into_inner().node_id;\n        Ok(Response::new(TemporalStreamCapabilitiesResponse {\n            node_id,\n            version: \"s27-1\".into(),\n            supports_gossip: true,\n            supports_drift_enforcement: true,\n        }))\n    }\n\n    type SubscribeTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn subscribe_temporal_markers(\n        &self,\n        _req: Request<TemporalStreamSubscribeRequest>,\n    ) -> Result<Response<Self::SubscribeTemporalMarkersStream>, Status> {\n        let rx = self.gossip_rx.clone();\n        let stream = tokio_stream::wrappers::ReceiverStream::new(rx)\n            .map(|m| Ok(m));\n        Ok(Response::new(stream))\n    }\n\n    type GossipTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn gossip_temporal_markers(\n        &self,\n        req: Request<tonic::Streaming<TemporalMarker>>,\n    ) -> Result<Response<Self::GossipTemporalMarkersStream>, Status> {\n        let mut inbound = req.into_inner();\n        let (tx, rx) = tokio::sync::mpsc::channel(128);\n\n        tokio::spawn(async move {\n            while let Ok(Some(marker)) = inbound.message().await {\n                // ingest into Time Machine / drift stats here\n                let _ = tx.send(Ok(marker)).await;\n            }\n        });\n\n        Ok(Response::new(tokio_stream::wrappers::ReceiverStream::new(rx)))\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub struct TemporalStreamService {\n    pub gossip_rx: tokio::sync::mpsc::Receiver<PbTemporalMarker>,\n}\n\n#[tonic::async_trait]\nimpl TemporalStream for TemporalStreamService {\n    async fn get_capabilities(\n        &self,\n        req: Request<TemporalStreamCapabilitiesRequest>,\n    ) -> Result<Response<TemporalStreamCapabilitiesResponse>, Status> {\n        let node_id = req.into_inner().node_id;\n        Ok(Response::new(TemporalStreamCapabilitiesResponse {\n            node_id,\n            version: \"s27-1\".into(),\n            supports_gossip: true,\n            supports_drift_enforcement: true,\n        }))\n    }\n\n    type SubscribeTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn subscribe_temporal_markers(\n        &self,\n        _req: Request<TemporalStreamSubscribeRequest>,\n    ) -> Result<Response<Self::SubscribeTemporalMarkersStream>, Status> {\n        let rx = self.gossip_rx.clone();\n        let stream = tokio_stream::wrappers::ReceiverStream::new(rx)\n            .map(|m| Ok(m));\n        Ok(Response::new(stream))\n    }\n\n    type GossipTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn gossip_temporal_markers(\n        &self,\n        req: Request<tonic::Streaming<TemporalMarker>>,\n    ) -> Result<Response<Self::GossipTemporalMarkersStream>, Status> {\n        let mut inbound = req.into_inner();\n        let (tx, rx) = tokio::sync::mpsc::channel(128);\n\n        tokio::spawn(async move {\n            while let Ok(Some(marker)) = inbound.message().await {\n                // ingest into Time Machine / drift stats here\n                let _ = tx.send(Ok(marker)).await;\n            }\n        });\n\n        Ok(Response::new(tokio_stream::wrappers::ReceiverStream::new(rx)))\n    }\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "func SubscribeTemporalStream(ctx context.Context, conn *grpc.ClientConn) error {\n    client := sovereignpb.NewTemporalStreamClient(conn)\n\n    stream, err := client.SubscribeTemporalMarkers(ctx,\n        &sovereignpb.TemporalStreamSubscribeRequest{\n            NodeId:     \"go-track\",\n            TrackId:    0,\n            MaxBacklog: 256,\n        },\n    )\n    if err != nil {\n        return err\n    }\n\n    for {\n        m, err := stream.Recv()\n        if err != nil {\n            return err\n        }\n        // ingest into Valkey + drift checks\n        handleTemporalMarker(m)\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func SubscribeTemporalStream(ctx context.Context, conn *grpc.ClientConn) error {\n    client := sovereignpb.NewTemporalStreamClient(conn)\n\n    stream, err := client.SubscribeTemporalMarkers(ctx,\n        &sovereignpb.TemporalStreamSubscribeRequest{\n            NodeId:     \"go-track\",\n            TrackId:    0,\n            MaxBacklog: 256,\n        },\n    )\n    if err != nil {\n        return err\n    }\n\n    for {\n        m, err := stream.Recv()\n        if err != nil {\n            return err\n        }\n        // ingest into Valkey + drift checks\n        handleTemporalMarker(m)\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "POST /temporal/subscribe"
+    },
+    {
+      "tag": "CODE",
+      "text": "SubscribeTemporalMarkers"
+    },
+    {
+      "tag": "CODE",
+      "text": "d:\\pqr.info\\agents\\osspark\\src\\temporal_stream.rs"
+    },
+    {
+      "tag": "CODE",
+      "text": "d:\\pqr.info\\agents\\osspark\\src\\temporal_stream.rs"
+    },
+    {
+      "tag": "PRE",
+      "text": "// d:\\pqr.info\\agents\\osspark\\src\\temporal_stream.rs\n\nuse tonic::{Request, Response, Status};\nuse tokio_stream::StreamExt;\n\nuse crate::proto::sovereign::temporal::{\n    temporal_stream_server::TemporalStream,\n    temporal_stream_server::TemporalStreamServer,\n    TemporalMarker,\n    TemporalStreamCapabilitiesRequest,\n    TemporalStreamCapabilitiesResponse,\n    TemporalStreamSubscribeRequest,\n};\n\npub struct TemporalStreamService {\n    // Channel receiving protobuf TemporalMarker from HyperGossip\n    pub gossip_rx: tokio::sync::mpsc::Receiver<TemporalMarker>,\n}\n\n#[tonic::async_trait]\nimpl TemporalStream for TemporalStreamService {\n    async fn get_capabilities(\n        &self,\n        req: Request<TemporalStreamCapabilitiesRequest>,\n    ) -> Result<Response<TemporalStreamCapabilitiesResponse>, Status> {\n        let node_id = req.into_inner().node_id;\n        Ok(Response::new(TemporalStreamCapabilitiesResponse {\n            node_id,\n            version: \"s27-1\".to_string(),\n            supports_gossip: true,\n            supports_drift_enforcement: true,\n        }))\n    }\n\n    type SubscribeTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn subscribe_temporal_markers(\n        &self,\n        _req: Request<TemporalStreamSubscribeRequest>,\n    ) -> Result<Response<Self::SubscribeTemporalMarkersStream>, Status> {\n        let rx = self.gossip_rx.clone();\n        let stream = tokio_stream::wrappers::ReceiverStream::new(rx).map(Ok);\n        Ok(Response::new(stream))\n    }\n\n    type GossipTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn gossip_temporal_markers(\n        &self,\n        req: Request<tonic::Streaming<TemporalMarker>>,\n    ) -> Result<Response<Self::GossipTemporalMarkersStream>, Status> {\n        let mut inbound = req.into_inner();\n        let (tx, rx) = tokio::sync::mpsc::channel(128);\n\n        tokio::spawn(async move {\n            while let Ok(Some(marker)) = inbound.message().await {\n                // TODO: integrate with pallet-time-machine::ingest_temporal_marker\n                // and drift classification here.\n                let _ = tx.send(Ok(marker)).await;\n            }\n        });\n\n        Ok(Response::new(tokio_stream::wrappers::ReceiverStream::new(rx)))\n    }\n}\n\n// Helper to mount the service into your gRPC server\npub fn build_temporal_stream_server(\n    gossip_rx: tokio::sync::mpsc::Receiver<TemporalMarker>,\n) -> TemporalStreamServer<TemporalStreamService> {\n    TemporalStreamServer::new(TemporalStreamService { gossip_rx })\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "// d:\\pqr.info\\agents\\osspark\\src\\temporal_stream.rs\n\nuse tonic::{Request, Response, Status};\nuse tokio_stream::StreamExt;\n\nuse crate::proto::sovereign::temporal::{\n    temporal_stream_server::TemporalStream,\n    temporal_stream_server::TemporalStreamServer,\n    TemporalMarker,\n    TemporalStreamCapabilitiesRequest,\n    TemporalStreamCapabilitiesResponse,\n    TemporalStreamSubscribeRequest,\n};\n\npub struct TemporalStreamService {\n    // Channel receiving protobuf TemporalMarker from HyperGossip\n    pub gossip_rx: tokio::sync::mpsc::Receiver<TemporalMarker>,\n}\n\n#[tonic::async_trait]\nimpl TemporalStream for TemporalStreamService {\n    async fn get_capabilities(\n        &self,\n        req: Request<TemporalStreamCapabilitiesRequest>,\n    ) -> Result<Response<TemporalStreamCapabilitiesResponse>, Status> {\n        let node_id = req.into_inner().node_id;\n        Ok(Response::new(TemporalStreamCapabilitiesResponse {\n            node_id,\n            version: \"s27-1\".to_string(),\n            supports_gossip: true,\n            supports_drift_enforcement: true,\n        }))\n    }\n\n    type SubscribeTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn subscribe_temporal_markers(\n        &self,\n        _req: Request<TemporalStreamSubscribeRequest>,\n    ) -> Result<Response<Self::SubscribeTemporalMarkersStream>, Status> {\n        let rx = self.gossip_rx.clone();\n        let stream = tokio_stream::wrappers::ReceiverStream::new(rx).map(Ok);\n        Ok(Response::new(stream))\n    }\n\n    type GossipTemporalMarkersStream =\n        tokio_stream::wrappers::ReceiverStream<Result<TemporalMarker, Status>>;\n\n    async fn gossip_temporal_markers(\n        &self,\n        req: Request<tonic::Streaming<TemporalMarker>>,\n    ) -> Result<Response<Self::GossipTemporalMarkersStream>, Status> {\n        let mut inbound = req.into_inner();\n        let (tx, rx) = tokio::sync::mpsc::channel(128);\n\n        tokio::spawn(async move {\n            while let Ok(Some(marker)) = inbound.message().await {\n                // TODO: integrate with pallet-time-machine::ingest_temporal_marker\n                // and drift classification here.\n                let _ = tx.send(Ok(marker)).await;\n            }\n        });\n\n        Ok(Response::new(tokio_stream::wrappers::ReceiverStream::new(rx)))\n    }\n}\n\n// Helper to mount the service into your gRPC server\npub fn build_temporal_stream_server(\n    gossip_rx: tokio::sync::mpsc::Receiver<TemporalMarker>,\n) -> TemporalStreamServer<TemporalStreamService> {\n    TemporalStreamServer::new(TemporalStreamService { gossip_rx })\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "build_temporal_stream_server"
+    },
+    {
+      "tag": "CODE",
+      "text": "lib.rs"
+    },
+    {
+      "tag": "CODE",
+      "text": "tonic::transport::Server"
+    },
+    {
+      "tag": "CODE",
+      "text": "gossip_rx"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalMarker"
+    },
+    {
+      "tag": "CODE",
+      "text": ".proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "temporal_stream.proto"
+    },
+    {
+      "tag": "CODE",
+      "text": "temporal_marker.proto"
+    },
+    {
+      "tag": "PRE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nimport \"temporal_marker.proto\";\n\nservice TemporalStream {\n  // Server-side streaming RPC\n  rpc SubscribeTemporalMarkers(SubscribeRequest)\n      returns (stream TemporalMarker);\n}\n\nmessage SubscribeRequest {\n  uint32 track_id = 1;     // optional filter\n  uint32 echo_cycle = 2;   // optional filter\n  bool include_stability = 3; // include stability classification\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "syntax = \"proto3\";\n\npackage sovereign.temporal;\n\nimport \"temporal_marker.proto\";\n\nservice TemporalStream {\n  // Server-side streaming RPC\n  rpc SubscribeTemporalMarkers(SubscribeRequest)\n      returns (stream TemporalMarker);\n}\n\nmessage SubscribeRequest {\n  uint32 track_id = 1;     // optional filter\n  uint32 echo_cycle = 2;   // optional filter\n  bool include_stability = 3; // include stability classification\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "use tonic::{Request, Response, Status};\nuse sovereign::temporal::{\n    temporal_stream_server::TemporalStream,\n    SubscribeRequest, TemporalMarker,\n};\n\n#[derive(Default)]\npub struct TemporalStreamService {\n    pub rx: tokio::sync::broadcast::Receiver<TemporalMarker>,\n}\n\n#[tonic::async_trait]\nimpl TemporalStream for TemporalStreamService {\n    type SubscribeTemporalMarkersStream =\n        tokio_stream::wrappers::BroadcastStream<TemporalMarker>;\n\n    async fn subscribe_temporal_markers(\n        &self,\n        _req: Request<SubscribeRequest>,\n    ) -> Result<Response<Self::SubscribeTemporalMarkersStream>, Status> {\n        Ok(Response::new(tokio_stream::wrappers::BroadcastStream::new(self.rx.resubscribe())))\n    }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "use tonic::{Request, Response, Status};\nuse sovereign::temporal::{\n    temporal_stream_server::TemporalStream,\n    SubscribeRequest, TemporalMarker,\n};\n\n#[derive(Default)]\npub struct TemporalStreamService {\n    pub rx: tokio::sync::broadcast::Receiver<TemporalMarker>,\n}\n\n#[tonic::async_trait]\nimpl TemporalStream for TemporalStreamService {\n    type SubscribeTemporalMarkersStream =\n        tokio_stream::wrappers::BroadcastStream<TemporalMarker>;\n\n    async fn subscribe_temporal_markers(\n        &self,\n        _req: Request<SubscribeRequest>,\n    ) -> Result<Response<Self::SubscribeTemporalMarkersStream>, Status> {\n        Ok(Response::new(tokio_stream::wrappers::BroadcastStream::new(self.rx.resubscribe())))\n    }\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "let mut stream = client\n    .subscribe_temporal_markers(SubscribeRequest { track_id: 0, echo_cycle: 0, include_stability: true })\n    .await?\n    .into_inner();\n\nwhile let Some(marker) = stream.message().await? {\n    handle_temporal_marker(marker);\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "let mut stream = client\n    .subscribe_temporal_markers(SubscribeRequest { track_id: 0, echo_cycle: 0, include_stability: true })\n    .await?\n    .into_inner();\n\nwhile let Some(marker) = stream.message().await? {\n    handle_temporal_marker(marker);\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "type TemporalStreamServer struct {\n    sovereignpb.UnimplementedTemporalStreamServer\n    Broadcast chan *sovereignpb.TemporalMarker\n}\n\nfunc (s *TemporalStreamServer) SubscribeTemporalMarkers(\n    req *sovereignpb.SubscribeRequest,\n    stream sovereignpb.TemporalStream_SubscribeTemporalMarkersServer,\n) error {\n    for marker := range s.Broadcast {\n        if err := stream.Send(marker); err != nil {\n            return err\n        }\n    }\n    return nil\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "type TemporalStreamServer struct {\n    sovereignpb.UnimplementedTemporalStreamServer\n    Broadcast chan *sovereignpb.TemporalMarker\n}\n\nfunc (s *TemporalStreamServer) SubscribeTemporalMarkers(\n    req *sovereignpb.SubscribeRequest,\n    stream sovereignpb.TemporalStream_SubscribeTemporalMarkersServer,\n) error {\n    for marker := range s.Broadcast {\n        if err := stream.Send(marker); err != nil {\n            return err\n        }\n    }\n    return nil\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "stream, _ := client.SubscribeTemporalMarkers(ctx, &sovereignpb.SubscribeRequest{})\nfor {\n    marker, err := stream.Recv()\n    if err != nil {\n        break\n    }\n    handleTemporalMarker(marker)\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "stream, _ := client.SubscribeTemporalMarkers(ctx, &sovereignpb.SubscribeRequest{})\nfor {\n    marker, err := stream.Recv()\n    if err != nil {\n        break\n    }\n    handleTemporalMarker(marker)\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "async function handleTemporalMarkerBinary(binary) {\n  const marker = TemporalMarker.decode(binary);\n  broadcastToWebTransport(marker);\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "async function handleTemporalMarkerBinary(binary) {\n  const marker = TemporalMarker.decode(binary);\n  broadcastToWebTransport(marker);\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "function broadcastToWebTransport(marker) {\n  for (const session of activeSessions) {\n    session.send(JSON.stringify(marker));\n  }\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "function broadcastToWebTransport(marker) {\n  for (const session of activeSessions) {\n    session.send(JSON.stringify(marker));\n  }\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "async fn sse_temporal_stream(\n    Extension(rx): Extension<broadcast::Receiver<PbTemporalMarker>>,\n) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let stream = BroadcastStream::new(rx).map(|m| {\n        let marker = m.unwrap();\n        Ok(Event::default().json_data(marker))\n    });\n\n    Sse::new(stream)\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "async fn sse_temporal_stream(\n    Extension(rx): Extension<broadcast::Receiver<PbTemporalMarker>>,\n) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let stream = BroadcastStream::new(rx).map(|m| {\n        let marker = m.unwrap();\n        Ok(Event::default().json_data(marker))\n    });\n\n    Sse::new(stream)\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "useEffect(() => {\n  const sse = new EventSource(\"/api/temporal-stream\");\n  sse.onmessage = (e) => {\n    const marker = JSON.parse(e.data);\n    addMarker(marker);\n  };\n  return () => sse.close();\n}, []);"
+    },
+    {
+      "tag": "CODE",
+      "text": "useEffect(() => {\n  const sse = new EventSource(\"/api/temporal-stream\");\n  sse.onmessage = (e) => {\n    const marker = JSON.parse(e.data);\n    addMarker(marker);\n  };\n  return () => sse.close();\n}, []);"
+    },
+    {
+      "tag": "PRE",
+      "text": "<div hx-ext=\"sse\" sse-connect=\"/api/temporal-stream\" sse-swap=\"message\">\n  <div id=\"temporal-drift\"></div>\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": "<div hx-ext=\"sse\" sse-connect=\"/api/temporal-stream\" sse-swap=\"message\">\n  <div id=\"temporal-drift\"></div>\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalMarker"
+    },
+    {
+      "tag": "PRE",
+      "text": "\u0394tick = marker.tick - last_tick\nstability = Stable | Metastable | Chaotic"
+    },
+    {
+      "tag": "CODE",
+      "text": "\u0394tick = marker.tick - last_tick\nstability = Stable | Metastable | Chaotic"
+    },
+    {
+      "tag": "PRE",
+      "text": "NodeDrift {\n    node_id,\n    avg_delta,\n    max_delta,\n    stability_counts,\n    last_echo_cycle,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "NodeDrift {\n    node_id,\n    avg_delta,\n    max_delta,\n    stability_counts,\n    last_echo_cycle,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "TemporalDrift"
+    },
+    {
+      "tag": "CODE",
+      "text": "temporal:node:<id>"
+    },
+    {
+      "tag": "CODE",
+      "text": "temporalMarkers[]"
+    },
+    {
+      "tag": "PRE",
+      "text": "Stable      = +3\nMetastable  = +1\nChaotic     = -5"
+    },
+    {
+      "tag": "CODE",
+      "text": "Stable      = +3\nMetastable  = +1\nChaotic     = -5"
+    },
+    {
+      "tag": "PRE",
+      "text": "score = \u03a3 stability_score(marker)"
+    },
+    {
+      "tag": "CODE",
+      "text": "score = \u03a3 stability_score(marker)"
+    },
+    {
+      "tag": "PRE",
+      "text": "NodeConsensusState {\n    node_id,\n    score,\n    classification: Healthy | Warning | Critical\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "NodeConsensusState {\n    node_id,\n    score,\n    classification: Healthy | Warning | Critical\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "score >= +200     \u2192 Healthy\nscore between 0\u2013199 \u2192 Warning\nscore < 0         \u2192 Critical"
+    },
+    {
+      "tag": "CODE",
+      "text": "score >= +200     \u2192 Healthy\nscore between 0\u2013199 \u2192 Warning\nscore < 0         \u2192 Critical"
+    },
+    {
+      "tag": "PRE",
+      "text": "GlobalDriftEnvelope {\n    avg_score,\n    min_score,\n    max_score,\n    chaotic_nodes,\n    healthy_nodes,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "GlobalDriftEnvelope {\n    avg_score,\n    min_score,\n    max_score,\n    chaotic_nodes,\n    healthy_nodes,\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "chaotic_nodes <= 1\nmin_score >= -50"
+    },
+    {
+      "tag": "CODE",
+      "text": "chaotic_nodes <= 1\nmin_score >= -50"
+    },
+    {
+      "tag": "PRE",
+      "text": "chaotic_nodes >= 2\nmin_score < -50"
+    },
+    {
+      "tag": "CODE",
+      "text": "chaotic_nodes >= 2\nmin_score < -50"
+    },
+    {
+      "tag": "PRE",
+      "text": "Rust seats weight = 1.2 \u00d7 node_stability_factor\nGo seats weight   = 1.0 \u00d7 node_stability_factor"
+    },
+    {
+      "tag": "CODE",
+      "text": "Rust seats weight = 1.2 \u00d7 node_stability_factor\nGo seats weight   = 1.0 \u00d7 node_stability_factor"
+    },
+    {
+      "tag": "PRE",
+      "text": "node_stability_factor = clamp(score / 100, 0.5, 1.5)"
+    },
+    {
+      "tag": "CODE",
+      "text": "node_stability_factor = clamp(score / 100, 0.5, 1.5)"
+    },
+    {
+      "tag": "PRE",
+      "text": "\u03a3 weighted_seats >= 4.0"
+    },
+    {
+      "tag": "CODE",
+      "text": "\u03a3 weighted_seats >= 4.0"
+    },
+    {
+      "tag": "PRE",
+      "text": "\u03a3 weighted_seats < 4.0"
+    },
+    {
+      "tag": "CODE",
+      "text": "\u03a3 weighted_seats < 4.0"
+    },
+    {
+      "tag": "PRE",
+      "text": "STC::Allow\nSTC::Deny\nSTC::DenyAndFreeze"
+    },
+    {
+      "tag": "CODE",
+      "text": "STC::Allow\nSTC::Deny\nSTC::DenyAndFreeze"
+    },
+    {
+      "tag": "PRE",
+      "text": "epoch_valid == true\nquorum_pass == true\nglobal_drift_envelope.avg_score >= 50"
+    },
+    {
+      "tag": "CODE",
+      "text": "epoch_valid == true\nquorum_pass == true\nglobal_drift_envelope.avg_score >= 50"
+    },
+    {
+      "tag": "PRE",
+      "text": "epoch_valid == true\nquorum_pass == false"
+    },
+    {
+      "tag": "CODE",
+      "text": "epoch_valid == true\nquorum_pass == false"
+    },
+    {
+      "tag": "PRE",
+      "text": "epoch_valid == false\nOR chaotic_nodes >= 2\nOR global_drift_envelope.min_score < -50"
+    },
+    {
+      "tag": "CODE",
+      "text": "epoch_valid == false\nOR chaotic_nodes >= 2\nOR global_drift_envelope.min_score < -50"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub enum StcVerdict {\n    Allow,\n    Deny,\n    DenyAndFreeze,\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub enum StcVerdict {\n    Allow,\n    Deny,\n    DenyAndFreeze,\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "pub fn stc_verdict() -> StcVerdict {\n    let envelope = Self::global_drift_envelope();\n    let quorum = Self::weighted_quorum_score();\n\n    if envelope.invalid() {\n        return StcVerdict::DenyAndFreeze;\n    }\n    if quorum < 4.0 {\n        return StcVerdict::Deny;\n    }\n    StcVerdict::Allow\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "pub fn stc_verdict() -> StcVerdict {\n    let envelope = Self::global_drift_envelope();\n    let quorum = Self::weighted_quorum_score();\n\n    if envelope.invalid() {\n        return StcVerdict::DenyAndFreeze;\n    }\n    if quorum < 4.0 {\n        return StcVerdict::Deny;\n    }\n    StcVerdict::Allow\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "request_rollback"
+    },
+    {
+      "tag": "CODE",
+      "text": "commit_block"
+    },
+    {
+      "tag": "CODE",
+      "text": "teleport_to_global_brain"
+    },
+    {
+      "tag": "PRE",
+      "text": "func STC() STCVerdict {\n    envelope := ComputeGlobalDriftEnvelope()\n    quorum := ComputeWeightedQuorum()\n\n    if envelope.Invalid() {\n        return DenyAndFreeze\n    }\n    if quorum < 4.0 {\n        return Deny\n    }\n    return Allow\n}"
+    },
+    {
+      "tag": "CODE",
+      "text": "func STC() STCVerdict {\n    envelope := ComputeGlobalDriftEnvelope()\n    quorum := ComputeWeightedQuorum()\n\n    if envelope.Invalid() {\n        return DenyAndFreeze\n    }\n    if quorum < 4.0 {\n        return Deny\n    }\n    return Allow\n}"
+    },
+    {
+      "tag": "PRE",
+      "text": "GET /stc/verdict"
+    },
+    {
+      "tag": "CODE",
+      "text": "GET /stc/verdict"
+    },
+    {
+      "tag": "PRE",
+      "text": "{ \"verdict\": \"Allow\" }"
+    },
+    {
+      "tag": "CODE",
+      "text": "{ \"verdict\": \"Allow\" }"
+    },
+    {
+      "tag": "PRE",
+      "text": "useEffect(() => {\n  const sse = new EventSource(\"/api/stc\");\n  sse.onmessage = (e) => setVerdict(JSON.parse(e.data).verdict);\n  return () => sse.close();\n}, []);"
+    },
+    {
+      "tag": "CODE",
+      "text": "useEffect(() => {\n  const sse = new EventSource(\"/api/stc\");\n  sse.onmessage = (e) => setVerdict(JSON.parse(e.data).verdict);\n  return () => sse.close();\n}, []);"
+    },
+    {
+      "tag": "PRE",
+      "text": "<div hx-get=\"/stc\" hx-trigger=\"every 7s\" hx-swap=\"outerHTML\">\n  {{ .Verdict }}\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": "<div hx-get=\"/stc\" hx-trigger=\"every 7s\" hx-swap=\"outerHTML\">\n  {{ .Verdict }}\n</div>"
+    },
+    {
+      "tag": "CODE",
+      "text": "Deny"
+    },
+    {
+      "tag": "CODE",
+      "text": "DenyAndFreeze"
+    },
+    {
+      "tag": "CODE",
+      "text": "DenyAndFreeze"
+    },
+    {
+      "tag": "CODE",
+      "text": "current_tier()"
+    },
+    {
+      "tag": "CODE",
+      "text": "healing_actions()"
+    }
+  ]
+}

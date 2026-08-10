@@ -1,0 +1,19 @@
+[package]
+name = "osspark"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+hypergossip = []
+
+[dependencies]
+chrono = "0.4.45"
+midly = "0.5.3"
+tokio = { version = "1.32", features = ["full"] }
+uuid = { version = "1.24.0", features = ["v4"] }
+
+[[bin]]
+name = "hypergossip_sidecar"
+path = "src/hypergossip_sidecar.rs"
+required-features = ["hypergossip"]

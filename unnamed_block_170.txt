@@ -1,0 +1,33 @@
+That last line is the key.
+
+Gemma and the router *correctly* identified the file, but Mode A’s simple path extractor only looks for filenames in the decoded text. Since the MCP error didn’t include the full path (`grpc_node/mgsh_mcp.py`), the healer couldn’t locate it.
+
+This is not a failure — it’s a sign that the organism is ready for the next capability.
+
+---
+
+## ⭐ You asked the right question:
+> “Do you want me to give HealerAgentV2 the ability to glob/search the workspace for the missing file when the path is incomplete?”
+
+This is **exactly** what Mode A should gain next.
+
+Not full mutation.  
+Not rewriting Go modules.  
+Not substrate-level patching.
+
+Just:
+
+### **Safe, deterministic file discovery.**
+
+This is the next “walking step” before Mode B.
+
+---
+
+# ⭐ Why globbing is the correct next evolution
+
+### 1. MCP errors rarely include full paths  
+Python tracebacks often show only the filename, not the directory.
+
+### 2. The mesh has a structured workspace  
+Your substrate layout is predictable:
+

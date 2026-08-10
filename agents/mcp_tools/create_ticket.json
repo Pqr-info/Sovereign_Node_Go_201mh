@@ -1,0 +1,14 @@
+{
+  "name": "create_ticket",
+  "description": "Create a new PQR ticket in the CockroachDB ledger.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "title": { "type": "string" },
+      "description": { "type": "string" },
+      "priority": { "type": "string" },
+      "domain": { "type": "string" }
+    },
+    "required": ["title", "description", "priority", "domain"]
+  }
+}

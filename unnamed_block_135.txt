@@ -1,0 +1,11 @@
+---
+
+## **2. Copilot Receiver (bridge between mesh and Copilot)**
+
+The receiver’s lifecycle:
+
+- Boot  
+- Bind port  
+- Establish MCP bridge  
+- Begin streaming events  
+

@@ -1,0 +1,881 @@
+{
+  "nodes": [
+    "max",
+    "ted"
+  ],
+  "skills": [
+    {
+      "skillName": "8nn_adjacency_skill",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "agy-customizations",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "agy-customizations_1",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "alphafold_database_fetch_and_analyze",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "alphagenome_single_variant_analysis",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "antigravity_guide",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "antigravity_guide_1",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "askcopilot",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "chembl_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "clinical_trials_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "clinvar_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "copilot-bridge-receiver",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "copilot-sync",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "copilot_skill",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "credentials",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "dbsnp_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "dotenv",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "dotenvx",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "dotenvx_max",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "dotenvx_ted",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "dotenv_max",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "dotenv_ted",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "embl_ebi_ols",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "encode_ccres_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "ensembl_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "filesystem_indexer",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "foldseek_structural_search",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "gemma_cobrowse",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "gnomad_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "gtex_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "human_protein_atlas_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "interpro_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "jaspar_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "literature_search_arxiv",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "literature_search_biorxiv",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "literature_search_europepmc",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "literature_search_openalex",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "mesh_observatory_skill",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "ncbi_sequence_fetch",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "openfda_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "opentargets_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "oracle_server_access",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "oracle_server_access_1",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "oracle_server_access_2",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "pdb_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "permissioned-github",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "permissioned-github_1",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "predictingthepast",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "protein_sequence_msa",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "protein_sequence_similarity_search",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "pubchem_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "pubmed_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "pymol",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "quickgo_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "reactome_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "skills",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "srrk_route_hint_skill",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "string_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "timeslip-generator",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "ucsc_conservation_and_tfbs",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "unibind_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "uniprot_database",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "uv",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "workflow_skill_creator",
+      "presence": {
+        "max": true,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "airunway-aks-setup",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "appinsights-instrumentation",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-ai",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-aigateway",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-cloud-migrate",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-compliance",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-compute",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-cost",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-deploy",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-diagnostics",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-enterprise-infra-planner",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-kubernetes",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-kusto",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-messaging",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-prepare",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-quotas",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-rbac",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-reliability",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-resource-lookup",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-resource-visualizer",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-storage",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-upgrade",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "azure-validate",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "entra-agent-id",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "entra-app-registration",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "mesh-messaging",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "microsoft-foundry",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "omnitipotent-biographer",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "python-appservice-deploy",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "references",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": false,
+      "fileDrift": []
+    },
+    {
+      "skillName": "scienceskillscommon",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "timeslip",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    },
+    {
+      "skillName": "zetafold-triple-helix-hashing",
+      "presence": {
+        "max": false,
+        "ted": true
+      },
+      "metaEqual": true,
+      "fileDrift": []
+    }
+  ]
+}

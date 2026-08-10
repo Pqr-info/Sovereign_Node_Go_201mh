@@ -1,0 +1,8 @@
+model_id: gemma-4-e4b
+tokenizer:
+  path: "./tokenizer.json"
+base_settings:
+  temperature: 0.7
+  top_p: 0.9
+  max_tokens: 2048
+  context_length: 8192

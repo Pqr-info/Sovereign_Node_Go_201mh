@@ -1,0 +1,34 @@
+{
+  "name": "dolphin-whitelabel-android",
+  "version": "2.0.0",
+  "description": "Next-Gen Dolphin / UNA Whitelabel Mobile Client Application for Android",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "npx -y vite ./ --host 0.0.0.0 --port 3000",
+    "dev": "npx -y vite ./ --host 0.0.0.0 --port 3000",
+    "build": "npx -y vite build",
+    "server": "node server.js"
+  },
+  "keywords": [
+    "dolphin",
+    "una",
+    "whitelabel",
+    "android",
+    "social-platform",
+    "community"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "node-fetch": "^2.7.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1"
+  }
+}

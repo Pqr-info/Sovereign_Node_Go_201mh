@@ -1,0 +1,1 @@
+fn(Json<GlyphProfile>) -> impl Future<Output = Json<GlyphProfile>> {create_profile}: Handler<_, _>

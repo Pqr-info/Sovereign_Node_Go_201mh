@@ -1,0 +1,6 @@
+---
+
+# ⭐ How the Integration Layer Fits Into Your Pipeline
+
+Your full sovereign pipeline now looks like this:
+

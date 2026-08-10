@@ -1,0 +1,2 @@
+And here’s a minimal `russian_agent.go` to pair with it (if you haven’t already dropped it in):
+

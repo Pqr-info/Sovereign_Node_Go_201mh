@@ -1,0 +1,6 @@
+---
+
+### auth-client.js
+
+Save as `auth-client.js` next to `login.html` and import it as an ES module. It stores the access token in memory, refreshes automatically on 401, and exposes helpers for API calls and WS token requests.
+

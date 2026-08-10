@@ -1,0 +1,14 @@
+This gives you:
+
+- a Windows‑native shell  
+- that *pretends* to be `/bin/sh`  
+- and routes errors through Gemma → Router → HealerAgent v2  
+
+This is the compatibility organ.
+
+---
+
+# ⭐ 2. `substrate.go` — Wire MeshShell as a Mesh Citizen
+
+Add:
+

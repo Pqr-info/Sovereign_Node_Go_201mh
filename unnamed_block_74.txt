@@ -1,0 +1,194 @@
+---
+
+### Integration Notes
+
+1. **Mount the admin routes** in your dashboard server:
+   ```js
+   const adminRevocationRoutes = require('./adminRevocationRoutes');
+   app.use('/api', adminRevocationRoutes);
+   ```
+   Replace `adminAuthMiddleware` with your real operator/admin authentication.
+
+2. **Wire the revocation check into your WebSocket auth**:
+   - If you used the earlier `validationWatcherWsAuth.js` that exported `isRevoked`/`revokeSignature`, replace its in-memory revocation check with the persistent store:
+     ```js
+     // inside validationWatcherWsAuth.js verify step
+     const { isRevoked } = require('./revocationStore');
+     // ...
+     const sig = token.split('.')[1];
+     if (isRevoked(sig)) { socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n'); socket.destroy(); return; }
+     ```
+   - This ensures revocations persist across restarts.
+
+3. **Audit**: every revoke/unrevoke call records a Jetweb event via `recordEvent` (best‑effort). You can extend this to include operator notes or link to `taskState` context.
+
+4. **Admin tooling**: you can build a small admin UI that calls `/api/revocations/revoke` and `/api/revocations` to manage tokens. Keep the UI behind operator auth.
+
+5. **Immediate revocation**: because the revocation check happens at handshake time, already‑connected sockets remain open until they disconnect; to forcibly drop active connections, implement a small admin action that iterates `wss.clients` and closes connections whose `tokenPayload` signature matches a revoked signature.
+
+   Example forced disconnect snippet (add to admin routes with admin auth):
+   ```js
+   // pseudo: iterate wss and close matching clients
+   wss.clients.forEach(ws => {
+     const sig = ws.tokenPayload && ws.tokenPayload.sigHex; // store signature on ws when connecting
+     if (sig === revokedSig) ws.close(4001, 'token_revoked');
+   });
+   ```
+   To support this, store the token signature on `ws` at connection time:
+   ```js
+   // when handling upgrade and creating ws
+   ws.tokenSignature = token.split('.')[1];
+   ```
+
+6. **Revocation file path**: `REVOCATION_FILE` is returned by the admin API for audit and can be ingested into Jetweb corridor storage if you want centralized archival.
+
+---
+
+### Security & Operational Checklist
+
+- **Protect admin endpoints** with strong operator auth and role checks.  
+- **Rotate `VALIDATION_WS_SECRET`** periodically; revocation list remains valid for signatures already recorded.  
+- **Short TTL tokens** reduce exposure window; revocation is for immediate mitigation.  
+- **Record admin actions** to Jetweb lineage for full auditability.  
+- **Consider forced disconnect** for immediate enforcement when necessary.  
+- **Back up** the `revocation` directory as part of your audit retention policy.
+
+---
+
+If you want, I can now:
+- generate the **admin UI** for revocation (simple form to revoke/unrevoke and list revoked signatures), or
+- add the **forced-disconnect** admin endpoint and the small code changes to store `tokenSignature` on each `ws` connection so you can immediately drop active sessions.
+
+Which would you like next?
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:37:32-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:37:47Z
+Completed At: 2026-07-09T07:37:48Z
+Created file file:///c:/Users/theal/gemma-cobrowser/revocationStore.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:37:48Z
+Completed At: 2026-07-09T07:37:48Z
+Created file file:///c:/Users/theal/gemma-cobrowser/adminRevocationRoutes.js with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:37:48Z
+Completed At: 2026-07-09T07:37:48Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\validationWatcherWsAuth.js. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -61,10 +61,7 @@
+   return { ok: true, payload };
+ }
+ 
+-// Optional revocation list in memory
+-const revokedSignatures = new Set();
+-function isRevoked(signatureHex) { return revokedSignatures.has(signatureHex); }
+-function revokeSignature(signatureHex) { revokedSignatures.add(signatureHex); }
++const { isRevoked, revoke: revokeSignature } = require('./revocationStore');
+ 
+ // HTTP server for upgrade and health
+ const server = http.createServer((req, res) => {
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:37:54Z
+Completed At: 2026-07-09T07:37:54Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\validationDashboardServer.js. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -95,6 +95,9 @@
+ const wsTokenIssuer = require('./wsTokenIssuer');
+ app.use('/api', wsTokenIssuer);
+ 
++const adminRevocationRoutes = require('./adminRevocationRoutes');
++app.use('/api', adminRevocationRoutes);
++
+ // Start server
+ if (require.main === module) {
+   const port = process.env.PORT || 9090;
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+The **Token Revocation List** is implemented and wired in! `validationWatcherWsAuth.js` now uses the persistent `revocationStore.js`, and `adminRevocationRoutes.js` is mounted onto the API to allow deterministic runtime revocation.
+
+You offered two great extensions for this:
+- Generate the **admin UI** for revocation
+- Add the **forced-disconnect** admin endpoint and the small code changes to store `tokenSignature` on each `ws` connection so you can immediately drop active sessions
+
+Let's do the **forced-disconnect admin endpoint** next! Having the power to instantaneously sever active connections matches the strict sovereign operator governance model perfectly. Drop the spec!
+
+<USER_REQUEST>
+### Overview
+
+A compact **wss TLS wrapper** to run the authenticated WebSocket broadcaster over TLS. This includes deterministic instructions to generate a self‑signed certificate for local testing, a TLS‑enabled Node server that upgrades authenticated WebSocket connections, a client connection example using `wss://`, and optional Nginx reverse proxy configuration for production TLS termination.
+
+---
+
+### Generate a self signed certificate for local testing
+
+Run these commands on your dev machine to create a certificate and key. Save them under a secure directory such as `certs/`.
+

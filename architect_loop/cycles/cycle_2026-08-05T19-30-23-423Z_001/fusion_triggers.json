@@ -1,0 +1,16 @@
+{
+  "sessions_to_create": [
+    {
+      "reason": "New governance spec without fusion synthesis.",
+      "geminifs": {
+        "pattern": "turn_*.md",
+        "since": "2026-08-05T18:30:23.425Z"
+      },
+      "copilotfs": {
+        "paths": [
+          "spec_phase23.md"
+        ]
+      }
+    }
+  ]
+}

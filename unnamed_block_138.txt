@@ -1,0 +1,11 @@
+---
+
+## **4. Port Authority (routing organ)**
+
+Port Authority’s lifecycle:
+
+- Boot  
+- Load canonical ports  
+- Resolve service map  
+- Serve routing queries  
+

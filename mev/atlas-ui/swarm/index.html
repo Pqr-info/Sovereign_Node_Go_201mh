@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQR SG-DAO // RC-1 | Sovereign Swarm</title>
+  <meta name="description" content="Autonomous self-healing ticketing fabric. Powered by Gemma Orchestration and Forensic Lineage." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --panel-bg: rgba(15, 23, 42, 0.75);
+      --panel-border: rgba(56, 189, 248, 0.2);
+      --accent-primary: #00f3ff;
+      --accent-secondary: #3b82f6;
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--panel-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: var(--accent-primary);
+      letter-spacing: 3px;
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent-primary); }
+
+    .btn-hud {
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+      color: #000 !important;
+      padding: 0.55rem 1.35rem;
+      border-radius: 8px;
+      font-weight: 800 !important;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-hud:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.8);
+    }
+
+    .btn-login {
+      border: 1px solid var(--panel-border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 5rem 3rem;
+      align-items: center;
+      flex: 1;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .badge {
+      align-self: flex-start;
+      background: rgba(0, 243, 255, 0.1);
+      border: 1px solid var(--accent-primary);
+      color: var(--accent-primary);
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .glitch {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 4rem;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+
+    .hero-tagline {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+      color: #000;
+      padding: 0.85rem 2rem;
+      border-radius: 10px;
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 1rem;
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0, 243, 255, 0.7);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      padding: 0.85rem 2rem;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1rem;
+      background: rgba(15, 23, 42, 0.5);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .floating-core {
+      animation: float 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 40px rgba(0, 243, 255, 0.4));
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto 4rem auto;
+      padding: 0 3rem;
+    }
+
+    .feature-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent-primary);
+      box-shadow: 0 10px 30px rgba(0, 243, 255, 0.15);
+    }
+
+    .feature-card i {
+      font-size: 2.5rem;
+      color: var(--accent-primary);
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: rgba(2, 6, 23, 0.9);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="main-nav">
+    <div class="logo">PQR.INFO</div>
+    <div class="nav-links">
+      <a href="/wiki.html">Manifesto</a>
+      <a href="/hud.html" class="btn-hud">Enter HUD</a>
+      <a href="#" class="btn-login"><i class="fab fa-github"></i> GHE Sync</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <div class="badge">Mesh Node v1.08 Operational</div>
+      <h1 class="glitch">SOVEREIGN SWARM</h1>
+      <p class="hero-tagline">Autonomous self-healing ticketing fabric. Powered by Gemma Orchestration and Forensic Lineage.</p>
+      <div class="hero-actions">
+        <a href="/hud.html" class="btn-primary">Initialize Node</a>
+        <a href="/wiki.html" class="btn-secondary">View Core Protocol</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-core">
+        <i data-lucide="shield" style="width: 200px; height: 200px; color: var(--accent-primary); opacity: 0.8;"></i>
+      </div>
+    </div>
+  </header>
+
+  <section class="features">
+    <div class="feature-card">
+      <i class="fas fa-fingerprint"></i>
+      <h3>Forensic Fabric</h3>
+      <p>Every decision is logged to an immutable genealogy tree, ensuring absolute traceability across the swarm.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-heartbeat"></i>
+      <h3>Autonomous Healing</h3>
+      <p>Layer 7 agents detect and resolve failures through recursive metaprogramming loops.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-network-wired"></i>
+      <h3>Distributed Brain</h3>
+      <p>Dual-node GPU resident orchestration across Yoga and Alienware clusters.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 PQR Sovereign Mesh. Authenticated via SG-DAO Genesis.</p>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

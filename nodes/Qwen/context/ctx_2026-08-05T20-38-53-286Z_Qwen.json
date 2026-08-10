@@ -1,0 +1,15 @@
+{
+  "agent": "Qwen",
+  "window_id": "ctx_2026-08-05T20-38-53-286Z_Qwen",
+  "sources": {
+    "geminifs": [],
+    "copilotfs": [],
+    "fusion": []
+  },
+  "decay_profile": "execution",
+  "priority_tags": [
+    "constitution",
+    "mesh_context"
+  ],
+  "expires_at": "2026-08-05T20:53:53.286Z"
+}

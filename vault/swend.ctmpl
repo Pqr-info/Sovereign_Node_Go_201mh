@@ -1,0 +1,4 @@
+CF_ACCESS_CLIENT_ID="{{ with secret "secret/swend/cf" }}{{ .Data.data.client_id }}{{ end }}"
+CF_ACCESS_CLIENT_SECRET="{{ with secret "secret/swend/cf" }}{{ .Data.data.client_secret }}{{ end }}"
+SAML_CERT="{{ with secret "secret/swend/saml" }}{{ .Data.data.cert }}{{ end }}"
+SAML_KEY="{{ with secret "secret/swend/saml" }}{{ .Data.data.key }}{{ end }}"

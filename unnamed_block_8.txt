@@ -1,0 +1,11 @@
+sovereign_mesh/
+  connectors/
+    types.go
+    binance.go
+    schwab.go
+    alpaca.go
+    aggregator.go
+  swarm/
+    coordinator.go
+    trifecta_agent.go
+    shadow_harness.go

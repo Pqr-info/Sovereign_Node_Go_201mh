@@ -1,0 +1,127 @@
+---
+
+### Server Mounting and Auth Notes
+
+- **Mounting** add this to your dashboard server if not already present
+  ```js
+  // in validationDashboardServer.js or main server file
+  app.use('/api', adminRevocationRoutes); // already present
+  // serve static admin UI
+  app.get('/admin/revocations', (req, res) => res.sendFile(path.join(__dirname, 'admin-revocations.html')));
+  ```
+- **Auth** replace the demo header `X-Admin-Id` with your real admin authentication middleware. The UI uses `X-Admin-Id` for local testing only.
+- **Determinism** the UI performs sequential API calls for bulk operations to preserve deterministic audit ordering.
+
+---
+
+### UX and Safety Behavior
+
+- **Confirmation prompts** prevent accidental destructive actions.  
+- **Sequential bulk operations** ensure each revoke and forced-disconnect is recorded in order.  
+- **Audit panel** shows the raw API response for deterministic lineage review.  
+- **No auto-fixes** the UI never attempts to guess or auto-correct signatures. All actions are operator driven.
+
+---
+
+### Next steps I can generate
+
+- **Auth middleware scaffold** to replace demo headers with JWT or session validation.  
+- **Admin UI enhancement** to show revocation timestamps and admin notes pulled from Jetweb lineage.  
+- **Forced-disconnect audit view** that shows which sockets were closed and operator ids affected.
+
+Pick one and I will produce the code.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T02:41:11-05:00.
+</ADDITIONAL_METADATA>
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+Created At: 2026-07-09T07:41:37Z
+Completed At: 2026-07-09T07:41:37Z
+Created file file:///c:/Users/theal/gemma-cobrowser/copilot-ui/admin-revocations.html with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+
+Created At: 2026-07-09T07:41:37Z
+Completed At: 2026-07-09T07:41:37Z
+The following changes were made by the replace_file_content tool to: c:\Users\theal\gemma-cobrowser\validationDashboardServer.js. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -98,6 +98,8 @@
+ const adminRevocationRoutes = require('./adminRevocationRoutes');
+ app.use('/api', adminRevocationRoutes);
+ 
++app.get('/admin/revocations', (req, res) => res.sendFile(path.join(__dirname, 'copilot-ui', 'admin-revocations.html')));
++
+ // Start server
+ if (require.main === module) {
+   const port = process.env.PORT || 9090;
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+The following is an <EPHEMERAL_MESSAGE> not actually sent by the user. It is provided by the system as a set of reminders and general important information to pay attention to. Do NOT respond to this message, just act accordingly.
+
+<EPHEMERAL_MESSAGE>
+<planning_mode>
+You're in planning mode. Exercise judgement on whether the user's last request warrants a plan and take action accordingly.
+If the user's request warrants a plan then follow this workflow:
+1. Research first before taking actions. Do not use your code editing tools or run modifying commands during this time.
+2. Create an implementation plan artifact with `request_feedback = true` to request approval. Include any open questions for the user directly in the implementation plan. Don't use the ask_question tool to ask these questions. Stop calling tools and allow the user to review the plan and provide feedback or approval.
+3. After receiving approval, begin execution. Create and update the task artifact as you work.
+4. Verify any work that you have done.
+5. Create a walkthrough artifact to present your work to the user. When writing artifacts, make sure to follow the artifact formatting guidelines and use github alerts to highlight critical sections.
+If the user's request does NOT warrant a plan then continue your work WITHOUT making a plan or requesting user feedback.
+</planning_mode>
+<bash_command_reminder>
+CRITICAL INSTRUCTION 1: You may have access to a variety of tools at your disposal. Some tools may be for a specific task such as 'view_file' (for viewing contents of a file). Others may be very broadly applicable such as the ability to run a command on a terminal. Always prioritize using the most specific tool you can for the task at hand. Here are some rules: (a) NEVER run cat inside a bash command to create a new file or append to an existing file. (b) ALWAYS use grep_search instead of running grep inside a bash command unless absolutely needed. (c) DO NOT use ls for listing, cat for viewing, grep for finding, sed for replacing. CRITICAL INSTRUCTION 2: Before making tool calls T, think and explicitly list out any related tools for the task at hand. You can only execute a set of tools T if all other tools in the list are either more generic or cannot be used for the task at hand. ALWAYS START your thought with recalling critical instructions 1 and 2. In particular, the format for the start of your thought block must be '...94>thought
+CRITICAL INSTRUCTION 1: ...
+CRITICAL INSTRUCTION 2: ...'.
+</bash_command_reminder>
+</EPHEMERAL_MESSAGE>
+
+The **Admin Revocation Console UI** is in place! I dropped `admin-revocations.html` into `copilot-ui` and mounted it cleanly on `/admin/revocations` in the dashboard server. It natively orchestrates the API calls while securely parsing audit feedback.
+
+Now we are left with the final, most critical layer of Sovereign Organism governance:
+- **Auth middleware scaffold (JWT/session + role checks)** to replace the demo headers.
+
+Hit me with the Auth Middleware design. Once we swap out the `X-Admin-Id` and `X-Operator-Id` demo checks for real robust token claims, the cockpit's perimeter will be completely hardened and ready for production operations!
+
+<USER_REQUEST>
+### Overview
+
+Below is the **Admin Revocation UI** integration package: the single‑file frontend you already have plus the minimal server glue to serve it, protect it, and wire it into your existing admin routes. The server glue includes a secure admin auth middleware scaffold, static file serving, and deterministic sequencing for revoke, unrevoke, and forced‑disconnect actions so operator actions are auditable and ordered.
+
+---
+
+### Files to add
+
+- **`admin-revocations.html`** — single page UI (you already created this in the previous step).  
+- **Server glue** — snippets to add to your dashboard server (examples assume `validationDashboardServer.js` as the main Express app).  
+- **Auth scaffold** — minimal admin auth middleware to replace demo headers; swap in your real auth provider.
+
+---
+
+### Server glue code
+
+Add these snippets into your main server file (for example `validationDashboardServer.js`) or a small module you `require` from it.
+
+#### 1. Admin auth middleware scaffold
+

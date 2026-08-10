@@ -1,0 +1,6 @@
+FROM node:24-alpine
+WORKDIR /app
+COPY godns_daemon.js ./
+EXPOSE 53/udp
+EXPOSE 53/tcp
+CMD ["node", "godns_daemon.js"]

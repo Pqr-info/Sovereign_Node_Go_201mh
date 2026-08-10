@@ -11,12 +11,12 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/thealanphipps-del/pqr"
-	"github.com/thealanphipps-del/pqr/internal/execution"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/auth"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/db"
-	"github.com/thealanphipps-del/pqr/internal/service"
-	"github.com/thealanphipps-del/pqr/internal/tui"
+	"pqr.info"
+	"pqr.info/internal/execution"
+	"pqr.info/internal/infrastructure/auth"
+	"pqr.info/internal/infrastructure/db"
+	"pqr.info/internal/service"
+	"pqr.info/internal/tui"
 )
 
 func main() {

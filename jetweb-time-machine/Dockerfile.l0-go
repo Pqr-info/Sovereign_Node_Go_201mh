@@ -1,0 +1,22 @@
+# Jetweb Time Machine Go L0 API Server
+
+FROM golang:alpine as builder
+
+WORKDIR /build
+
+COPY . .
+
+RUN CGO_ENABLED=0 go build -ldflags="-w -s" -o jetweb-time-machine .
+
+FROM alpine:3.19
+
+WORKDIR /app
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /build/jetweb-time-machine /app/
+
+# Expose L0 MemoryBridge Server
+EXPOSE 8080
+
+ENTRYPOINT ["/app/jetweb-time-machine"]

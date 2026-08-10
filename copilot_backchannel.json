@@ -1,0 +1,29 @@
+This prevents:
+
+- VS Code extensions  
+- Gemini scripts  
+- Copilot suggestions  
+- CLI tools  
+
+from accidentally overwriting the spine.
+
+### Ownership Rules:
+- `bcpd` = authoritative  
+- VS Code = may request updates  
+- Copilot = may emit intents  
+- Gemini = may emit intents  
+- CLI = may emit deltas  
+
+But only **bcpd** writes the final state.
+
+This is how you prevent drift.
+
+---
+
+# 🔁 **3. Implement the “Copilot Intent Clear” Mechanism**
+You already implemented the intent poller — good.
+
+Now add the **intent clear** step:
+
+After Antigravity processes:
+

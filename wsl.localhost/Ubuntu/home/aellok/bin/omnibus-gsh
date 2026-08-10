@@ -1,0 +1,20 @@
+#!/bin/bash
+# STRIKE FOR 38 DYNAMICS DALLAS CONTEXT
+# YELLOW CIRCLE REPAIR JOB FOR UID 10463
+# TARGET BINARY /home/aellok/bin/omnibus-gsh
+
+if [ "$EUID" -ne 10463 ]; then
+    echo "CRITICAL FAILURE UID 10463 REQUIRED"
+    exit 1
+fi
+
+nc -z 127.0.0.1 8080
+if [ $? -ne 0 ]; then
+    echo "PORT 8080 UNREACHABLE INITIATING SELF HEALING"
+    /home/aellok/bin/omnibus-gsh --restart --port 8080 &
+else
+    echo "PORT 8080 ACTIVE RESTARTING LOCAL COMPONENTS"
+    systemctl --user restart docker
+    systemctl --user restart substrate
+    systemctl --user restart agentMemory
+fi

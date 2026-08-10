@@ -9,8 +9,8 @@ import (
 	"net/url"
 
 	"github.com/crewjam/saml/samlidp"
-	"github.com/thealanphipps-del/pqr/internal/domain"
-	"github.com/thealanphipps-del/pqr/internal/infrastructure/auth"
+	"pqr.info/internal/domain"
+	"pqr.info/internal/infrastructure/auth"
 )
 
 // AuthService handles SAML Identity Provider (IdP) logic
